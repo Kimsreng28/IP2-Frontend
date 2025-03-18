@@ -13,6 +13,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/client',
+        permanent: true, // true for 301 (permanent) or false for 302 (temporary)
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
