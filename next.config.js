@@ -16,8 +16,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/client",
+        source: '/',
+        destination: '/client',
         permanent: true, // true for 301 (permanent) or false for 302 (temporary)
       },
     ];

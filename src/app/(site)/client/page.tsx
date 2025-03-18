@@ -5,8 +5,9 @@ import Navigation from "../../components/Navigation";
 export default function Client() {
   return (
     <>
-      <Navigation />
-      <div className="flex h-screen items-center justify-center">
+    <Navigation></Navigation>
+    
+      <div className="flex justify-center items-center h-screen">
         <h1>Client Page </h1>
       </div>
     </>
