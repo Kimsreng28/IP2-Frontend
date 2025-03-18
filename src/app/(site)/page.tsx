@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main>
       <h1 className="flex h-screen items-center justify-center text-center text-3xl">
-        Hello
+        Hello 12
       </h1>
     </main>
   );
