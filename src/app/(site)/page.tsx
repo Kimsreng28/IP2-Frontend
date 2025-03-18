@@ -9,7 +9,9 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main>
-      <h1 className="flex text-3xl justify-center items-center text-center h-screen">Helo</h1>
+      <h1 className="flex h-screen items-center justify-center text-center text-3xl">
+        Hello
+      </h1>
     </main>
   );
 }
