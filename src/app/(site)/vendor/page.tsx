@@ -1,11 +1,6 @@
 "use client";
-export default function Vendor() {
-  return (
-    <>
-    
-      <div className="flex justify-center items-center h-screen">
-        <h1>Vendor Page </h1>
-      </div>
-    </>
-  );
+import { redirect } from "next/navigation";
+
+export default function AdminPage() {
+  redirect("/vendor/pages/dashboard");
 }

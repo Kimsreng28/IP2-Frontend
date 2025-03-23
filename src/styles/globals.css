@@ -4,14 +4,22 @@
 
 /* globals.css */
 @font-face {
-  font-family: 'Kantumruy';
-  src: url('/fonts/KantumruyPro.ttf') format('truetype');
+  font-family: "Kantumruy";
+  src: url("/fonts/KantumruyPro.ttf") format("truetype");
+  font-weight: "100 200 300 400 500 600 700 800 900";
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
   font-weight: "100 200 300 400 500 600 700 800 900";
   font-style: normal;
 }
 
 * {
-  font-family: 'Kantumruy';
+  font-family: "Kantumruy";
+  font-family: "Poppins";
 }
 
 /* third-party libraries CSS */
@@ -136,4 +144,8 @@ pre {
 
 .active-tab {
   @apply bg-stroke text-black dark:bg-blackho dark:text-white;
+}
+
+.hover\:bg-custom-blue:hover {
+  background-color: #286ef1;
 }

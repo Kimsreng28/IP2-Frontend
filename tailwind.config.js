@@ -13,6 +13,7 @@ module.exports = {
   theme: {
     fontFamily: {
       inter: ["Inter", "sans-serif"],
+      poppins: ["Poppins", "sans-serif"],
     },
     extend: {
       colors: {
