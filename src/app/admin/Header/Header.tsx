@@ -24,8 +24,8 @@ export default function Header({
   const title = userRole === "vendor" ? "Vendor" : "Admin";
 
   return (
-    <header className="font-poppins flex items-center justify-between bg-white p-4 shadow dark:bg-gray-900 dark:text-white">
-      <h1 className="text-xl font-bold">{title}</h1>
+    <header className="flex items-center justify-between bg-white p-4 font-poppins shadow dark:bg-gray-900 dark:text-white">
+      <h1 className="font-poppins text-xl font-bold">{title}</h1>
 
       <div className="flex items-center gap-4">
         {/* Dark Mode Toggle */}

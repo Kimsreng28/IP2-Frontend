@@ -23,7 +23,7 @@ export default function Sidebar() {
   if (userRole === null) {
     return (
       <div
-        className={`font-poppins flex h-full w-64 flex-col justify-between p-5 shadow-md ${
+        className={`flex h-full w-64 flex-col justify-between p-5 font-poppins shadow-md ${
           theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-600"
         }`}
       >
@@ -52,7 +52,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`font-poppins flex h-full w-64 flex-col justify-between p-5 shadow-md ${
+      className={`flex h-full w-64 flex-col justify-between p-5 font-poppins shadow-md ${
         theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-600"
       }`}
     >
@@ -90,7 +90,7 @@ export default function Sidebar() {
         onClick={handleLogout}
         className="flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white"
       >
-        <LogOut className="h-5 w-5 text-gray-800 hover:bg-white" />
+        <LogOut className="text-white-700 h-5 w-5 " />
         Logout
       </button>
     </div>
