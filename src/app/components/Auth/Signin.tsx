@@ -91,7 +91,7 @@ const Signin = () => {
                 aria-label="signup"
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
-                Sign In
+                <Link href="/client/pages/home">Sign In</Link>
                 <svg
                   className="fill-white"
                   width="14"
