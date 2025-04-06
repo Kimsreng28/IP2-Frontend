@@ -1,8 +1,8 @@
 "use client";
+import { User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 
@@ -11,6 +11,8 @@ const Navigation = () => {
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
+
+  const router = useRouter();
 
   const pathUrl = usePathname();
 
@@ -127,6 +129,16 @@ const Navigation = () => {
           </nav>
         </div>
         <ThemeToggler />
+
+        <div className="relative">
+          <button
+            onClick={() => router.push("/auth")}
+            aria-label="user profile"
+            className="flex  items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <User className="h-6 w-6" />
+          </button>
+        </div>
       </div>
     </header>
   );

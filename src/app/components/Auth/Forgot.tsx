@@ -4,10 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-const Signin = () => {
+const Forgot = () => {
   const [data, setData] = useState({
     email: "",
-    password: "",
   });
 
   return (
@@ -29,19 +28,13 @@ const Signin = () => {
           {/* Right side form */}
           <div className="w-full px-6 py-8 md:w-1/2">
             <h2 className="mb-6 text-center text-3xl font-semibold text-black dark:text-white">
-              Sign In
+              Forgot Password
             </h2>
 
             <form className="flex flex-col gap-5">
-              {/* Or Signup */}
+              {/* description */}
               <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                Don’t have an account yet?{" "}
-                <Link
-                  href="/auth/signup"
-                  className="text-primary hover:underline dark:text-primary"
-                >
-                  Sign Up
-                </Link>
+                Enter your email to verify and change the password.
               </p>
 
               <input
@@ -55,43 +48,12 @@ const Signin = () => {
                 className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
               />
 
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={data.password}
-                onChange={(e) =>
-                  setData({ ...data, [e.target.name]: e.target.value })
-                }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
-              />
-
-              {/* Remember me */}
-              <div className="flex items-start justify-between gap-3 text-sm">
-                <div className=" flex items-center justify-center gap-3 text-sm">
-                  <input id="terms" type="checkbox" />
-                  <label
-                    htmlFor="terms"
-                    className="text-gray-600 dark:text-gray-300"
-                  >
-                    Remember me
-                  </label>
-                </div>
-
-                <Link
-                  href="/auth/forgotpassword"
-                  className="text-primary hover:underline dark:text-primary"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-
               {/* Submit */}
               <button
                 aria-label="signup"
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
-                Sign In
+                <Link href="/auth/verify">Send</Link>
                 <svg
                   className="fill-white"
                   width="14"
@@ -103,30 +65,6 @@ const Signin = () => {
                 </svg>
               </button>
             </form>
-
-            {/* Divider */}
-            <div className="my-6 flex items-center gap-4">
-              <hr className="w-full border-gray-300 dark:border-gray-700" />
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                or
-              </span>
-              <hr className="w-full border-gray-300 dark:border-gray-700" />
-            </div>
-
-            {/* Google Sign in */}
-            <button
-              aria-label="signup with Google"
-              className="flex w-full items-center justify-center rounded-md border border-stroke bg-gray-50 px-4 py-3 text-gray-600 transition duration-300 hover:border-primary hover:bg-primary/10 dark:bg-[#2C303B] dark:text-white"
-            >
-              <Image
-                src="/images/icon/icons8-google.svg"
-                alt="Google"
-                width={20}
-                height={20}
-                className="mr-3"
-              />
-              Sign In with Google
-            </button>
           </div>
         </div>
       </div>
@@ -134,4 +72,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Forgot;
