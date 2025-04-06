@@ -4,15 +4,16 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const Forgot = () => {
+const ChangeCode = () => {
   const [data, setData] = useState({
-    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const router = useRouter();
-  const handleForgot = () => {
+  const handleNewCode = () => {
     // Handle forgot password logic here, e.g., API call to send reset link
-    router.push("/auth/verify");
+    router.push("/auth");
   };
 
   return (
@@ -34,20 +35,33 @@ const Forgot = () => {
           {/* Right side form */}
           <div className="w-full px-6 py-8 md:w-1/2">
             <h2 className="mb-6 text-center text-3xl font-semibold text-black dark:text-white">
-              Forgot Password
+              New Code
             </h2>
 
             <form className="flex flex-col gap-5">
               {/* description */}
               <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                Enter your email to verify and change the password.
+                Enter new password and confirm.
               </p>
 
+              {/* Password */}
               <input
-                name="email"
-                type="email"
-                placeholder="Email address"
-                value={data.email}
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={data.password}
+                onChange={(e) =>
+                  setData({ ...data, [e.target.name]: e.target.value })
+                }
+                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+              />
+
+              {/* Confirm Password */}
+              <input
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                value={data.confirmPassword}
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
@@ -59,11 +73,11 @@ const Forgot = () => {
                 aria-label="signup"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleForgot();
+                  handleNewCode();
                 }}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
-                Send
+                Enter
                 <svg
                   className="fill-white"
                   width="14"
@@ -82,4 +96,4 @@ const Forgot = () => {
   );
 };
 
-export default Forgot;
+export default ChangeCode;

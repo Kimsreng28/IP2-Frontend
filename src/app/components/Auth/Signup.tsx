@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const Signup = () => {
@@ -10,6 +11,13 @@ const Signup = () => {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
+
+  const handleSignup = () => {
+    // Handle signup logic here, e.g., API call to create a new user
+    router.push("/auth");
+  };
 
   return (
     <section>
@@ -103,6 +111,10 @@ const Signup = () => {
               {/* Submit */}
               <button
                 aria-label="signup"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignup();
+                }}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
                 Sign Up

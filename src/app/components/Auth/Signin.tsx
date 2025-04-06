@@ -4,11 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 const Signin = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+
+  const router = useRouter();
+
+  const handleSignin = () => {
+    // Handle signin logic here, e.g., API call to authenticate user
+    router.push("/client/pages/home");
+  };
 
   return (
     <section>
@@ -89,9 +98,13 @@ const Signin = () => {
               {/* Submit */}
               <button
                 aria-label="signup"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignin();
+                }}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
-                <Link href="/client/pages/home">Sign In</Link>
+                Sign In
                 <svg
                   className="fill-white"
                   width="14"

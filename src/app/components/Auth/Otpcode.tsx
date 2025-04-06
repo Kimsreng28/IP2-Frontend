@@ -1,8 +1,10 @@
 "use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 const VerifyOTP = () => {
+  const router = useRouter();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
@@ -24,7 +26,11 @@ const VerifyOTP = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const code = otp.join("");
-    console.log("Submitted OTP Code:", code);
+    console.log("OTP Code:", code);
+  };
+
+  const handleStatic = () => {
+    router.push("/auth/changecode");
   };
 
   return (
@@ -74,6 +80,10 @@ const VerifyOTP = () => {
 
               <button
                 type="submit"
+                onClick={() => {
+                  // Handle resend OTP logic here
+                  handleStatic();
+                }}
                 className="mt-4 w-full rounded-xl bg-black px-6 py-3 text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
                 Verify
@@ -83,8 +93,11 @@ const VerifyOTP = () => {
                 Didn’t receive the code?{" "}
                 <button
                   type="button"
+                  onClick={() => {
+                    // alter message
+                    alert("Code resent successfully!");
+                  }}
                   className="font-semibold text-primary hover:underline"
-                  onClick={() => alert("Resend OTP logic here")}
                 >
                   Resend
                 </button>
