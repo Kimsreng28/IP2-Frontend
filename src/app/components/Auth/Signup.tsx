@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,10 +14,67 @@ const Signup = () => {
     password: "",
   });
 
+  const [error, setError] = useState({
+    firstName: "",
+    lastName: "",
+
+    email: "",
+    password: "",
+  });
+
+  const [termPolicy, setTermPolicy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const validateInputs = () => {
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    };
+
+    if (!data.firstName) {
+      newErrors.firstName = "First name is required.";
+    } else if (data.firstName.length < 2) {
+      newErrors.firstName = "First name must be at least 2 characters.";
+    }
+
+    if (!data.lastName) {
+      newErrors.lastName = "Last name is required.";
+    } else if (data.lastName.length < 2) {
+      newErrors.lastName = "Last name must be at least 2 characters.";
+    }
+
+    if (!data.email) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      newErrors.email = "Please enter a valid email.";
+    }
+
+    if (!data.password) {
+      newErrors.password = "Password is required.";
+    } else if (data.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters.";
+    }
+
+    setError(newErrors);
+    return (
+      !newErrors.email &&
+      !newErrors.password &&
+      !newErrors.firstName &&
+      !newErrors.lastName
+    );
+  };
+
+  const handleSignup = async () => {
+    if (!validateInputs()) return;
+
+    if (!termPolicy) {
+      alert("Please agree to the Privacy Policy and Terms of Use.");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3001/auth/signup", {
@@ -47,9 +105,17 @@ const Signup = () => {
   return (
     <section>
       <div className="bg-light dark:bg-dark flex min-h-screen items-center justify-center px-4">
-        <div className="animate-fadeIn flex w-full max-w-[1000px] flex-col-reverse items-center justify-between overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-[#1E1E2F] md:flex-row">
+        <motion.div
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="flex w-full max-w-[1000px] flex-col-reverse items-center justify-between overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-[#1E1E2F] md:flex-row"
+        >
           {/* Left side image */}
-          <div className="flex w-full items-center justify-center p-6 md:w-1/2">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="flex w-full items-center justify-center p-6 md:w-1/2"
+          >
             <Image
               src="/images/logo/LogoAuth.png"
               alt="Logo"
@@ -58,10 +124,15 @@ const Signup = () => {
               className="h-auto w-full max-w-[300px] object-contain transition-transform duration-500 hover:scale-105 md:max-w-[400px]"
               priority
             />
-          </div>
+          </motion.div>
 
           {/* Right side form */}
-          <div className="w-full px-6 py-8 md:w-1/2">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full px-6 py-8 md:w-1/2"
+          >
             <h2 className="mb-6 text-center text-3xl font-semibold text-black dark:text-white">
               Sign Up
             </h2>
@@ -86,8 +157,15 @@ const Signup = () => {
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                  error.email ? "border-red-500 " : "border-stroke"
+                }`}
               />
+              {error.firstName && (
+                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
+                  {error.firstName}
+                </p>
+              )}
 
               <input
                 name="lastName"
@@ -97,9 +175,17 @@ const Signup = () => {
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                  error.email ? "border-red-500 " : "border-stroke"
+                }`}
               />
+              {error.lastName && (
+                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
+                  {error.lastName}
+                </p>
+              )}
 
+              {/* Email */}
               <input
                 name="email"
                 type="email"
@@ -108,28 +194,83 @@ const Signup = () => {
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                  error.email ? "border-red-500 " : "border-stroke"
+                }`}
               />
+              {error.email && (
+                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
+                  {error.email}
+                </p>
+              )}
 
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={data.password}
-                onChange={(e) =>
-                  setData({ ...data, [e.target.name]: e.target.value })
-                }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
-              />
+              {/* Password input */}
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={data.password}
+                  onChange={(e) =>
+                    setData({ ...data, [e.target.name]: e.target.value })
+                  }
+                  className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                    error.password ? "border-red-500" : "border-stroke"
+                  }`}
+                />
+                {/* Toggle password visibility */}
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <Image
+                    src={
+                      showPassword
+                        ? "/images/icon/eye-closed-svgrepo-com.svg"
+                        : "/images/icon/eye-svgrepo-com.svg"
+                    }
+                    alt={showPassword ? "Hide password" : "Show password"}
+                    width={20}
+                    height={20}
+                  />
+                </button>
+              </div>
+              {error.password && (
+                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
+                  {error.password}
+                </p>
+              )}
 
               {/* Terms */}
               <div className="flex items-start gap-3 text-sm">
-                <input id="terms" type="checkbox" className="mt-1" />
+                <input
+                  id="terms"
+                  type="checkbox"
+                  className="mt-1"
+                  checked={termPolicy}
+                  onChange={() => setTermPolicy(!termPolicy)}
+                />
                 <label
                   htmlFor="terms"
                   className="text-gray-600 dark:text-gray-300"
                 >
-                  I agree to the <b>Privacy Policy</b> and <b>Terms</b> of Use
+                  I agree to the{" "}
+                  <a
+                    href="/privacy-policy"
+                    target="_blank"
+                    className="text-primary underline hover:text-primary/80"
+                  >
+                    Privacy Policy
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    className="text-primary underline hover:text-primary/80"
+                  >
+                    Terms of Use
+                  </a>
                 </label>
               </div>
 
@@ -138,7 +279,7 @@ const Signup = () => {
                 aria-label="signup"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSignup(e);
+                  handleSignup();
                 }}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >
@@ -178,8 +319,8 @@ const Signup = () => {
               />
               Signup with Google
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
