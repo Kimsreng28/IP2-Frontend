@@ -6,6 +6,8 @@ import { ChangeEvent, FormEvent, useState } from "react";
 const VerifyOTP = () => {
   const router = useRouter();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
+  const [isResending, setIsResending] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
@@ -31,6 +33,33 @@ const VerifyOTP = () => {
 
   const handleStatic = () => {
     router.push("/auth/changecode");
+  };
+
+  const handleResend = async () => {
+    setIsResending(true);
+    setError(""); // Reset any previous error message
+
+    try {
+      // Simulating OTP resend (You can replace it with actual API request logic)
+      const response = await fetch("http://localhost:3001/auth/resend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: "user@example.com" }), // Use the actual email or data
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to resend OTP. Please try again.");
+      }
+
+      // If OTP is successfully resent
+      alert("Code resent successfully!");
+    } catch (error) {
+      setError("Failed to resend OTP. Please try again.");
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
@@ -81,7 +110,6 @@ const VerifyOTP = () => {
               <button
                 type="submit"
                 onClick={() => {
-                  // Handle resend OTP logic here
                   handleStatic();
                 }}
                 className="mt-4 w-full rounded-xl bg-black px-6 py-3 text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
@@ -93,15 +121,16 @@ const VerifyOTP = () => {
                 Didn’t receive the code?{" "}
                 <button
                   type="button"
-                  onClick={() => {
-                    // alter message
-                    alert("Code resent successfully!");
-                  }}
+                  onClick={handleResend}
                   className="font-semibold text-primary hover:underline"
                 >
-                  Resend
+                  {isResending ? "Resending..." : "Resend"}
                 </button>
               </p>
+
+              {error && (
+                <p className="mt-3 text-center text-sm text-red-500">{error}</p>
+              )}
             </form>
           </div>
         </div>

@@ -8,15 +8,40 @@ const Signup = () => {
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
+
     email: "",
     password: "",
   });
 
   const router = useRouter();
 
-  const handleSignup = () => {
-    // Handle signup logic here, e.g., API call to create a new user
-    router.push("/auth");
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:3001/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      console.log("Status:", response.status);
+      console.log("Result:", result);
+
+      if (!response.ok) {
+        throw new Error(result.message || "Signup failed");
+      }
+
+      alert("Signup successful!");
+      router.push("/auth");
+    } catch (err) {
+      console.error("Signup error:", err.message);
+      alert(err.message);
+    }
   };
 
   return (
@@ -99,7 +124,7 @@ const Signup = () => {
 
               {/* Terms */}
               <div className="flex items-start gap-3 text-sm">
-                <input id="terms" type="checkbox" />
+                <input id="terms" type="checkbox" className="mt-1" />
                 <label
                   htmlFor="terms"
                   className="text-gray-600 dark:text-gray-300"
@@ -113,7 +138,7 @@ const Signup = () => {
                 aria-label="signup"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSignup();
+                  handleSignup(e);
                 }}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
               >

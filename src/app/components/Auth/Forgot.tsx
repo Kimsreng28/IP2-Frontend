@@ -9,10 +9,53 @@ const Forgot = () => {
     email: "",
   });
 
+  const [error, setError] = useState({
+    email: "",
+  });
+
+  const validateInputs = () => {
+    const newErrors = {
+      email: "",
+    };
+
+    if (!data.email) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      newErrors.email = "Please enter a valid email.";
+    }
+
+    setError(newErrors);
+    return !newErrors.email;
+  };
+
   const router = useRouter();
-  const handleForgot = () => {
-    // Handle forgot password logic here, e.g., API call to send reset link
-    router.push("/auth/verify");
+  const handleForgot = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3001/auth/request-reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Something went wrong");
+      }
+
+      const result = await res.json();
+
+      console.log("Result:", result);
+
+      router.push("/auth/verify");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -43,6 +86,7 @@ const Forgot = () => {
                 Enter your email to verify and change the password.
               </p>
 
+              {/* Email */}
               <input
                 name="email"
                 type="email"
@@ -51,8 +95,15 @@ const Forgot = () => {
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
-                className="w-full border-b border-stroke bg-transparent pb-3.5 outline-none focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                  error.email ? "border-red-500 " : "border-stroke"
+                }`}
               />
+              {error.email && (
+                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
+                  {error.email}
+                </p>
+              )}
 
               {/* Submit */}
               <button
