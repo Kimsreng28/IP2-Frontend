@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Signup = () => {
+  // State for form data
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -14,6 +15,7 @@ const Signup = () => {
     password: "",
   });
 
+  // State for error messages
   const [error, setError] = useState({
     firstName: "",
     lastName: "",
@@ -22,11 +24,28 @@ const Signup = () => {
     password: "",
   });
 
+  // Router for navigation
+  const router = useRouter();
+
+  // State for terms and conditions checkbox
+  // State for password visibility toggle
   const [termPolicy, setTermPolicy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const router = useRouter();
+  // Check for token in URL and redirect if present
+  // This effect runs once when the component mounts
+  useEffect(() => {
+    // check for token in url
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
 
+    if (token) {
+      localStorage.setItem("token", token);
+      router.push("/client/pages/home");
+    }
+  }, []);
+
+  // Validate form inputs
   const validateInputs = () => {
     const newErrors = {
       firstName: "",
@@ -35,24 +54,29 @@ const Signup = () => {
       password: "",
     };
 
+    // Check if each field is empty or invalid
+    // firstName
     if (!data.firstName) {
       newErrors.firstName = "First name is required.";
     } else if (data.firstName.length < 2) {
       newErrors.firstName = "First name must be at least 2 characters.";
     }
 
+    // lastName
     if (!data.lastName) {
       newErrors.lastName = "Last name is required.";
     } else if (data.lastName.length < 2) {
       newErrors.lastName = "Last name must be at least 2 characters.";
     }
 
+    // email
     if (!data.email) {
       newErrors.email = "Email is required.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       newErrors.email = "Please enter a valid email.";
     }
 
+    // password
     if (!data.password) {
       newErrors.password = "Password is required.";
     } else if (data.password.length < 6) {
@@ -68,15 +92,21 @@ const Signup = () => {
     );
   };
 
+  // Handle form submission
+  // This function is called when the user clicks the "Sign Up" button
   const handleSignup = async () => {
+    // Prevent default form submission behavior check if inputs are valid
     if (!validateInputs()) return;
 
+    // Check if terms and conditions are accepted
     if (!termPolicy) {
       alert("Please agree to the Privacy Policy and Terms of Use.");
       return;
     }
 
+    // Prepare data for signup request
     try {
+      // Send signup request to the server
       const response = await fetch("http://localhost:3001/auth/signup", {
         method: "POST",
         headers: {
@@ -85,11 +115,13 @@ const Signup = () => {
         body: JSON.stringify(data),
       });
 
+      // Check if the response is ok (status code 200-299)
       const result = await response.json();
 
       console.log("Status:", response.status);
       console.log("Result:", result);
 
+      // If the response is not ok, throw an error
       if (!response.ok) {
         throw new Error(result.message || "Signup failed");
       }
@@ -99,6 +131,17 @@ const Signup = () => {
     } catch (err) {
       console.error("Signup error:", err.message);
       alert(err.message);
+    }
+  };
+
+  // Handle Google signup
+  const handleGoogleSignup = async () => {
+    try {
+      // Redirect to Google authentication URL
+      window.location.href = "http://localhost:3001/auth/google";
+    } catch (err: any) {
+      alert("Google Sign-in failed: " + err.message);
+      console.error("Google Sign-in error:", err);
     }
   };
 
@@ -149,6 +192,7 @@ const Signup = () => {
                 </Link>
               </p>
 
+              {/* First name inputs */}
               <input
                 name="firstName"
                 type="text"
@@ -167,6 +211,7 @@ const Signup = () => {
                 </p>
               )}
 
+              {/* Last name inputs */}
               <input
                 name="lastName"
                 type="text"
@@ -218,6 +263,7 @@ const Signup = () => {
                     error.password ? "border-red-500" : "border-stroke"
                   }`}
                 />
+
                 {/* Toggle password visibility */}
                 <button
                   type="button"
@@ -308,6 +354,11 @@ const Signup = () => {
             {/* Google Sign up */}
             <button
               aria-label="signup with Google"
+              onClick={(e) => {
+                e.preventDefault();
+                handleGoogleSignup();
+              }}
+              type="button"
               className="flex w-full items-center justify-center rounded-md border border-stroke bg-gray-50 px-4 py-3 text-gray-600 transition duration-300 hover:border-primary hover:bg-primary/10 dark:bg-[#2C303B] dark:text-white"
             >
               <Image
@@ -317,7 +368,7 @@ const Signup = () => {
                 height={20}
                 className="mr-3"
               />
-              Signup with Google
+              SignUp with Google
             </button>
           </motion.div>
         </motion.div>

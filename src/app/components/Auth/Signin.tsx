@@ -8,23 +8,49 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 const Signin = () => {
+  // State for email and password inputs
+  // and their error messages
   const [data, setData] = useState({
     email: "",
     password: "",
   });
 
+  // State for error messages
+  // for email and password inputs
   const [error, setError] = useState({
     email: "",
     password: "",
   });
 
+  // Initialize router for navigation
+  const router = useRouter();
+
+  // State for remember me functionality
+  // and show password toggle
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    // check for token in url
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const avatar = urlParams.get("avatar");
+
+    // check for token in localStorage
+    if (token) {
+      localStorage.setItem("token", token);
+      if (avatar) {
+        localStorage.setItem("avatar", avatar);
+      }
+      router.push("/client/pages/home");
+    }
+
+    // check for user data in localStorage
     const storedEmail = localStorage.getItem("email");
     const storedPassword = localStorage.getItem("password");
 
+    // if user data exists, set it in state
+    // and set rememberMe to true
     if (storedEmail && storedPassword) {
       setData({
         email: storedEmail,
@@ -34,20 +60,21 @@ const Signin = () => {
     }
   }, []);
 
-  const router = useRouter();
-
+  // Function to validate email and password inputs
   const validateInputs = () => {
     const newErrors = {
       email: "",
       password: "",
     };
 
+    // Check if email is valid
     if (!data.email) {
       newErrors.email = "Email is required.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       newErrors.email = "Please enter a valid email.";
     }
 
+    // Check if password is valid
     if (!data.password) {
       newErrors.password = "Password is required.";
     } else if (data.password.length < 6) {
@@ -58,10 +85,15 @@ const Signin = () => {
     return !newErrors.email && !newErrors.password;
   };
 
+  // Function to handle sign in
+  // with email and password
   const handleSignin = async () => {
+    // Check if inputs are valid
     if (!validateInputs()) return;
 
     try {
+      // Send POST request to the server
+      // with email and password
       const res = await fetch("http://localhost:3001/auth", {
         method: "POST",
         headers: {
@@ -89,11 +121,23 @@ const Signin = () => {
         localStorage.removeItem("password");
       }
 
-      // Navigate to home
+      // Navigate to home page
+      // after successful login
       router.push("/client/pages/home");
     } catch (err: any) {
       alert("Login failed: " + err.message);
       console.error("Login error:", err);
+    }
+  };
+
+  // Function to handle Google Sign-in
+  const handleGoogleSignin = async () => {
+    try {
+      // Redirect to Google authentication URL
+      window.location.href = "http://localhost:3001/auth/google";
+    } catch (err: any) {
+      alert("Google Sign-in failed: " + err.message);
+      console.error("Google Sign-in error:", err);
     }
   };
 
@@ -261,6 +305,10 @@ const Signin = () => {
             {/* Google Sign in */}
             <motion.button
               aria-label="signin with Google"
+              onClick={(e) => {
+                e.preventDefault();
+                handleGoogleSignin();
+              }}
               className="flex w-full items-center justify-center rounded-md border border-stroke bg-gray-50 px-4 py-3 text-gray-600 transition duration-300 hover:border-primary hover:bg-primary/10 dark:bg-[#2C303B] dark:text-white"
               whileHover={{ scale: 1.05 }}
             >
