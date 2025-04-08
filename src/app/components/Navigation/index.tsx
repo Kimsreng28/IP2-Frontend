@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "lucide-react";
+import { Heart, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { parseCookies } from "nookies";
@@ -68,7 +68,7 @@ const Navigation = () => {
 
   const handleProfileClick = () => {
     if (avatar) {
-      router.push("/profile"); // Navigate to profile page if avatar exists
+      router.push("/client/pages/profile"); // Navigate to profile page if avatar exists
     } else {
       router.push("/auth"); // Navigate to auth page if no avatar
     }
@@ -134,9 +134,20 @@ const Navigation = () => {
             </ul>
           </nav>
         </div>
+
         <ThemeToggler />
 
-        <div className="relative">
+        <div className="relative flex items-center gap-2">
+          {/* Heart Icon */}
+          <button
+            aria-label="wishlist"
+            onClick={() => router.push("/client/pages/wishlist")}
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </button>
+
+          {/* Profile Button */}
           <button
             onClick={handleProfileClick}
             aria-label="user profile"
@@ -146,7 +157,7 @@ const Navigation = () => {
               <img
                 src={avatar}
                 alt="Profile"
-                className="h-8 w-12 rounded-full object-cover"
+                className="h-8 w-22 rounded-full object-cover"
                 onError={() => setAvatar(null)} // Fallback if image fails to load
               />
             ) : (
@@ -154,6 +165,15 @@ const Navigation = () => {
                 <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </div>
             )}
+          </button>
+
+          {/* Shopping Cart Icon */}
+          <button
+            aria-label="cart"
+            onClick={() => router.push("/client/pages/cart")}
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </button>
         </div>
       </div>
