@@ -1,8 +1,9 @@
 "use client";
+import { Heart, ShoppingCart, User } from "lucide-react";
+import { User } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 
@@ -11,6 +12,8 @@ const Navigation = () => {
   const [dropdownToggler, setDropdownToggler] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
+
+  const router = useRouter();
 
   const pathUrl = usePathname();
 
@@ -44,6 +47,15 @@ const Navigation = () => {
       window.removeEventListener("scroll", handleStickyMenu);
     };
   }, []);
+
+
+  const handleProfileClick = () => {
+    if (avatar) {
+      router.push("/client/pages/profile"); // Navigate to profile page if avatar exists
+    } else {
+      router.push("/auth"); // Navigate to auth page if no avatar
+    }
+  };
 
   return (
     <header
@@ -126,7 +138,52 @@ const Navigation = () => {
             </ul>
           </nav>
         </div>
+
         <ThemeToggler />
+
+        <div className="relative flex items-center gap-2">
+          {/* Heart Icon */}
+          <button
+            aria-label="wishlist"
+            onClick={() => router.push("/client/pages/wishlist")}
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </button>
+
+          {/* Profile Button */}
+          <button
+            onClick={() => router.push("/auth")}
+            aria-label="user profile"
+            className="flex  items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+
+            {avatar ? (
+              <img
+                src={avatar}
+                alt="Profile"
+                className="h-8 w-22 rounded-full object-cover"
+                onError={() => setAvatar(null)} // Fallback if image fails to load
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+                <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </div>
+            )}
+
+            <User className="h-6 w-6" />
+
+          </button>
+
+          {/* Shopping Cart Icon */}
+          <button
+            aria-label="cart"
+            onClick={() => router.push("/client/pages/cart")}
+            className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </button>
+        </div>
       </div>
     </header>
   );

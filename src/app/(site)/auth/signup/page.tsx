@@ -1,9 +1,9 @@
-import Signin from "@/src/app/components/Auth/Signin";
+import Signup from "@/src/app/components/Auth/Signup";
 
 export default function Auth() {
   return (
     <main>
-      <Signin />
+      <Signup />
     </main>
   );
 }
