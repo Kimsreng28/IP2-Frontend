@@ -18,7 +18,7 @@ const nextConfig = {
       {
         source: '/',
         destination: '/client',
-        permanent: true, // true for 301 (permanent) or false for 302 (temporary)
+        permanent: true,
       },
     ];
   },
