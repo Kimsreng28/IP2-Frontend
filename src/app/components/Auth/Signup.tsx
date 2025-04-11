@@ -38,8 +38,9 @@ const Signup = () => {
     // check for token in url
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
+    const avatar = urlParams.get("avatar");
 
-    if (token) {
+    if (token && avatar) {
       localStorage.setItem("token", token);
       router.push("/client/pages/home");
     }
@@ -107,16 +108,25 @@ const Signup = () => {
     // Prepare data for signup request
     try {
       // Send signup request to the server
-      const response = await fetch("http://localhost:3001/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:3001/api/account/auth/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
 
       // Check if the response is ok (status code 200-299)
       const result = await response.json();
+
+      // Optionally store token in localStorage
+      localStorage.setItem("token", result.token);
+
+      // Optionally store avatar in localStorage
+      localStorage.setItem("avatar", result.user.avatar);
 
       console.log("Status:", response.status);
       console.log("Result:", result);
@@ -138,7 +148,7 @@ const Signup = () => {
   const handleGoogleSignup = async () => {
     try {
       // Redirect to Google authentication URL
-      window.location.href = "http://localhost:3001/auth/google";
+      window.location.href = "http://localhost:3001/api/account/auth/google";
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);
