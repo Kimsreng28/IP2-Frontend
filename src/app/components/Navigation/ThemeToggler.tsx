@@ -1,29 +1,32 @@
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const ThemeToggler = () => {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Ensures theme is loaded before accessing it (avoids hydration mismatch)
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   return (
     <button
       aria-label="theme toggler"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="bg-gray-2  dark:bg-dark-bg absolute right-17 mr-1.5 flex cursor-pointer items-center justify-center rounded-full p-2 text-black transition hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700 lg:static"
+      className="flex w-full items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
     >
       <Image
-        src="/images/icon/icon-moon.svg"
-        alt="logo"
+        src={
+          theme === "dark"
+            ? "/images/icon/icon-sun.svg"
+            : "/images/icon/icon-moon.svg"
+        }
+        alt="Theme Icon"
         width={30}
         height={30}
-        className="dark:hidden"
-      />
-
-      <Image
-        src="/images/icon/icon-sun.svg"
-        alt="logo"
-        width={30}
-        height={30}
-        className="hidden dark:block"
+        className="h-5 w-5"
       />
     </button>
   );

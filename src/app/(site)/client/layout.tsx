@@ -10,7 +10,6 @@ export default function ClientLayout({
   return (
     <div>
       <Navigation />
-
       <main className="p-6">{children}</main>
     </div>
   );
