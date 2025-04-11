@@ -94,7 +94,7 @@ const Signin = () => {
     try {
       // Send POST request to the server
       // with email and password
-      const res = await fetch("http://localhost:3001/auth", {
+      const res = await fetch("http://localhost:3001/api/account/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,6 +111,9 @@ const Signin = () => {
 
       // Optionally store token in localStorage
       localStorage.setItem("token", result.token);
+
+      // Optionally store avatar in localStorage
+      localStorage.setItem("avatar", result.user.avatar);
 
       //remember me functionality
       if (rememberMe) {
@@ -134,7 +137,7 @@ const Signin = () => {
   const handleGoogleSignin = async () => {
     try {
       // Redirect to Google authentication URL
-      window.location.href = "http://localhost:3001/auth/google";
+      window.location.href = "http://localhost:3001/api/account/auth/google";
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);
