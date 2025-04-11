@@ -57,12 +57,10 @@ const Navigation = () => {
 
   return (
     <header
-      className={`fixed shadow-sm left-0 -top-2 z-99999 w-full py-2 ${stickyMenu
-        ? "bg-white !py-2 shadow transition duration-100 dark:bg-black"
-        : ""
+      className={`fixed left-0 top-0 w-full z-50 bg-white dark:bg-black transition duration-100 ${stickyMenu ? "-py-4" : "py-2"
         }`}
     >
-      <div className="relative mx-auto max-w-c-1390 items-center justify-between px-4 md:px-8 xl:flex 2xl:px-0">
+      <div className="relative mx-auto max-w-c-1390 items-center justify-between px-4  xl:flex 2xl:px-0">
         <div className="flex w-full items-center justify-between xl:w-1/4">
 
           {/* shop logo  */}
@@ -70,14 +68,14 @@ const Navigation = () => {
             {/* Light Mode Logo */}
             <img
               src="/images/logo/shop_logo.png"
-              className="h-28 block dark:hidden"
+              className="h-[60px] scale-150 block dark:hidden"
               alt="Shop_Logo_Light"
             />
 
             {/* Dark Mode Logo */}
             <img
               src="/images/logo/shop_logo_dark.png"
-              className="h-28 hidden dark:block"
+              className="h-[60px] scale-150 hidden dark:block"
               alt="Shop_Logo_Dark"
             />
           </a>

@@ -8,9 +8,9 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <>
       <Navigation />
-      <main className="p-6">{children}</main>
-    </div>
+      <main>{children}</main>
+    </>
   );
 }
