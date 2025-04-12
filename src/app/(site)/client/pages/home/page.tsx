@@ -1,8 +1,9 @@
 'use client';
 
+import NewArrivals from '@/src/app/components/Client/Home/NewArrivals';
 import { useEffect, useState } from 'react';
 import BannerRotator, { Banner } from '../../../../components/Client/Home/BannerRotator';
-import { getBanners } from '../../../../server/client/home/banner.route';
+import homeClientApi from '../../../../server/client/home/home.route';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ export default function Home() {
 
   const fetchDataBanner = async () => {
     try {
-      const data = await getBanners();
+      const data = await homeClientApi.getBanners();
       if ('error' in data) {
         setError(data.error);
       } else {
@@ -35,6 +36,12 @@ export default function Home() {
         <div className="flex flex-col items-center w-full justify-center min-h-screen">
           {loading ? (<p>Loading...</p>) : error ? (<p className="text-red-500">{error}</p>)
             : (<BannerRotator banners={banners} />)}
+        </div>
+        <div>
+          <div className="flex flex-col items-center justify-center w-ful bg-gray-100">
+            {/* New Arrivals Component Here */}
+            <NewArrivals></NewArrivals>
+          </div>
         </div>
         <div className="h-screen">
           <h1 className="text-2xl font-bold text-center">Welcome to Our Site</h1>
