@@ -47,6 +47,17 @@ const mockDataNewArrivals = [
     stars: 4.0,
     created_at: '2023-10-02T00:00:00Z',
   },
+  {
+    id: 3,
+    title: 'New Arrival 3',
+    image: '/images/product/image2.png',
+    is_favorite: false,
+    is_new: true,
+    description: 'Description for New Arrival 3',
+    price: 19.99,
+    stars: 5.0,
+    created_at: '2023-10-03T00:00:00Z',
+  },
 ];
 class HomeService {
   private readonly url = `${env.API_BASE_URL}/client/banner`;

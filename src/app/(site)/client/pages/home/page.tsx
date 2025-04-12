@@ -38,9 +38,10 @@ export default function Home() {
             : (<BannerRotator banners={banners} />)}
         </div>
         <div>
-          <div className="flex flex-col items-center justify-center w-ful bg-gray-100">
+          <div className="flex flex-col items-center justify-center w-full ">
+
             {/* New Arrivals Component Here */}
-            <NewArrivals></NewArrivals>
+            <NewArrivals />
           </div>
         </div>
         <div className="h-screen">

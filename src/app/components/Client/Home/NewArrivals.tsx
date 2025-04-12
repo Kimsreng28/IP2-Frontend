@@ -66,8 +66,8 @@ export default function NewArrivals() {
 
   return (
     <div className="container mx-auto mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-3xl font-semibold">New Arrivals</h2>
+      <div className="flex items-center justify-between mb-4 px-5">
+        <h2 className="text-2xl text-black dark:text-gray-300 font-semibold">New Arrivals</h2>
         <div className="flex gap-2">
           {[1, 2, 3].map((num) => (
             <button
@@ -89,70 +89,82 @@ export default function NewArrivals() {
       ) : newArrivals.length === 0 ? (
         <p>No new arrivals available.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {newArrivals.map((item) => (
-            <div
-              key={item.id}
-              className="border rounded-xl shadow-sm p-4 hover:shadow-md transition relative"
-            >
-              {/* NEW Badge */}
-              {item.is_new && (
-                <div className="absolute top-2 left-2 text-black bg-white text-xs font-bold px-2 py-1 rounded">
-                  NEW
+        <div className="pl-5 overflow-x-auto scrollbar-hide mb-4">
+          <div className="flex gap-4 w-max">
+            {newArrivals.map((item) => (
+              <div className='flex gap-1'>
+                <div
+                  key={item.id}
+                  className=""
+                >
+                  <div className='border bg-gray-100 rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group'>
+                    {/* NEW Badge */}
+                    {item.is_new && (
+                      <div className="absolute top-2 left-2 text-black bg-white text-xs font-bold px-2 py-1 rounded">
+                        NEW
+                      </div>
+                    )}
+
+                    {/* Favorite Icon */}
+                    <motion.div
+                      className="absolute top-2 right-2 cursor-pointer z-10"
+                      onClick={() => toggleFavorite(item.id)}
+                      whileTap={{ scale: 0.8 }}
+                      whileHover={{ scale: 1.1 }}
+                      initial={{ scale: 1 }}
+                      animate={{ scale: item.is_favorite ? 1.2 : 1 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 10 }}
+                    >
+                      {item.is_favorite ? (
+                        <Icon className="text-red-400" path={mdiHeart} size={1} />
+                      ) : (
+                        <Icon className="text-gray-400" path={mdiHeartOutline} size={1} />
+                      )}
+                    </motion.div>
+
+                    {/* Image Container with Hover Add to Cart */}
+                    <div className="relative w-full h-48 mb-4 overflow-hidden rounded">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <button className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 bg-black text-white py-2 text-sm font-medium transition-all duration-500 hover:bg-gray-800">
+                        Add to cart
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    {/* Stars */}
+                    <div className="flex items-center">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span
+                          key={i}
+                          className={`text-black dark:text-gray-300 text-2xl ${i < Math.floor(item.stars)
+                            ? ''
+                            : 'text-gray-300 dark:text-gray-600'
+                            }`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-black dark:text-gray-300 text-base font-semibold mb-1">
+                      {item.title}
+                    </h3>
+
+                    {/* Price */}
+                    <p className="text-black dark:text-gray-300 text-[13px] font-bold">
+                      ${item.price}
+                    </p>
+                  </div>
                 </div>
-              )}
-              {/* Favorite Icon */}
-              <motion.div
-                className="absolute top-2 right-2 cursor-pointer"
-                onClick={() => toggleFavorite(item.id)}
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
-                initial={{ scale: 1 }}
-                animate={{ scale: item.is_favorite ? 1.2 : 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 10 }}
-              >
-                {item.is_favorite ? (
-                  <Icon className="text-red-400" path={mdiHeart} size={1} />
-                ) : (
-                  <Icon className="text-gray-400" path={mdiHeartOutline} size={1} />
-                )}
-              </motion.div>
-
-              {/* Product Image */}
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-contain mb-4"
-              />
-
-              {/* Title */}
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-
-              {/* Stars */}
-              <div className="flex items-center mb-1">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <span
-                    key={i}
-                    className={`text-yellow-500 text-sm ${i < Math.floor(item.stars) ? '' : 'text-opacity-30'
-                      }`}
-                  >
-                    ★
-                  </span>
-                ))}
-                <span className="ml-1 text-sm text-gray-600">
-                  {item.stars}
-                </span>
               </div>
-
-              {/* Price */}
-              <p className="text-lg font-bold">${item.price}</p>
-
-              {/* Add to Cart Button */}
-              <button className="mt-3 w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">
-                Add to cart
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
