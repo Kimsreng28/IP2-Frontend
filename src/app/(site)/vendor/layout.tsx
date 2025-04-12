@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "next-themes"; // Import the useTheme hook
-import Header from "../../admin/Header/Header";
-import Sidebar from "../../admin/Sidebar/Sidebar";
+import Header from "../../components/admin/Header/Header";
+import Sidebar from "../../components/admin/Sidebar/Sidebar";
 
 export default function AdminLayout({
   children,
