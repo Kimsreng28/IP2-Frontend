@@ -30,19 +30,62 @@ const Signin = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Function to clear auth storage
+  const clearAuthStorage = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("avatar");
+    if (!rememberMe) {
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
+    }
+  };
+
   useEffect(() => {
+    clearAuthStorage();
     // check for token in url
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const avatar = urlParams.get("avatar");
+    const role = urlParams.get("role");
+    const user = urlParams.get("user");
 
     // check for token in localStorage
     if (token) {
       localStorage.setItem("token", token);
+
+      // Store avatar if available
       if (avatar) {
         localStorage.setItem("avatar", avatar);
       }
-      router.push("/client/pages/home");
+
+      // Store user data if available
+      if (user) {
+        try {
+          const userData = JSON.parse(user);
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          // Also store avatar from user data if it exists
+          if (userData.avatar && !avatar) {
+            localStorage.setItem("avatar", userData.avatar);
+          }
+        } catch (e) {
+          console.error("Failed to parse user data", e);
+        }
+      }
+
+      // Redirect based on role
+      switch (role) {
+        case "ADMIN":
+          router.push("/admin/pages/dashboard");
+          break;
+        case "VENDOR":
+          router.push("/vendor/pages/dashboard");
+          break;
+        case "CUSTOMER":
+        default:
+          router.push("/client/pages/home");
+      }
     }
 
     // check for user data in localStorage
@@ -109,11 +152,12 @@ const Signin = () => {
 
       const result = await res.json();
 
+      // Clear previous localStorage items
+      clearAuthStorage();
+
       // Optionally store token in localStorage
       localStorage.setItem("token", result.token);
-
-      // Optionally store avatar in localStorage
-      localStorage.setItem("avatar", result.user.avatar);
+      localStorage.setItem("user", JSON.stringify(result.user));
 
       //remember me functionality
       if (rememberMe) {
@@ -124,9 +168,20 @@ const Signin = () => {
         localStorage.removeItem("password");
       }
 
-      // Navigate to home page
-      // after successful login
-      router.push("/client/pages/home");
+      // Force refresh of other tabs/windows
+      window.dispatchEvent(new Event("storage"));
+
+      switch (result.user.role) {
+        case "ADMIN":
+          router.push("/admin/pages/dashboard");
+          break;
+        case "VENDOR":
+          router.push("/vendor/pages/dashboard");
+          break;
+        case "CUSTOMER":
+        default:
+          router.push("/client/pages/home");
+      }
     } catch (err: any) {
       alert("Login failed: " + err.message);
       console.error("Login error:", err);
@@ -136,6 +191,7 @@ const Signin = () => {
   // Function to handle Google Sign-in
   const handleGoogleSignin = async () => {
     try {
+      clearAuthStorage();
       // Redirect to Google authentication URL
       window.location.href = "http://localhost:3001/api/account/auth/google";
     } catch (err: any) {

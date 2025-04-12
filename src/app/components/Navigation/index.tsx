@@ -23,30 +23,58 @@ const Navigation = () => {
     }
   };
 
-  useEffect(() => {
-    // Check both localStorage and cookies for avatar
+  const getAvatar = () => {
+    // 1. First check standalone avatar in localStorage
     const storedAvatar = localStorage.getItem("avatar");
-    if (storedAvatar) {
-      setAvatar(storedAvatar);
-      return;
+    if (storedAvatar) return storedAvatar;
+
+    // 2. Check user object in localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user?.avatar) return user.avatar;
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
     }
 
-    // Fallback to cookie parsing
+    // 3. Check cookies as fallback
     try {
       const cookies = parseCookies();
       const userCookie = cookies.user_cookie;
-
       if (userCookie) {
         const user = JSON.parse(userCookie);
-        if (user?.avatar) {
-          setAvatar(user.avatar);
-          localStorage.setItem("avatar", user.avatar);
-        }
+        if (user?.avatar) return user.avatar;
       }
     } catch (error) {
       console.error("Error parsing cookies:", error);
     }
-  }, []);
+
+    return null;
+  };
+
+  useEffect(() => {
+    // Update path when it changes
+    setCurrentPath(pathUrl);
+
+    // Load avatar on component mount
+    const currentAvatar = getAvatar();
+    setAvatar(currentAvatar);
+
+    // Listen for storage changes (in case avatar is updated in another tab)
+    const handleStorageChange = () => {
+      const newAvatar = getAvatar();
+      if (newAvatar !== avatar) {
+        setAvatar(newAvatar);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [pathUrl]);
 
   // Sticky menu
   const handleStickyMenu = () => {
@@ -74,8 +102,9 @@ const Navigation = () => {
 
   return (
     <header
-      className={`fixed left-0 top-0 w-full z-50 bg-white dark:bg-black transition duration-100 ${stickyMenu ? "-py-4" : "py-2"
-        }`}
+      className={`fixed left-0 top-0 z-50 w-full bg-white transition duration-100 dark:bg-black ${
+        stickyMenu ? "-py-4" : "py-2"
+      }`}
     >
       <div className="relative mx-auto max-w-c-1390 items-center justify-between px-4  xl:flex 2xl:px-0">
         <div className="flex w-full items-center justify-between xl:w-1/4">
@@ -84,14 +113,14 @@ const Navigation = () => {
             {/* Light Mode Logo */}
             <img
               src="/images/logo/shop_logo.png"
-              className="h-[60px] scale-150 block dark:hidden"
+              className="block h-[60px] scale-150 dark:hidden"
               alt="Shop_Logo_Light"
             />
 
             {/* Dark Mode Logo */}
             <img
               src="/images/logo/shop_logo_dark.png"
-              className="h-[60px] scale-150 hidden dark:block"
+              className="hidden h-[60px] scale-150 dark:block"
               alt="Shop_Logo_Dark"
             />
           </a>
