@@ -27,7 +27,7 @@ const mockData = [
 const mockDataNewArrivals = [
   {
     id: 1,
-    title: 'New Arrival 1',
+    title: 'Skullcandy - Crusher anc 2 wireless headphones',
     image: '/images/product/image.png',
     is_favorite: false,
     is_new: true,
@@ -38,7 +38,7 @@ const mockDataNewArrivals = [
   },
   {
     id: 2,
-    title: 'New Arrival 2',
+    title: 'Beats Studio Pro',
     image: '/images/product/image1.png',
     is_favorite: false,
     is_new: true,
@@ -49,7 +49,7 @@ const mockDataNewArrivals = [
   },
   {
     id: 3,
-    title: 'New Arrival 3',
+    title: 'Sony - WH-CH720N Wireless Noise Canceling',
     image: '/images/product/image2.png',
     is_favorite: false,
     is_new: true,

@@ -1,6 +1,7 @@
 'use client';
 
 import NewArrivals from '@/src/app/components/Client/Home/NewArrivals';
+import ShopCollection from '@/src/app/components/Client/Home/ShopCollection';
 import { useEffect, useState } from 'react';
 import BannerRotator, { Banner } from '../../../../components/Client/Home/BannerRotator';
 import homeClientApi from '../../../../server/client/home/home.route';
@@ -39,17 +40,15 @@ export default function Home() {
         </div>
         <div>
           <div className="flex flex-col items-center justify-center w-full ">
-
-            {/* New Arrivals Component Here */}
+            {/* New Arrivals Component */}
             <NewArrivals />
           </div>
-        </div>
-        <div className="h-screen">
-          <h1 className="text-2xl font-bold text-center">Welcome to Our Site</h1>
-          <p className="mt-4 text-center">Explore our features and offerings.</p>
+          <div className="h-screen">
+            {/* Shop Collection Component */}
+            <ShopCollection />
+          </div>
         </div>
       </div>
     </>
-
   );
 }

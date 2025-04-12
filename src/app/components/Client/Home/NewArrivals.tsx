@@ -102,7 +102,7 @@ export default function NewArrivals() {
                   key={item.id}
                   className=""
                 >
-                  <div className='border bg-gray-100 dark:bg-transparent rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group'>
+                  <div className='border bg-gray-100 dark:bg-transparent rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group min-h-[20px]'>
                     {/* NEW Badge */}
                     {item.is_new && (
                       <div className="absolute top-2 left-2 text-black bg-white text-xs font-bold px-2 py-1 rounded">
@@ -128,7 +128,7 @@ export default function NewArrivals() {
                     </motion.div>
 
                     {/* Image Container with Hover Add to Cart */}
-                    <div className="relative w-full h-48 mb-4 overflow-hidden rounded">
+                    <div className="relative w-full h-[240px] mb-4 overflow-hidden rounded">
                       <img
                         src={item.image}
                         alt={item.title}
@@ -157,7 +157,7 @@ export default function NewArrivals() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-black dark:text-gray-300 text-base font-semibold mb-1">
+                    <h3 className="text-black max-w-[220px] min-w-[220px] dark:text-gray-300 text-base font-semibold mb-1">
                       {item.title}
                     </h3>
 
