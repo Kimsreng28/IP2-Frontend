@@ -19,6 +19,15 @@ export async function getNewArrivals(params:{ page?: number} ) {
   }
 }
 
+export async function getBestSellers() {
+  try {
+    const newArrivals = await homeService.getBestSellers();
+    return newArrivals;
+  } catch (error) {
+    return { error: 'Unable to fetch new arrivals' };
+  }
+}
+
 export async function updateFavoriteStatus(id: number) {
   try {
     const result = await homeService.updateFavoriteStatus(id);
@@ -32,6 +41,7 @@ const homeClientApi = {
   getBanners,
   getNewArrivals,
   updateFavoriteStatus,
+  getBestSellers,
 };
 
 export default homeClientApi;

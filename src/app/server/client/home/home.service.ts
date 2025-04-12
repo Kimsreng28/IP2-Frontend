@@ -59,6 +59,86 @@ const mockDataNewArrivals = [
     created_at: '2023-10-03T00:00:00Z',
   },
 ];
+
+const mockDataBestSellers = [
+  {
+    id: 1,
+    title: 'Skullcandy - Crusher anc 2 wireless headphones',
+    image: '/images/product/image3.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 1',
+    price: 29.99,
+    stars: 4.5,
+    created_at: '2023-10-01T00:00:00Z',
+  },
+  {
+    id: 2,
+    title: 'Sony',
+    image: '/images/product/image4.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 1',
+    price: 29.99,
+    stars: 4.5,
+    created_at: '2023-10-01T00:00:00Z',
+  },
+  {
+    id: 2,
+    title: 'Beats Studio Pro',
+    image: '/images/product/image1.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 2',
+    price: 49.99,
+    stars: 4.0,
+    created_at: '2023-10-02T00:00:00Z',
+  },
+  {
+    id: 3,
+    title: 'Sony - WH-CH720N Wireless Noise Canceling',
+    image: '/images/product/image2.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 3',
+    price: 19.99,
+    stars: 5.0,
+    created_at: '2023-10-03T00:00:00Z',
+  },
+  {
+    id: 4,
+    title: 'Skullcandy - Crusher anc 2 wireless headphones',
+    image: '/images/product/image.png',
+    is_favorite: false,
+    is_new: true,
+    description: 'Description for New Arrival 1',
+    price: 29.99,
+    stars: 4.5,
+    created_at: '2023-10-01T00:00:00Z',
+  },
+  {
+    id: 5,
+    title: 'Skullcandy - Crusher anc 2 wireless headphones',
+    image: '/images/product/image3.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 1',
+    price: 29.99,
+    stars: 4.5,
+    created_at: '2023-10-01T00:00:00Z',
+  },
+  {
+    id: 6,
+    title: 'Sony',
+    image: '/images/product/image4.png',
+    is_favorite: false,
+    is_hot: true,
+    description: 'Description for New Arrival 1',
+    price: 29.99,
+    stars: 4.5,
+    created_at: '2023-10-01T00:00:00Z',
+  },
+]
 class HomeService {
   private readonly url = `${env.API_BASE_URL}/client/banner`;
 
@@ -115,6 +195,34 @@ class HomeService {
       if (!res.ok) {
         console.error('Error fetching new arrivals from external API');
         throw new Error('Failed to fetch new arrivals');
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error('Server error:', error);
+      throw new Error('Server Error');
+    }
+  }
+
+  async getBestSellers(): Promise<any> {
+    try {
+      // Uncomment this for testing mock data
+      return mockDataBestSellers;
+
+      const url = `${process.env.API_URL}/best-seller}`;
+
+      const res = await fetch(url, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        console.error('Error fetching Best Sellers from external API');
+        throw new Error('Failed to fetch  Best Sellers');
       }
 
       const data = await res.json();

@@ -60,7 +60,7 @@ export default function ShopCollection() {
                                 </div>
                                 <div className='flex justify-end'>
                                     <img
-                                        src="/images/product/image1.png"
+                                        src="/images/product/image5.png"
                                         alt="Main Shop Collection"
                                         className="w-[300px] h-[300px] mt-5 object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
@@ -87,7 +87,7 @@ export default function ShopCollection() {
                                 </div>
                                 <div className='flex justify-center'>
                                     <img
-                                        src="/images/product/image2.png"
+                                        src="/images/product/image3.png"
                                         alt="Main Shop Collection"
                                         className="w-[300px] h-[300px] mt-5 object-cover transition-transform duration-300 group-hover:scale-105"
                                     />

@@ -1,6 +1,8 @@
 'use client';
 
+import BestSeller from '@/src/app/components/Client/Home/BestSeller';
 import NewArrivals from '@/src/app/components/Client/Home/NewArrivals';
+import ServiceShop from '@/src/app/components/Client/Home/ServiceShop';
 import ShopCollection from '@/src/app/components/Client/Home/ShopCollection';
 import { useEffect, useState } from 'react';
 import BannerRotator, { Banner } from '../../../../components/Client/Home/BannerRotator';
@@ -43,10 +45,9 @@ export default function Home() {
             {/* New Arrivals Component */}
             <NewArrivals />
           </div>
-          <div className="h-screen">
-            {/* Shop Collection Component */}
-            <ShopCollection />
-          </div>
+          <ShopCollection />
+          <BestSeller />
+          <ServiceShop />
         </div>
       </div>
     </>

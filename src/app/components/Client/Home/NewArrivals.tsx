@@ -102,7 +102,7 @@ export default function NewArrivals() {
                   key={item.id}
                   className=""
                 >
-                  <div className='border bg-gray-100 dark:bg-transparent rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group min-h-[20px]'>
+                  <div className='border bg-gray-100 dark:bg-transparent rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group min-w-[260px] min-h-[20px]'>
                     {/* NEW Badge */}
                     {item.is_new && (
                       <div className="absolute top-2 left-2 text-black bg-white text-xs font-bold px-2 py-1 rounded">
