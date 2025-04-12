@@ -46,13 +46,16 @@ const ChangeCode = () => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3001/auth/complete-reset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        "http://localhost:3001/api/account/auth/complete-reset",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "Something went wrong");

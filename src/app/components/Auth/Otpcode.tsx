@@ -34,13 +34,16 @@ const VerifyOTP = () => {
 
   const handleNewPassword = async () => {
     try {
-      const res = await fetch("http://localhost:3001/auth/verify-reset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        "http://localhost:3001/api/account/auth/verify-reset",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code: otp.join("") }),
         },
-        body: JSON.stringify({ code: otp.join("") }),
-      });
+      );
 
       if (!res.ok) {
         const err = await res.json();
