@@ -78,8 +78,8 @@ export default function BestSeller() {
       ) : bestSellers.length === 0 ? (
         <p className="text-center text-gray-500">No best sellers available.</p>
       ) : (
-        <div className="w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6 px-5">
+        <div className="w-full px-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {bestSellers.map((item) => (
               <div
                 key={item.id}
@@ -139,7 +139,7 @@ export default function BestSeller() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-black max-w-[220px] min-w-[220px] dark:text-gray-300 text-base font-semibold mb-1">
+                  <h3 className="text-black max-w-[220px] dark:text-gray-300 text-base font-semibold mb-1">
                     {item.title}
                   </h3>
 
