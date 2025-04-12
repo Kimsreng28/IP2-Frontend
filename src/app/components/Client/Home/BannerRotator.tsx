@@ -37,7 +37,7 @@ export default function BannerRotator({ banners }: Props) {
   return (
     <motion.div
       key={banner.id} // This key will trigger motion animation on data change
-      className="w-full h-screen flex flex-col md:flex-row items-center justify-center p-10"
+      className="w-full h-screen flex flex-col md:flex-row items-center dark:bg-transparent justify-center p-10"
       style={{ backgroundColor: banner.color }}
       initial={{ opacity: 0.5, y: 40 }}         // Start lower & invisible
       animate={{ opacity: 1, y: 0.5 }}          // Move to center & fade in

@@ -1,8 +1,12 @@
 'use client';
 
+import BestSeller from '@/src/app/components/Client/Home/BestSeller';
+import NewArrivals from '@/src/app/components/Client/Home/NewArrivals';
+import ServiceShop from '@/src/app/components/Client/Home/ServiceShop';
+import ShopCollection from '@/src/app/components/Client/Home/ShopCollection';
 import { useEffect, useState } from 'react';
 import BannerRotator, { Banner } from '../../../../components/Client/Home/BannerRotator';
-import { getBanners } from '../../../../server/client/home/banner.route';
+import homeClientApi from '../../../../server/client/home/home.route';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -16,7 +20,7 @@ export default function Home() {
 
   const fetchDataBanner = async () => {
     try {
-      const data = await getBanners();
+      const data = await homeClientApi.getBanners();
       if ('error' in data) {
         setError(data.error);
       } else {
@@ -36,12 +40,16 @@ export default function Home() {
           {loading ? (<p>Loading...</p>) : error ? (<p className="text-red-500">{error}</p>)
             : (<BannerRotator banners={banners} />)}
         </div>
-        <div className="h-screen">
-          <h1 className="text-2xl font-bold text-center">Welcome to Our Site</h1>
-          <p className="mt-4 text-center">Explore our features and offerings.</p>
+        <div>
+          <div className="flex flex-col items-center justify-center w-full ">
+            {/* New Arrivals Component */}
+            <NewArrivals />
+          </div>
+          <ShopCollection />
+          <BestSeller />
+          <ServiceShop />
         </div>
       </div>
     </>
-
   );
 }
