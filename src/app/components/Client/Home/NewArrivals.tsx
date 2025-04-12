@@ -1,7 +1,7 @@
 'use client';
 
 import homeClientApi from '@/src/app/server/client/home/home.route';
-import { mdiHeart, mdiHeartOutline } from '@mdi/js';
+import { mdiCircle, mdiHeart, mdiHeartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -70,16 +70,21 @@ export default function NewArrivals() {
         <h2 className="text-2xl text-black dark:text-gray-300 font-semibold">New Arrivals</h2>
         <div className="flex gap-2">
           {[1, 2, 3].map((num) => (
-            <button
+            <motion.button
               key={num}
               onClick={() => setPage(num)}
-              className={`text-sm px-3 py-1 rounded border ${page === num
-                ? 'bg-black text-white'
-                : 'text-gray-500 hover:text-black border-gray-300'
-                } transition`}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.1 }}
+              className={`text-sm px-1 py-1 rounded-full transition-all duration-200 ${page === num
+                ? 'bg-white text-black dark:bg-black dark:text-white border border-black dark:border-white'
+                : 'text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white border-gray-300 dark:border-gray-600'
+                }`}
             >
-              {num}
-            </button>
+              <Icon
+                path={mdiCircle}
+                size={0.5}
+              />
+            </motion.button>
           ))}
         </div>
       </div>
@@ -97,7 +102,7 @@ export default function NewArrivals() {
                   key={item.id}
                   className=""
                 >
-                  <div className='border bg-gray-100 rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group'>
+                  <div className='border bg-gray-100 dark:bg-transparent rounded-xl shadow-sm p-4 hover:shadow-md transition relative overflow-hidden group'>
                     {/* NEW Badge */}
                     {item.is_new && (
                       <div className="absolute top-2 left-2 text-black bg-white text-xs font-bold px-2 py-1 rounded">
@@ -129,7 +134,7 @@ export default function NewArrivals() {
                         alt={item.title}
                         className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                       />
-                      <button className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 bg-black text-white py-2 text-sm font-medium transition-all duration-500 hover:bg-gray-800">
+                      <button className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 opacity-0 group-hover:opacity-100 bg-black text-white py-2 text-sm font-medium transition-all duration-500 hover:bg-gray-800 dark:bg-gray-300 dark:text-gray-700">
                         Add to cart
                       </button>
                     </div>
