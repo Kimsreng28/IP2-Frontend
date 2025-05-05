@@ -16,6 +16,9 @@ module.exports = {
       poppins: ["Poppins", "sans-serif"],
     },
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
       colors: {
         current: "currentColor",
         transparent: "transparent",
