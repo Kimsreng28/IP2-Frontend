@@ -5,12 +5,17 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['localhost'],
+    domains: ["localhost", "cdn-icons-png.flaticon.com"],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.sanity.io',
-        port: '',
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-icons-png.flaticon.com",
+        port: "",
       },
     ],
   },
@@ -22,8 +27,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/client',
+        source: "/",
+        destination: "/client",
         permanent: true,
       },
     ];

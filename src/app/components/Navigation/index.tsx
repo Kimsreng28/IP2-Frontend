@@ -93,8 +93,8 @@ const Navigation = () => {
   }, []);
 
   const handleProfileClick = () => {
-    if (avatar) {
-      router.push("/client/pages/profile"); // Navigate to profile page if avatar exists
+    if (!avatar || avatar) {
+      router.push("/client/pages/profile/account"); // Navigate to profile page if avatar exists
     } else {
       router.push("/auth"); // Navigate to auth page if no avatar
     }
