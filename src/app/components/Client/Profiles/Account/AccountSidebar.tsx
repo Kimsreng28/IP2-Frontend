@@ -23,164 +23,9 @@ const fadeInUp = {
 const AccountSidebar = ({ activePage }: { activePage: string }) => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [displayName, setDisplayName] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("User");
   const pathname = usePathname();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          `${process.env.API_BASE_URL}/api/account/auth/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch profile");
-        }
-
-        const data = await res.json();
-        setAvatar(data.avatar || null);
-        setDisplayName(data.display_name || "User");
-
-        // Update localStorage with current avatar
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          userData.avatar = data.avatar || null;
-          localStorage.setItem("user", JSON.stringify(userData));
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        toast.error("Failed to load profile");
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-
-    // Validate file type
-    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image (JPEG, PNG, WEBP, GIF)");
-      return;
-    }
-
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size should be less than 5MB");
-      return;
-    }
-
-    try {
-      setUploading(true);
-      const token = localStorage.getItem("token");
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Upload to file service
-      const uploadRes = await fetch(
-        `${process.env.FILE_BASE_URL}/api/file/upload-single`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!uploadRes.ok) {
-        const errorData = await uploadRes.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || uploadRes.statusText || "Upload failed",
-        );
-      }
-
-      const uploadResult = await uploadRes.json();
-
-      // Update profile with new avatar URL
-      const updateRes = await fetch(
-        `${process.env.API_BASE_URL}/api/account/auth/update-avatar`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            avatar: uploadResult.path,
-          }),
-        },
-      );
-
-      if (!updateRes.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      const updateResult = await updateRes.json();
-      setAvatar(updateResult.user.avatar);
-      toast.success("Avatar updated successfully");
-
-      // Update localStorage
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        userData.avatar = updateResult.user.avatar;
-        localStorage.setItem("user", JSON.stringify(userData));
-      }
-    } catch (error: any) {
-      console.error("Upload failed:", error);
-      toast.error(error.message || "Failed to upload avatar");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const renderAvatar = () => {
-    if (!avatar) {
-      return (
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-          <span className="text-white">No Avatar</span>
-        </div>
-      );
-    }
-
-    // Check if avatar is an external URL
-    const isExternalUrl =
-      avatar.startsWith("http://") || avatar.startsWith("https://");
-
-    if (isExternalUrl) {
-      return (
-        <img
-          src={avatar}
-          alt="User Avatar"
-          className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
-          onError={() => setAvatar(null)}
-        />
-      );
-    }
-
-    // Handle local files
-    return (
-      <Image
-        src={`${process.env.FILE_BASE_URL}/public/${avatar}`}
-        alt="User Avatar"
-        width={80}
-        height={80}
-        className="rounded-full border-4 border-white shadow-md"
-        priority
-      />
-    );
-  };
-
-  // Update your profile fetching logic
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -197,10 +42,15 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
         if (!res.ok) throw new Error("Failed to fetch profile");
 
         const data = await res.json();
-
-        // Store the avatar URL exactly as returned by the server
         setAvatar(data.avatar || null);
         setDisplayName(data.display_name || "User");
+
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          userData.avatar = data.avatar || null;
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
         toast.error("Failed to load profile");
@@ -209,6 +59,96 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
 
     fetchProfile();
   }, []);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(
+        `${process.env.API_BASE_URL}/api/account/auth/profile/upload-avatar`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to upload avatar");
+      }
+
+      const result = await res.json();
+      toast.success("Avatar updated!");
+
+      // Bust cache by appending a timestamp
+      const updatedAvatar = `${result.avatar}?t=${Date.now()}`;
+      setAvatar(updatedAvatar);
+
+      // Update localStorage with the new avatar
+      localStorage.setItem("avatar", updatedAvatar);
+
+      const storedUser = localStorage.getItem("user");
+
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        userData.avatar = updatedAvatar;
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("avatarUpdated", { detail: updatedAvatar }),
+      );
+    } catch (error) {
+      console.error("Avatar upload error:", error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const renderAvatar = () => {
+    if (!avatar) {
+      return (
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+          <span className="text-white">No Avatar</span>
+        </div>
+      );
+    }
+
+    const isExternalUrl =
+      avatar.startsWith("http://") || avatar.startsWith("https://");
+
+    if (isExternalUrl) {
+      return (
+        <img
+          src={avatar}
+          alt="User Avatar"
+          className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+          onError={() => setAvatar(null)}
+        />
+      );
+    }
+
+    return (
+      <Image
+        src={`${process.env.FILE_BASE_URL}/api/file/${avatar}`}
+        alt="User Avatar"
+        width={80}
+        height={80}
+        className="rounded-full border-4 border-white shadow-md"
+        priority
+      />
+    );
+  };
 
   return (
     <motion.div
