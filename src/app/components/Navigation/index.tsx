@@ -70,9 +70,17 @@ const Navigation = () => {
       }
     };
 
+    // sync avatar with localStorage and cookies
+    const handleAvatarUpdated = (e: Event) => {
+      const fileName = (e as CustomEvent).detail;
+      setAvatar(fileName);
+    };
+
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("avatarUpdated", handleAvatarUpdated);
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("avatarUpdated", handleAvatarUpdated);
     };
   }, [pathUrl]);
 
@@ -214,7 +222,7 @@ const Navigation = () => {
             >
               {avatar ? (
                 <img
-                  src={avatar}
+                  src={`${process.env.FILE_BASE_URL}/api/file/${avatar}`}
                   alt="Profile"
                   className="h-8 w-22 rounded-full object-cover"
                   onError={() => setAvatar(null)} // Fallback if image fails to load

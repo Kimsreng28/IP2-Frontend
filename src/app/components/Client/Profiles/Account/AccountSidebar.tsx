@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -22,7 +23,7 @@ const fadeInUp = {
 const AccountSidebar = ({ activePage }: { activePage: string }) => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [displayName, setDisplayName] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("User");
   const pathname = usePathname();
 
   useEffect(() => {
@@ -30,18 +31,29 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          "http://localhost:3001/api/account/auth/profile",
+          `${process.env.API_BASE_URL}/api/account/auth/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           },
         );
+
+        if (!res.ok) throw new Error("Failed to fetch profile");
+
         const data = await res.json();
         setAvatar(data.avatar || null);
         setDisplayName(data.display_name || "User");
+
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          userData.avatar = data.avatar || null;
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
+        toast.error("Failed to load profile");
       }
     };
 
@@ -49,17 +61,18 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
   }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const formData = new FormData();
-    formData.append("avatar", file);
+    setUploading(true);
 
     try {
-      setUploading(true);
       const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file);
+
       const res = await fetch(
-        "http://localhost:3001/api/account/auth/upload-avatar",
+        `${process.env.API_BASE_URL}/api/account/auth/profile/upload-avatar`,
         {
           method: "POST",
           headers: {
@@ -68,13 +81,73 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
           body: formData,
         },
       );
+
+      if (!res.ok) {
+        throw new Error("Failed to upload avatar");
+      }
+
       const result = await res.json();
-      setAvatar(result.avatar);
+      toast.success("Avatar updated!");
+
+      // Bust cache by appending a timestamp
+      const updatedAvatar = `${result.avatar}?t=${Date.now()}`;
+      setAvatar(updatedAvatar);
+
+      // Update localStorage with the new avatar
+      localStorage.setItem("avatar", updatedAvatar);
+
+      const storedUser = localStorage.getItem("user");
+
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        userData.avatar = updatedAvatar;
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("avatarUpdated", { detail: updatedAvatar }),
+      );
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("Avatar upload error:", error);
+      toast.error("Failed to upload avatar");
     } finally {
       setUploading(false);
     }
+  };
+
+  const renderAvatar = () => {
+    if (!avatar) {
+      return (
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+          <span className="text-white">No Avatar</span>
+        </div>
+      );
+    }
+
+    const isExternalUrl =
+      avatar.startsWith("http://") || avatar.startsWith("https://");
+
+    if (isExternalUrl) {
+      return (
+        <img
+          src={avatar}
+          alt="User Avatar"
+          className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+          onError={() => setAvatar(null)}
+        />
+      );
+    }
+
+    return (
+      <Image
+        src={`${process.env.FILE_BASE_URL}/api/file/${avatar}`}
+        alt="User Avatar"
+        width={80}
+        height={80}
+        className="rounded-full border-4 border-white shadow-md"
+        priority
+      />
+    );
   };
 
   return (
@@ -92,27 +165,24 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
           custom={0.2}
           className="relative"
         >
-          {avatar ? (
-            <Image
-              src={avatar}
-              alt="User Avatar"
-              width={80}
-              height={80}
-              className="rounded-full border-4 border-white shadow-md"
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
-              <span className="text-white">No Avatar</span>
-            </div>
-          )}
+          {renderAvatar()}
           <label className="absolute bottom-0 right-0 cursor-pointer">
-            <CameraIcon className="h-6 w-6 rounded-full bg-white p-1 text-black shadow-md dark:bg-gray-800 dark:text-white dark:shadow" />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              className="hidden"
-            />
+            {uploading ? (
+              <div className="h-6 w-6 rounded-full bg-white p-1 shadow-md dark:bg-gray-800">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-black dark:border-t-white"></div>
+              </div>
+            ) : (
+              <>
+                <CameraIcon className="h-6 w-6 rounded-full bg-white p-1 text-black shadow-md dark:bg-gray-800 dark:text-white dark:shadow" />
+                <input
+                  type="file"
+                  accept="image/jpeg, image/png, image/webp, image/gif"
+                  onChange={handleUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+              </>
+            )}
           </label>
         </motion.div>
 
@@ -156,6 +226,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
             custom={5}
             onClick={() => {
               localStorage.removeItem("token");
+              localStorage.removeItem("user");
               window.location.href = "/auth";
             }}
             className="cursor-pointer text-red-600 hover:text-red-800"

@@ -49,6 +49,7 @@
     "react-router-dom": "^7.4.0",
     "sharp": "^0.33.5",
     "solid-nextjs": "file:",
+    "sonner": "^2.0.3",
     "swiper": "^9.3.2",
     "tailwind-merge": "^3.0.2",
     "tailwind-scrollbar-hide": "^2.0.0",
