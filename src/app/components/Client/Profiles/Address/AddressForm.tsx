@@ -47,7 +47,7 @@ const AddressForm = ({
           { label: "PHONE NUMBER", name: "phone", optional: true },
         ].map((field, index) => (
           <div key={index} className={field.colSpan ? "md:col-span-2" : ""}>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-300">
               {field.label} {field.optional ? "" : "*"}
             </label>
             <input
