@@ -26,7 +26,7 @@ const FormInput = ({
       animate="visible"
       className="mb-4 font-poppins"
     >
-      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="mb-1 block text-[12px] font-medium text-gray-500 dark:text-gray-300">
         {label}
       </label>
       <input
@@ -46,7 +46,7 @@ const FormInput = ({
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.1 }}
-          className="mt-1 text-xs text-gray-500 dark:text-gray-400"
+          className="mt-1 font-poppins text-xs italic text-gray-500 dark:text-gray-400"
         >
           {helpText}
         </motion.p>
