@@ -23,13 +23,10 @@ const WishlistPage = () => {
     const fetchWishlist = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/login");
-          return;
-        }
 
+        // Get Products from the API Wishlist
         const response = await fetch(
-          `${process.env.API_BASE_URL}/api/vendor/product`,
+          `${process.env.API_BASE_URL}/api/vendor/product`, // Adjust example catch from products automatically
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -58,10 +55,6 @@ const WishlistPage = () => {
   const removeFromWishlist = async (productId: number) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
 
       // Optimistic UI update
       setWishlistItems((prev) =>
@@ -83,12 +76,11 @@ const WishlistPage = () => {
       }
     } catch (error) {
       console.error("Error removing from wishlist:", error);
-      // Revert UI if API call fails
-      // You might want to re-fetch the wishlist here
     }
   };
 
   const navigateToProduct = (productId: number) => {
+    // Navigate to the product details page
     router.push(`/product/${productId}`);
   };
 
