@@ -208,7 +208,7 @@ const Navigation = () => {
             {/* Heart Icon */}
             <button
               aria-label="wishlist"
-              onClick={() => router.push("/client/pages/wishlist")}
+              onClick={() => router.push("/client/pages/profile/wishlist")}
               className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
