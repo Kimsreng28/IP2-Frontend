@@ -2,7 +2,6 @@
 import { Heart, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
@@ -11,6 +10,7 @@ const Navigation = () => {
   const [stickyMenu, setStickyMenu] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [wishlistCount, setWishlistCount] = useState(0);
 
   const router = useRouter();
   const pathUrl = usePathname();
@@ -23,63 +23,80 @@ const Navigation = () => {
     }
   };
 
-  const getAvatar = () => {
-    // 1. First check standalone avatar in localStorage
-    const storedAvatar = localStorage.getItem("avatar");
-    if (storedAvatar) return storedAvatar;
-
-    // 2. Check user object in localStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        if (user?.avatar) return user.avatar;
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-      }
-    }
-
-    // 3. Check cookies as fallback
+  const fetchWishlist = async () => {
     try {
-      const cookies = parseCookies();
-      const userCookie = cookies.user_cookie;
-      if (userCookie) {
-        const user = JSON.parse(userCookie);
-        if (user?.avatar) return user.avatar;
-      }
-    } catch (error) {
-      console.error("Error parsing cookies:", error);
-    }
+      const token = localStorage.getItem("token");
 
-    return null;
+      const response = await fetch(
+        `${process.env.API_BASE_URL}/api/vendor/product`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch wishlist");
+      }
+
+      const data = await response.json();
+      console.log("Fetched wishlist data:", data);
+
+      setWishlistCount(Array.isArray(data) ? data.length : 0); // ✅ Update here
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  const getAvatar = async (): Promise<string | null> => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    try {
+      const res = await fetch(
+        `${process.env.API_BASE_URL}/api/account/auth/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        console.error("Failed to fetch profile:", res.status);
+        return null;
+      }
+
+      const data = await res.json();
+
+      return data?.avatar || null;
+    } catch (error) {
+      console.error("Error fetching avatar from API:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
-    // Update path when it changes
     setCurrentPath(pathUrl);
 
-    // Load avatar on component mount
-    const currentAvatar = getAvatar();
-    setAvatar(currentAvatar);
-
-    // Listen for storage changes (in case avatar is updated in another tab)
-    const handleStorageChange = () => {
-      const newAvatar = getAvatar();
-      if (newAvatar !== avatar) {
-        setAvatar(newAvatar);
-      }
+    const fetchAvatar = async () => {
+      const currentAvatar = await getAvatar();
+      setAvatar(currentAvatar);
     };
 
-    // sync avatar with localStorage and cookies
-    const handleAvatarUpdated = (e: Event) => {
-      const fileName = (e as CustomEvent).detail;
-      setAvatar(fileName);
+    fetchAvatar();
+
+    fetchWishlist();
+
+    // Listen for custom avatar update event
+    const handleAvatarUpdated = async (e: Event) => {
+      const currentAvatar = await getAvatar();
+      setAvatar(currentAvatar);
     };
 
-    window.addEventListener("storage", handleStorageChange);
     window.addEventListener("avatarUpdated", handleAvatarUpdated);
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("avatarUpdated", handleAvatarUpdated);
     };
   }, [pathUrl]);
@@ -106,6 +123,10 @@ const Navigation = () => {
     } else {
       router.push("/auth"); // Navigate to auth page if no avatar
     }
+  };
+
+  const handleWishlistClick = () => {
+    router.push("/client/pages/profile/wishlist"); // Navigate to wishlist page if avatar exists
   };
 
   return (
@@ -208,10 +229,17 @@ const Navigation = () => {
             {/* Heart Icon */}
             <button
               aria-label="wishlist"
-              onClick={() => router.push("/client/pages/profile/wishlist")}
+              onClick={handleWishlistClick}
               className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              <div className="relative">
+                <Heart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-xs text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </div>
             </button>
 
             {/* Profile Button */}
