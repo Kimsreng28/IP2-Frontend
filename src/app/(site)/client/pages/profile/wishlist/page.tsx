@@ -90,10 +90,10 @@ const WishlistPage = () => {
 
   return (
     <motion.div
+      className="space-y-6 font-poppins"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2, delay: 0.1 }}
-      className="space-y-6 font-poppins"
+      transition={{ duration: 0.4 }}
     >
       <motion.h2
         initial={{ opacity: 0 }}

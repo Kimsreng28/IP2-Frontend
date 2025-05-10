@@ -1,13 +1,17 @@
 "use client";
 
+import { motion } from "framer-motion";
 import AccountDetailsSection from "./AccountDetailsSection";
 import PasswordSection from "./PasswordSection";
 
 const AccountForm = ({ formData, handleChange, handleSubmit }) => {
   return (
-    <form
+    <motion.form
       onSubmit={handleSubmit}
-      className="flex-1 rounded-lg bg-white shadow-sm dark:bg-gray-900"
+      className="mt-4 space-y-4 font-[Poppins]"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="space-y-8">
         <AccountDetailsSection
@@ -23,7 +27,7 @@ const AccountForm = ({ formData, handleChange, handleSubmit }) => {
       >
         Save changes
       </button>
-    </form>
+    </motion.form>
   );
 };
 
