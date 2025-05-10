@@ -1,8 +1,14 @@
+import { motion } from "framer-motion";
 import FormInput from "./FormInput";
 
 const PasswordSection = ({ formData, handleChange }) => {
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6 font-poppins"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
         Password
       </h2>
@@ -34,7 +40,7 @@ const PasswordSection = ({ formData, handleChange }) => {
         type="password"
         helpText={undefined}
       />
-    </div>
+    </motion.div>
   );
 };
 

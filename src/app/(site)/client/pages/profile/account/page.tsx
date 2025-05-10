@@ -1,6 +1,7 @@
 "use client";
 
 import AccountForm from "@/src/app/components/Client/Profiles/Account/AccountForm";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -132,7 +133,12 @@ const AccountPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-4">
+    <motion.div
+      className="space-y-6 font-poppins"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       {error && (
         <div className="mb-4 rounded-md bg-red-100 p-4 text-red-700">
           {error}
@@ -148,7 +154,7 @@ const AccountPage = () => {
         handleChange={handleChange}
         handleSubmit={handleSubmit}
       />
-    </div>
+    </motion.div>
   );
 };
 
