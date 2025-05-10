@@ -5,6 +5,7 @@ import { CameraIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import router from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -40,6 +41,13 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
         );
 
         if (!res.ok) throw new Error("Failed to fetch profile");
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+
+          router.push("/auth");
+        }
 
         const data = await res.json();
         setAvatar(data.avatar || null);
