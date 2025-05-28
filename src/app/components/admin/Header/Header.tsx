@@ -16,12 +16,22 @@ export default function Header({
 
   // Fetch the user role from localStorage when the component mounts
   useEffect(() => {
-    const role = localStorage.getItem("role") || "admin"; // Default to "admin"
-    setUserRole(role);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUserRole(parsedUser?.role || "ADMIN");
+      } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        setUserRole("ADMIN");
+      }
+    } else {
+      setUserRole("ADMIN");
+    }
   }, []);
 
   // Determine the title based on the role
-  const title = userRole === "vendor" ? "Vendor" : "Admin";
+  const title = userRole === "VENDOR" ? "VENDOR" : "ADNIN";
 
   return (
     <header className="flex items-center justify-between bg-white p-4 font-poppins shadow dark:bg-gray-900 dark:text-white">
