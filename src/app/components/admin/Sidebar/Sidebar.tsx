@@ -15,18 +15,8 @@ export default function Sidebar() {
 
   // Fetch the user role from localStorage after the component mounts
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUserRole(parsedUser?.role || "ADMIN");
-      } catch (error) {
-        console.error("Failed to parse user from localStorage", error);
-        setUserRole("ADMIN");
-      }
-    } else {
-      setUserRole("ADMIN");
-    }
+    const storedUser = localStorage.getItem("token");
+    if (storedUser) setUserRole("");
   }, []);
 
   // If userRole is not set yet, render a loading state
