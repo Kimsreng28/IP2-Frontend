@@ -4,8 +4,8 @@ import homeClientApi from "@/src/app/server/client/home/home.route";
 import { mdiCircle, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
-
 export type NewArrival = {
   id: number;
   title: string;
@@ -71,7 +71,7 @@ export default function NewArrivals() {
 
   return (
     <div className="container mx-auto mt-6">
-      <div className="mb-4 flex items-center justify-between px-5">
+      <div className="flex items-center justify-between px-5 mb-4">
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           New Arrivals
         </h2>
@@ -82,11 +82,10 @@ export default function NewArrivals() {
               onClick={() => setPage(num)}
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: 1.1 }}
-              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${
-                page === num
-                  ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
-                  : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
-              }`}
+              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${page === num
+                ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
+                : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
+                }`}
             >
               <Icon path={mdiCircle} size={0.5} />
             </motion.button>
@@ -99,22 +98,22 @@ export default function NewArrivals() {
       ) : newArrivals.length === 0 ? (
         <p>No new arrivals available.</p>
       ) : (
-        <div className="scrollbar-hide mb-4 overflow-x-auto pl-5">
-          <div className="flex w-max gap-4">
+        <div className="pl-5 mb-4 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 w-max">
             {newArrivals.map((item) => (
               <div className="flex gap-1">
                 <div key={item.id} className="">
                   <div className="group relative min-h-[20px] min-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
                     {/* NEW Badge */}
                     {item.is_new && (
-                      <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
+                      <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
                         NEW
                       </div>
                     )}
 
                     {/* Favorite Icon */}
                     <motion.div
-                      className="absolute right-2 top-2 z-10 cursor-pointer"
+                      className="absolute z-10 cursor-pointer right-2 top-2"
                       onClick={() => toggleFavorite(item.id)}
                       whileTap={{ scale: 0.8 }}
                       whileHover={{ scale: 1.1 }}
@@ -146,9 +145,9 @@ export default function NewArrivals() {
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
                       />
-                      <button className="absolute inset-x-0 bottom-0 translate-y-full bg-black py-2 text-sm font-medium text-white opacity-0 transition-all duration-500 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700">
+                      <button className="absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 translate-y-full bg-black opacity-0 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700">
                         Add to cart
                       </button>
                     </div>
@@ -156,19 +155,21 @@ export default function NewArrivals() {
 
                   <div>
                     {/* Stars */}
-                    <div className="flex items-center">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <span
-                          key={i}
-                          className={`text-2xl text-black dark:text-gray-300 ${
-                            i < Math.floor(item.stars)
-                              ? ""
-                              : "text-gray-300 dark:text-gray-600"
-                          }`}
-                        >
-                          ★
-                        </span>
-                      ))}
+                    <div className="flex items-center mt-1">
+                      {Array.from({ length: 5 }, (_, i) => {
+                        const filled = i < Math.floor(item.stars);
+                        return (
+                          <span
+                            key={i}
+                            className={`inline-block ${filled ? "text-black dark:text-gray-300" : "text-gray-300 dark:text-gray-600"}`}
+                          >
+                            <Star
+                              className={`w-5 h-5 ${filled ? "fill-current" : ""}`}
+                              strokeWidth={filled ? 0 : 1.5}
+                            />
+                          </span>
+                        );
+                      })}
                     </div>
 
                     {/* Title */}

@@ -4,8 +4,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { menuDashboardAdmin, menuDashboardVendor } from "./menuDashboard";
+import { menuDashboardAdmin, menuDashboardVendor } from "./menuDashboard.tsx";
 
 export default function Sidebar() {
   const { theme } = useTheme();
@@ -78,7 +77,7 @@ export default function Sidebar() {
               }`}
               target={item.newTab ? "_blank" : "_self"}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="w-5 h-5" />
               {item.title}
             </Link>
           </li>
@@ -88,9 +87,9 @@ export default function Sidebar() {
       {/* Logout Button at the Bottom */}
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white"
+        className="flex items-center gap-3 p-3 text-sm font-medium transition-all duration-300 ease-in-out rounded-lg hover:bg-red-500 hover:text-white"
       >
-        <LogOut className="text-white-700 h-5 w-5 " />
+        <LogOut className="w-5 h-5 text-white-700 " />
         Logout
       </button>
     </div>
