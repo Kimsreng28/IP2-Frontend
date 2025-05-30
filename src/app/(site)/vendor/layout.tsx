@@ -26,7 +26,7 @@ export default function AdminLayout({
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-col flex-1">
         <Header toggleDarkMode={toggleDarkMode} darkMode={theme === "dark"} />
         <main className="p-6">{children}</main>
       </div>
