@@ -14,8 +14,8 @@ export default function Sidebar() {
 
   // Fetch the user role from localStorage after the component mounts
   useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    setUserRole(storedRole || "admin"); // Default to "admin" if no role is found
+    const storedUser = localStorage.getItem("token");
+    if (storedUser) setUserRole("");
   }, []);
 
   // If userRole is not set yet, render a loading state
@@ -40,7 +40,7 @@ export default function Sidebar() {
 
   // Choose the appropriate menu based on the user role
   const menuItems =
-    userRole === "admin" ? menuDashboardAdmin : menuDashboardVendor;
+    userRole === "ADMIN" ? menuDashboardAdmin : menuDashboardVendor;
 
   const handleLogout = () => {
     // Clear user session or token here

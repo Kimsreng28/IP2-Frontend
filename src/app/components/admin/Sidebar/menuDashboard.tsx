@@ -31,13 +31,6 @@ const menuDashboardAdmin = [
     newTab: false,
   },
   {
-    id: 4,
-    title: "Analytics",
-    path: "/admin/pages/analysis",
-    icon: BarChart,
-    newTab: false,
-  },
-  {
     id: 5,
     title: "Settings",
     path: "/admin/pages/settings",
