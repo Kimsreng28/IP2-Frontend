@@ -4,10 +4,9 @@ import BestSeller from "@/src/app/components/Client/Home/BestSeller";
 import NewArrivals from "@/src/app/components/Client/Home/NewArrivals";
 import ServiceShop from "@/src/app/components/Client/Home/ServiceShop";
 import ShopCollection from "@/src/app/components/Client/Home/ShopCollection";
+import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { useEffect, useState } from "react";
-import BannerRotator, {
-  Banner,
-} from "../../../../components/Client/Home/BannerRotator";
+import BannerRotator, { Banner } from "../../../../components/Client/Home/BannerRotator";
 import homeClientApi from "../../../../server/client/home/home.route";
 
 export default function Home() {
@@ -37,7 +36,7 @@ export default function Home() {
   return (
     <>
       <div className="w-full">
-        <div className="flex min-h-screen w-full flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center w-full min-h-screen">
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -47,7 +46,7 @@ export default function Home() {
           )}
         </div>
         <div>
-          <div className="flex w-full flex-col items-center justify-center ">
+          <div className="flex flex-col items-center justify-center w-full ">
             {/* New Arrivals Component */}
             <NewArrivals />
           </div>
@@ -56,6 +55,7 @@ export default function Home() {
           <ServiceShop />
         </div>
       </div>
+      <SharedFooterComponent></SharedFooterComponent>
     </>
   );
 }
