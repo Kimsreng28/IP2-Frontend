@@ -63,7 +63,7 @@ const menuDashboardVendor = [
   },
   {
     id: 4,
-    title: "Report",
+    title: "Order History",
     path: "/vendor/pages/report",
     icon: BarChart,
     newTab: false,
