@@ -42,9 +42,7 @@ const OrderCompletePage = ({ params }: { params: { id: string } }) => {
 
   const handleGoToPurchaseHistory = () => {
     // Navigate to the purchase history page
-    router.push(
-      `/client/pages/shop/view/${params.id}/checkout/cart/checkoutDetails`,
-    );
+    router.push(`/client/pages/profile/orders`);
   };
 
   useEffect(() => {
