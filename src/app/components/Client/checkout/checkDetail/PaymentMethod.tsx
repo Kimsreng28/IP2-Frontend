@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import FormInput from "../../Profiles/Account/FormInput";
 
 const paymentMethodOptions = [
   { id: "MasterCard", name: "Master Card", image: "/images/logo/master.png" },
   { id: "VisaCard", name: "Visa Card", image: "/images/logo/visa.png" },
   { id: "ABA", name: "ABA", image: "/images/logo/aba.png" },
-  { id: "ACLENDA", name: "ACLENDA", image: "/images/logo/ac.png" },
+  { id: "ACLEDA", name: "ACLEDA", image: "/images/logo/ac.png" },
 ];
 
-const PaymentMethods = ({ formData, handleChange }) => {
-  const [selectedMethod, setSelectedMethod] = useState("MasterCard");
-
+const PaymentMethods = ({
+  formData,
+  handleChange,
+  onAbaOptionChange,
+  onAcledaOptionChange,
+}) => {
   const handlePaymentSelect = (id: string) => {
     const event = {
       target: {
@@ -70,36 +72,132 @@ const PaymentMethods = ({ formData, handleChange }) => {
         ))}
       </div>
 
-      <div className="space-y-2 border-t pb-1 pt-1"></div>
+      {["MasterCard", "VisaCard"].includes(formData.paymentMethod) && (
+        <>
+          <div className="space-y-2 border-t pb-1 pt-1"></div>
+          <FormInput
+            label="CARD NUMBER"
+            name="cardNumber"
+            value={formData.cardNumber}
+            onChange={handleChange}
+            placeholder="1234 5678 9012 3456"
+            helpText={undefined}
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <FormInput
+              label="EXPIRATION DATE"
+              name="expirationDate"
+              value={formData.expirationDate}
+              onChange={handleChange}
+              placeholder="MM/YY"
+              helpText={undefined}
+            />
+            <FormInput
+              label="CVV"
+              name="cvv"
+              value={formData.cvv}
+              onChange={handleChange}
+              placeholder="123"
+              helpText={undefined}
+            />
+          </div>
+        </>
+      )}
 
-      <FormInput
-        label="CARD NUMBER"
-        name="cardNumber"
-        value={formData.cardNumber}
-        onChange={handleChange}
-        placeholder="Card Number"
-        helpText={undefined}
-      />
+      {formData.paymentMethod === "ABA" && (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <button
+              onClick={() => onAbaOptionChange("payway")}
+              className={`flex-1 rounded-lg py-2 ${
+                formData.abaOption === "payway"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              ABA Payway
+            </button>
+            <button
+              onClick={() => onAbaOptionChange("khqr")}
+              className={`flex-1 rounded-lg py-2 ${
+                formData.abaOption === "khqr"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              KHQR
+            </button>
+          </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormInput
-          label="EXPIRATION DATE"
-          name="expirationDate"
-          value={formData.expirationDate}
-          onChange={handleChange}
-          placeholder="Expiration Date"
-          helpText={undefined}
-        />
+          {formData.abaOption === "payway" ? (
+            <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                You will be redirected to ABA Payway to complete your payment
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+              <p className="mb-2 text-sm font-medium">Scan KHQR Code</p>
+              <div className="flex justify-center">
+                <div className="flex h-48 w-48 items-center justify-center border-2 border-dashed border-gray-300">
+                  <span className="text-xs text-gray-500">KHQR Code</span>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                Open ABA Mobile app and scan this QR code to pay
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
-        <FormInput
-          label="CVC"
-          name="cvc"
-          value={formData.cvc}
-          onChange={handleChange}
-          placeholder="CVC"
-          helpText={undefined}
-        />
-      </div>
+      {formData.paymentMethod === "ACLEDA" && (
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <button
+              onClick={() => onAcledaOptionChange("payway")}
+              className={`flex-1 rounded-lg py-2 ${
+                formData.abaOption === "payway"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              ACLENDA Payway
+            </button>
+            <button
+              onClick={() => onAcledaOptionChange("khqr")}
+              className={`flex-1 rounded-lg py-2 ${
+                formData.abaOption === "khqr"
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              KHQR
+            </button>
+          </div>
+
+          {formData.abaOption === "payway" ? (
+            <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                You will be redirected to ACLENDA Payway to complete your
+                payment
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+              <p className="mb-2 text-sm font-medium">Scan KHQR Code</p>
+              <div className="flex justify-center">
+                <div className="flex h-48 w-48 items-center justify-center border-2 border-dashed border-gray-300">
+                  <span className="text-xs text-gray-500">KHQR Code</span>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                Open ACLENDA Mobile app and scan this QR code to pay
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 };
