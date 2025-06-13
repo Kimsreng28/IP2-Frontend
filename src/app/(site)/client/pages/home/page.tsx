@@ -7,8 +7,29 @@ import ShopCollection from "@/src/app/components/Client/Home/ShopCollection";
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { useEffect, useState } from "react";
 import BannerRotator, { Banner } from "../../../../components/Client/Home/BannerRotator";
-import homeClientApi from "../../../../server/client/home/home.route";
-
+const mockData = [
+  {
+    id: 1,
+    title: 'Enjoyed the electronic products',
+    image: '/images/product/image.png',
+    color: '#377dff',
+    description: 'Experience sale-online like never before',
+  },
+  {
+    id: 2,
+    title: 'Discover the latest trends',
+    image: '/images/product/image1.png',
+    color: '#377dff',
+    description: 'Shop the latest trends in fashion and electronics',
+  },
+  {
+    id: 3,
+    title: 'Grab the best deals',
+    image: '/images/product/image2.png',
+    color: '#377dff',
+    description: 'Find the best deals on electronics and fashion',
+  },
+];
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -20,12 +41,7 @@ export default function Home() {
 
   const fetchDataBanner = async () => {
     try {
-      const data = await homeClientApi.getBanners();
-      if ("error" in data) {
-        setError(data.error);
-      } else {
-        setBanners(data);
-      }
+      setBanners(mockData);
     } catch (err) {
       setError("Failed to load banners");
     } finally {
