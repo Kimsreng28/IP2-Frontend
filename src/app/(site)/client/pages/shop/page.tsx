@@ -1,6 +1,9 @@
 "use client";
 
+import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { Search } from "@/src/app/components/shared/ui/search";
+import homeClientApi from "@/src/app/server/client/home/home.route";
+import env from "@/src/envs/env";
 import { mdiFilterOutline, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,42 +11,90 @@ import { Grid3X3, LayoutGrid, List, Menu, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../../../../components/shared/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../components/shared/ui/select";
-import { fetchFilteredProducts } from "../../../../server/client/shop/product";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "../../../../components/shared/ui/select";
 
-const categories = [
-  "All Electronic",
-  "Iphone",
-  "Samsung",
-  "Computer",
-  "Power Bank",
-  "Headset",
-  "Magsafe",
-  "Tablet",
-  "Charger",
-  "Camera",
-];
-
-import SharedFooterComponent from "@/src/app/components/shared/footer";
-import homeClientApi from "@/src/app/server/client/home/home.route";
 const initialPriceRanges = [
-  { label: "All Price", checked: false },
-  { label: "$0.00 - 99.99", checked: true },
+  { label: "All Price", checked: true },
+  { label: "$0.00 - 99.99", checked: false },
   { label: "$100.00 - 199.99", checked: false },
   { label: "$200.00 - 299.99", checked: false },
   { label: "$300.00 - 399.99", checked: false },
   { label: "$400.00+", checked: false },
 ];
 
+const getHeaders = () => {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+
+  const token = localStorage.getItem("token");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+};
+
+interface FetchOptions {
+  categoryId?: number;
+  priceRanges?: string[];
+  sortBy?: string;
+  search?: string;
+  limit?: number;
+}
+
+async function fetchDataSetup() {
+  const res = await fetch(`${env.API_BASE_URL}/client/shop/setup`, {
+    method: "GET",
+    headers: getHeaders(),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch setup data");
+  const response = await res.json();
+  return response.data || [];
+}
+
+async function fetchFilteredProducts({
+  categoryId,
+  priceRanges,
+  sortBy,
+  search,
+  limit = 20
+}: FetchOptions) {
+  const params = new URLSearchParams();
+
+  if (categoryId) params.append("category", categoryId.toString());
+  if (priceRanges && priceRanges.length) params.append("priceRanges", priceRanges.join(","));
+  if (sortBy && sortBy !== "default") {
+    const sortMap: { [key: string]: string } = {
+      "price-low": "price_asc",
+      "price-high": "price_desc",
+      rating: "newest",
+    };
+    params.append("sortBy", sortMap[sortBy] || "newest");
+  }
+  if (search) params.append("search", search);
+  params.append("limit", limit.toString());
+
+  const res = await fetch(`${env.API_BASE_URL}/client/shop/products?${params.toString()}`, {
+    method: "GET",
+    headers: getHeaders(),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch products");
+  const response = await res.json();
+  return {
+    products: response.data || [],
+    total: response.total || response.data?.length || 0
+  };
+}
+
 export default function ShopPage() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("All Electronic");
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([
+    { id: 0, name: "All Electronic" },
+  ]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [priceRanges, setPriceRanges] = useState(initialPriceRanges);
   const [sortBy, setSortBy] = useState("default");
@@ -52,6 +103,8 @@ export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [limit, setLimit] = useState(20);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   const displayedCategories = showAllCategories ? categories : categories.slice(0, 8);
 
@@ -66,28 +119,63 @@ export default function ShopPage() {
 
   const selectedPriceLabels = priceRanges.filter((p) => p.checked).map((p) => p.label);
 
+  const handleSeeMore = () => {
+    setLimit(prev => prev + 20);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSetup = async () => {
+      try {
+        const setupData = await fetchDataSetup();
+        const formattedCategories = [
+          { id: 0, name: "All Electronic" },
+          ...setupData.map((cat: any) => ({ id: cat.id, name: cat.name })),
+        ];
+        setCategories(formattedCategories);
+      } catch (error) {
+        console.error("Failed to fetch setup data", error);
+      }
+    };
+
+    const fetchProducts = async () => {
       setLoading(true);
       try {
-        const data = await fetchFilteredProducts({
-          category: selectedCategory,
+        const { products: data, total } = await fetchFilteredProducts({
+          categoryId: selectedCategoryId !== 0 ? selectedCategoryId : undefined,
           priceRanges: selectedPriceLabels,
           sortBy,
           search,
+          limit
         });
-        setProducts(data);
+
+        const formattedProducts = data.map((product: any) => ({
+          ...product,
+          is_favorite: false,
+          stars: 3 + (product.id % 3),
+          title: product.name,
+          image: product.product_images?.[0]?.image_url || product.product_images?.[0]?.url || "/images/product/image.png",
+          is_new: product.is_new_arrival,
+        }));
+
+        // If we're loading more products, append them instead of replacing
+        if (limit > 20) {
+          setProducts(prev => [...prev, ...formattedProducts]);
+        } else {
+          setProducts(formattedProducts);
+        }
+
+        setTotalProducts(total);
       } catch (error) {
         console.error("Failed to fetch products", error);
       }
       setLoading(false);
     };
 
-    fetchData();
-  }, [selectedCategory, priceRanges, sortBy, search]);
+    fetchSetup();
+    fetchProducts();
+  }, [selectedCategoryId, priceRanges, sortBy, search, limit]);
 
   const toggleFavorite = async (id: number) => {
-    // Optimistically update favorite locally
     setProducts((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
@@ -96,7 +184,6 @@ export default function ShopPage() {
     try {
       await homeClientApi.updateFavoriteStatus(id);
     } catch (error) {
-      // Revert on failure
       setProducts((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
@@ -104,7 +191,6 @@ export default function ShopPage() {
       );
     }
   };
-
   return (
     <>
       <div className="container h-auto px-4 py-6 mx-auto">
@@ -133,8 +219,7 @@ export default function ShopPage() {
 
           {/* Sidebar */}
           <aside
-            className={`space-y-6 mb-6 lg:mb-0 lg:block ${showSidebar ? "block" : "hidden"
-              } lg:w-64`}
+            className={`space-y-6 mb-6 lg:mb-0 lg:block ${showSidebar ? "block" : "hidden"} lg:w-64`}
           >
             <div className="flex items-center gap-2">
               <Icon
@@ -153,19 +238,19 @@ export default function ShopPage() {
                 <AnimatePresence initial={false}>
                   {displayedCategories.map((category) => (
                     <motion.button
-                      key={category}
+                      key={category.id}
                       layout
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -5 }}
                       transition={{ duration: 0.2 }}
-                      onClick={() => setSelectedCategory(category)}
-                      className={`block w-full text-left px-2 py-1 text-sm hover:text-black ${selectedCategory === category
+                      onClick={() => setSelectedCategoryId(category.id)}
+                      className={`block w-full text-left px-2 py-1 text-sm hover:text-black ${selectedCategoryId === category.id
                         ? "text-black dark:text-gray-300 font-medium underline"
                         : "text-gray-600"
                         }`}
                     >
-                      {category}
+                      {category.name}
                     </motion.button>
                   ))}
                 </AnimatePresence>
@@ -222,7 +307,6 @@ export default function ShopPage() {
                     <SelectItem value="default">Default</SelectItem>
                     <SelectItem value="price-low">Price: Low to High</SelectItem>
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="rating">Rating</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="flex justify-center gap-1 p-1 border rounded-md sm:justify-start">
@@ -237,8 +321,7 @@ export default function ShopPage() {
                       <button
                         key={mode}
                         aria-label={`Set view mode to ${mode}`}
-                        className={`p-2 rounded-md ${viewMode === mode ? "bg-black text-white" : ""
-                          }`}
+                        className={`p-2 rounded-md ${viewMode === mode ? "bg-black text-white" : ""}`}
                         onClick={() => setViewMode(mode)}
                       >
                         <IconComponent className="w-5 h-5" />
@@ -260,141 +343,152 @@ export default function ShopPage() {
               )}
 
               {!loading && products.length > 0 && (
-                <div
-                  className={`grid gap-4 ${viewMode === "list"
-                    ? "grid-cols-1"
-                    : viewMode === "large-grid"
-                      ? "grid-cols-2 md:grid-cols-3"
-                      : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-                    }`}
-                >
-                  {products.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`${viewMode === "list"
-                        ? "flex gap-4 items-center p-4 border rounded-xl hover:shadow-md transition"
-                        : ""
-                        }`}
-                    >
+                <>
+                  <div
+                    className={`grid gap-4 ${viewMode === "list"
+                      ? "grid-cols-1"
+                      : viewMode === "large-grid"
+                        ? "grid-cols-2 md:grid-cols-3"
+                        : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+                      }`}
+                  >
+                    {products.map((item) => (
                       <div
+                        key={item.id}
                         className={`${viewMode === "list"
-                          ? "flex-1 flex gap-4 items-center"
-                          : "w-full"
+                          ? "flex gap-4 items-center p-4 border rounded-xl hover:shadow-md transition"
+                          : ""
                           }`}
                       >
-                        {/* Image Container */}
                         <div
-                          className={`group relative overflow-hidden rounded ${viewMode === "list"
-                            ? "h-32 w-32 min-w-[128px]"
-                            : "h-[240px] w-full mb-4"
+                          className={`${viewMode === "list" ? "flex-1 flex gap-4 items-center" : "w-full"
                             }`}
                         >
-                          {/* NEW Badge */}
-                          {item.is_new && (
-                            <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
-                              NEW
-                            </div>
-                          )}
-
-                          {/* Favorite Icon */}
-                          <motion.div
-                            className="absolute z-10 cursor-pointer right-2 top-2"
-                            onClick={() => toggleFavorite(item.id)}
-                            whileTap={{ scale: 0.8 }}
-                            whileHover={{ scale: 1.1 }}
-                            initial={{ scale: 1 }}
-                            animate={{ scale: item.is_favorite ? 1.2 : 1 }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 300,
-                              damping: 10,
-                            }}
+                          {/* Image Container */}
+                          <div
+                            className={`group relative overflow-hidden rounded ${viewMode === "list" ? "h-32 w-32 min-w-[128px]" : "h-[240px] w-full mb-4"
+                              }`}
                           >
-                            {item.is_favorite ? (
-                              <Icon className="text-red-400" path={mdiHeart} size={1} />
-                            ) : (
-                              <Icon
-                                className="text-gray-400"
-                                path={mdiHeartOutline}
-                                size={1}
-                              />
+                            {/* NEW Badge */}
+                            {item.is_new && (
+                              <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
+                                NEW
+                              </div>
                             )}
-                          </motion.div>
 
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
-                            className={`object-contain cursor-pointer  w-full h-full transition-transform duration-300 ${viewMode === "list" ? "" : "group-hover:scale-105"
-                              }`}
-                          />
-                          <button
-                            className={`absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 ${viewMode === "list"
-                              ? "translate-y-0 opacity-100 bg-black/70"
-                              : "translate-y-full opacity-0"
-                              } hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700`}
-                          >
-                            Add to cart
-                          </button>
-                        </div>
+                            {/* Favorite Icon */}
+                            <motion.div
+                              className="absolute z-10 cursor-pointer right-2 top-2"
+                              onClick={() => toggleFavorite(item.id)}
+                              whileTap={{ scale: 0.8 }}
+                              whileHover={{ scale: 1.1 }}
+                              initial={{ scale: 1 }}
+                              animate={{ scale: item.is_favorite ? 1.2 : 1 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 10,
+                              }}
+                            >
+                              {item.is_favorite ? (
+                                <Icon className="text-red-400" path={mdiHeart} size={1} />
+                              ) : (
+                                <Icon
+                                  className="text-gray-400"
+                                  path={mdiHeartOutline}
+                                  size={1}
+                                />
+                              )}
+                            </motion.div>
 
-                        {/* Product Info */}
-                        <div
-                          className={`${viewMode === "list" ? "flex-1" : ""
-                            }`}
-                        >
-                          {/* Stars */}
-                          <div className="flex items-center mt-1">
-                            {Array.from({ length: 5 }, (_, i) => {
-                              const filled = i < Math.floor(item.stars);
-                              return (
-                                <span
-                                  key={i}
-                                  className={`inline-block ${filled ? "text-black dark:text-gray-300" : "text-gray-300 dark:text-gray-600"}`}
-                                >
-                                  <Star
-                                    className={`w-5 h-5 ${filled ? "fill-current" : ""}`}
-                                    strokeWidth={filled ? 0 : 1.5}
-                                  />
-                                </span>
-                              );
-                            })}
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
+                              className={`object-contain cursor-pointer w-full h-full transition-transform duration-300 ${viewMode === "list" ? "" : "group-hover:scale-105"
+                                }`}
+                            />
+                            <button
+                              className={`absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 ${viewMode === "list"
+                                ? "translate-y-0 opacity-100 bg-black/70"
+                                : "translate-y-full opacity-0"
+                                } hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700`}
+                            >
+                              Add to cart
+                            </button>
                           </div>
-                          {/* Title */}
-                          <h3
-                            className={`font-semibold text-black dark:text-gray-300 ${viewMode === "list"
-                              ? "text-lg mb-2"
-                              : "text-base mb-1 min-w-[220px] max-w-[220px]"
-                              }`}
-                          >
-                            {item.title}
-                          </h3>
 
-                          {/* Price */}
-                          <p
-                            className={`font-bold text-black dark:text-gray-300 ${viewMode === "list" ? "text-lg" : "text-[13px]"
-                              }`}
+                          {/* Product Info */}
+                          <div
+                            className={`${viewMode === "list" ? "flex-1" : ""}`}
                           >
-                            ${item.price}
-                          </p>
+                            {/* Stars */}
+                            <div className="flex items-center mt-1">
+                              {Array.from({ length: 5 }, (_, i) => {
+                                const filled = i < Math.floor(item.stars);
+                                return (
+                                  <span
+                                    key={i}
+                                    className={`inline-block ${filled ? "text-black dark:text-gray-300" : "text-gray-300 dark:text-gray-600"
+                                      }`}
+                                  >
+                                    <Star
+                                      className={`w-5 h-5 ${filled ? "fill-current" : ""}`}
+                                      strokeWidth={filled ? 0 : 1.5}
+                                    />
+                                  </span>
+                                );
+                              })}
+                            </div>
+                            {/* Title */}
+                            <h3
+                              className={`font-semibold text-black dark:text-gray-300 ${viewMode === "list"
+                                ? "text-lg mb-2"
+                                : "text-base mb-1 min-w-[220px] max-w-[220px]"
+                                }`}
+                            >
+                              {item.title}
 
-                          {/* Description for list view */}
-                          {viewMode === "list" && (
-                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                              {item.description}
+                            </h3>
+
+                            {/* Price */}
+                            <p
+                              className={`font-bold text-black dark:text-gray-300 ${viewMode === "list" ? "text-lg" : "text-[13px]"
+                                }`}
+                            >
+                              ${item.price}
                             </p>
-                          )}
+
+                            {/* Description for list view */}
+                            {viewMode === "list" && (
+                              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                  {products.length < totalProducts && (
+                    <div className="flex justify-center mt-8">
+                      <Button
+                        variant="outline"
+                        onClick={handleSeeMore}
+                        disabled={loading}
+                        className="px-8 py-4"
+                      >
+                        {loading ? "Loading..." : "See More"}
+                      </Button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </section>
           </main>
         </div>
       </div>
-      <SharedFooterComponent></SharedFooterComponent>
+      <SharedFooterComponent />
     </>
   );
 }

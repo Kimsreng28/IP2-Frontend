@@ -1,26 +1,15 @@
 'use client';
 
-import homeClientApi from '@/src/app/server/client/home/home.route';
+import env from '@/src/envs/env';
+import { Product } from '@/src/interface/product.interface';
 import { mdiHeart, mdiHeartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export type BestSeller = {
-  id: number;
-  title: string;
-  image: string;
-  is_favorite: boolean;
-  is_hot: boolean;
-  description: string;
-  price: string;
-  stars: number;
-  created_at: string;
-};
-
 export default function BestSeller() {
-  const [bestSellers, setBestSellers] = useState<BestSeller[]>([]);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,19 +18,58 @@ export default function BestSeller() {
     fetchBestSellers();
   }, [page]);
 
+  // Helper function to get headers with token if available
+  const getHeaders = () => {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    // Get token from localStorage if available
+    const token = localStorage.getItem("token");
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  };
+
   const fetchBestSellers = async () => {
     setLoading(true);
     try {
-      const data = await homeClientApi.getBestSellers();
-      if ('error' in data) {
-        setError(data.error);
+
+      const response = await fetch(`${env.API_BASE_URL}/client/home/best-seller`, {
+        method: 'GET',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.error) {
+        setError(result.error);
         setBestSellers([]);
+      } else if (result.status === 200 && result.data) {
+        // Filter only best sellers and add default values for missing properties
+        const bestSellersData = result.data
+          .filter((item: Product) => item.is_best_seller)
+          .map((item: Product) => ({
+            ...item,
+            is_favorite: item.is_favorite || false,
+            is_hot: item.is_hot || false,
+            stars: item.stars || Math.floor(Math.random() * 5) + 1, // Random stars if not provided
+          }));
+        setBestSellers(bestSellersData);
+        setError(null);
       } else {
-        setBestSellers(data);
+        setBestSellers([]);
         setError(null);
       }
     } catch (err) {
-      setError('Failed to load best sellers');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load best sellers';
+      setError(errorMessage);
       setBestSellers([]);
     } finally {
       setLoading(false);
@@ -49,13 +77,30 @@ export default function BestSeller() {
   };
 
   const toggleFavorite = async (id: number) => {
+    // Optimistically update UI
     setBestSellers((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
       )
     );
+
     try {
-      await homeClientApi.updateFavoriteStatus(id);
+      const currentItem = bestSellers.find(item => item.id === id);
+      const response = await fetch(`${env.API_BASE_URL}/client/home/favorites/${id}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ is_favorite: !currentItem?.is_favorite }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
     } catch (error) {
       // Revert change on error
       setBestSellers((prev) =>
@@ -63,6 +108,9 @@ export default function BestSeller() {
           item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
         )
       );
+
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update favorite status';
+      console.error('Error updating favorite status:', errorMessage);
     }
   };
 
@@ -113,9 +161,12 @@ export default function BestSeller() {
                   {/* Image Container with Hover Add to Cart */}
                   <div className="relative w-full h-[240px] mb-4 overflow-hidden rounded">
                     <img
-                      src={item.image}
-                      alt={item.title}
+                      src={item.product_images.length > 0 ? item.product_images[0].url : '/images/product/image.png'}
+                      alt={item.name}
                       className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/product/image.png';
+                      }}
                     />
                     <button className="absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 translate-y-full bg-black opacity-0 group-hover:translate-y-0 group-hover:opacity-100 hover:bg-gray-800 dark:bg-gray-300 dark:text-gray-700">
                       Add to cart
@@ -127,7 +178,7 @@ export default function BestSeller() {
                   {/* Stars */}
                   <div className="flex items-center mt-1">
                     {Array.from({ length: 5 }, (_, i) => {
-                      const filled = i < Math.floor(item.stars);
+                      const filled = i < Math.floor(item.stars || 0);
                       return (
                         <span
                           key={i}
@@ -144,12 +195,12 @@ export default function BestSeller() {
 
                   {/* Title */}
                   <h3 className="text-black max-w-[220px] dark:text-gray-300 text-base font-semibold mb-1">
-                    {item.title}
+                    {item.name}
                   </h3>
 
                   {/* Price */}
                   <p className="text-black dark:text-gray-300 text-[13px] font-bold">
-                    ${item.price}
+                    ${item.price.toFixed(2)}
                   </p>
                 </div>
               </div>
