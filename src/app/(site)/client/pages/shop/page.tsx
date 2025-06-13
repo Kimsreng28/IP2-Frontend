@@ -2,7 +2,6 @@
 
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { Search } from "@/src/app/components/shared/ui/search";
-import homeClientApi from "@/src/app/server/client/home/home.route";
 import env from "@/src/envs/env";
 import { mdiFilterOutline, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -182,7 +181,7 @@ export default function ShopPage() {
       )
     );
     try {
-      await homeClientApi.updateFavoriteStatus(id);
+      // await homeClientApi.updateFavoriteStatus(id);
     } catch (error) {
       setProducts((prev) =>
         prev.map((item) =>
@@ -334,7 +333,7 @@ export default function ShopPage() {
 
             {/* Product Grid/List */}
             <section>
-              {loading && (
+              {loading && products.length === 0 && (
                 <p className="mb-4 text-center text-gray-500">Loading products...</p>
               )}
 
@@ -357,7 +356,7 @@ export default function ShopPage() {
                         key={item.id}
                         className={`${viewMode === "list"
                           ? "flex gap-4 items-center p-4 border rounded-xl hover:shadow-md transition"
-                          : ""
+                          : "bg-gray-100 rounded-xl shadow-sm p-4 hover:shadow-md transition"
                           }`}
                       >
                         <div
@@ -471,7 +470,7 @@ export default function ShopPage() {
                     ))}
                   </div>
                   {products.length < totalProducts && (
-                    <div className="flex justify-center mt-8">
+                    <div className="flex justify-center mt-8 bg-gray-50">
                       <Button
                         variant="outline"
                         onClick={handleSeeMore}

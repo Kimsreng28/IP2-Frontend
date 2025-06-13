@@ -59,7 +59,7 @@ export default function BestSeller() {
             ...item,
             is_favorite: item.is_favorite || false,
             is_hot: item.is_hot || false,
-            stars: item.stars || Math.floor(Math.random() * 5) + 1, // Random stars if not provided
+            stars: item.stars
           }));
         setBestSellers(bestSellersData);
         setError(null);
