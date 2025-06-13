@@ -3,7 +3,7 @@
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { Search } from "@/src/app/components/shared/ui/search";
 import env from "@/src/envs/env";
-import { mdiFilterOutline, mdiHeart, mdiHeartOutline } from "@mdi/js";
+import { mdiFilterOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Grid3X3, LayoutGrid, List, Menu, Star } from "lucide-react";
@@ -375,30 +375,7 @@ export default function ShopPage() {
                               </div>
                             )}
 
-                            {/* Favorite Icon */}
-                            <motion.div
-                              className="absolute z-10 cursor-pointer right-2 top-2"
-                              onClick={() => toggleFavorite(item.id)}
-                              whileTap={{ scale: 0.8 }}
-                              whileHover={{ scale: 1.1 }}
-                              initial={{ scale: 1 }}
-                              animate={{ scale: item.is_favorite ? 1.2 : 1 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 10,
-                              }}
-                            >
-                              {item.is_favorite ? (
-                                <Icon className="text-red-400" path={mdiHeart} size={1} />
-                              ) : (
-                                <Icon
-                                  className="text-gray-400"
-                                  path={mdiHeartOutline}
-                                  size={1}
-                                />
-                              )}
-                            </motion.div>
+
 
                             <img
                               src={item.image}

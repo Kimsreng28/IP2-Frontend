@@ -1,5 +1,8 @@
 "use client";
 
+import Questions from "@/src/app/components/Client/Product/Questions";
+import RelatedItems from "@/src/app/components/Client/Product/RelatedItems";
+import Reviews from "@/src/app/components/Client/Product/Reviews";
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import env from "@/src/envs/env";
 import {
@@ -10,8 +13,7 @@ import {
   Minus,
   Plus,
   ShoppingCartIcon,
-  Star,
-  ThumbsUp
+  Star
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -498,6 +500,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="px-6 py-8 mx-auto max-w-7xl">
+
           {/* Tabs Navigation */}
           <div className="flex border-b border-gray-200">
             {["ratings", "questions", "reviews"].map((tab) => (
@@ -511,9 +514,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   : "text-gray-500 hover:text-gray-700"
                   }`}
               >
-                {tab === "ratings" && `Ratings (${product.stars})`}
-                {tab === "questions" && "Questions (0)"}
-                {tab === "reviews" && "Reviews (2)"}
+                {tab === "ratings" && `Relate Items`}
+                {tab === "questions" && "Questions"}
+                {tab === "reviews" && "Reviews"}
               </button>
             ))}
           </div>
@@ -521,78 +524,24 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           {/* Ratings Tab Content */}
           {activeTab === "ratings" && (
             <>
-              {/* Rating Summary */}
-              <div className="py-6">
-                <div className="flex items-center">
-                  <div className="text-4xl font-bold text-gray-900">{product.stars}.0</div>
-                  <div className="ml-4">
-                    {renderStars(product.stars, "md")}
-                    <div className="text-sm text-gray-600">Based on product rating</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sample Rating Item */}
-              <div className="pb-8 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Sofia Harvetz
-                  </h3>
-                  {renderStars(5, "md")}
-                </div>
-                <p className="mt-2 text-gray-600">
-                  Great quality product from {product.brand.name}. Exactly as described and fast shipping!
-                </p>
-                <div className="flex items-center mt-4 space-x-4 text-sm">
-                  <button className="flex items-center text-gray-500 hover:text-gray-700">
-                    <ThumbsUp className="w-4 h-4 mr-1" />
-                    Like
-                  </button>
-                  <button className="text-gray-500 hover:text-gray-700">
-                    Reply
-                  </button>
-                  <span className="text-xs text-gray-400">3 days ago</span>
-                </div>
-              </div>
+              <RelatedItems productId={product.id} />
             </>
           )}
 
           {/* Questions Tab Content */}
           {activeTab === "questions" && (
-            <div className="py-6 text-center">
-              <p className="text-gray-500">No questions yet. Be the first to ask!</p>
-            </div>
+            <>
+              <Questions productId={product.id} />
+            </>
           )}
 
           {/* Reviews Tab Content */}
           {activeTab === "reviews" && (
-            <div className="py-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Alex Johnson
-                </h3>
-                {renderStars(product.stars, "md")}
-              </div>
-              <p className="mt-2 text-gray-600">
-                The {product.name} from {product.brand.name} exceeded my expectations. Very durable and looks exactly like the pictures.
-              </p>
-              <div className="flex items-center mt-4 space-x-4 text-sm">
-                <button className="flex items-center text-gray-500 hover:text-gray-700">
-                  <ThumbsUp className="w-4 h-4 mr-1" />
-                  Helpful (5)
-                </button>
-                <button className="text-gray-500 hover:text-gray-700">
-                  Comment
-                </button>
-                <span className="text-xs text-gray-400">2 weeks ago</span>
-              </div>
-            </div>
-          )}
+            <>
+              <Reviews productId={product.id} />
+            </>
 
-          {/* Load More Button */}
-          <button className="w-full py-3 mt-6 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-            Load more
-          </button>
+          )}
         </div>
       </div>
       <SharedFooterComponent />
