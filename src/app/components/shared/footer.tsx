@@ -1,11 +1,11 @@
-import { Facebook, Instagram, Youtube } from "lucide-react"
-import Link from "next/link"
+import { Facebook, Instagram, Youtube } from "lucide-react";
+import Link from "next/link";
 
 export default function SharedFooterComponent() {
   return (
-    <footer className="text-white bg-gray-900">
+    <footer className="bg-gray-900 text-white">
       {/* Main footer content */}
-      <div className="container px-6 py-8 mx-auto">
+      <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col items-start justify-between md:flex-row md:items-center">
           {/* Brand section */}
           <div className="mb-6 md:mb-0">
@@ -15,19 +15,34 @@ export default function SharedFooterComponent() {
 
           {/* Navigation links */}
           <nav className="flex flex-wrap gap-8">
-            <Link href="/" className="text-gray-300 transition-colors hover:text-white">
+            <Link
+              href="/client/pages/home"
+              className="text-gray-300 transition-colors hover:text-white"
+            >
               Home
             </Link>
-            <Link href="/shop" className="text-gray-300 transition-colors hover:text-white">
+            <Link
+              href="/client/pages/shop"
+              className="text-gray-300 transition-colors hover:text-white"
+            >
               Shop
             </Link>
-            <Link href="/product" className="text-gray-300 transition-colors hover:text-white">
+            <Link
+              href="/product"
+              className="text-gray-300 transition-colors hover:text-white"
+            >
               Product
             </Link>
-            <Link href="/blog" className="text-gray-300 transition-colors hover:text-white">
+            <Link
+              href="/blog"
+              className="text-gray-300 transition-colors hover:text-white"
+            >
               Blog
             </Link>
-            <Link href="/contact" className="text-gray-300 transition-colors hover:text-white">
+            <Link
+              href="/client/pages/contact"
+              className="text-gray-300 transition-colors hover:text-white"
+            >
               Contact Us
             </Link>
           </nav>
@@ -36,16 +51,24 @@ export default function SharedFooterComponent() {
 
       {/* Bottom section */}
       <div className="border-t border-gray-800">
-        <div className="container px-6 py-4 mx-auto">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex flex-col items-center justify-between md:flex-row">
             {/* Copyright and legal links */}
-            <div className="flex flex-col items-center gap-4 mb-4 md:flex-row md:mb-0">
-              <p className="text-sm text-gray-400">Copyright © 2025 Ele-Sale. All rights reserved</p>
+            <div className="mb-4 flex flex-col items-center gap-4 md:mb-0 md:flex-row">
+              <p className="text-sm text-gray-400">
+                Copyright © 2025 Ele-Sale. All rights reserved
+              </p>
               <div className="flex gap-4">
-                <Link href="/privacy" className="text-sm text-gray-400 transition-colors hover:text-white">
+                <Link
+                  href="/privacy"
+                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                >
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="text-sm text-gray-400 transition-colors hover:text-white">
+                <Link
+                  href="/terms"
+                  className="text-sm text-gray-400 transition-colors hover:text-white"
+                >
                   Terms of Use
                 </Link>
               </div>
@@ -53,15 +76,24 @@ export default function SharedFooterComponent() {
 
             {/* Social media icons */}
             <div className="flex gap-4">
-              <Link href="#" className="text-gray-400 transition-colors hover:text-white">
+              <Link
+                href="#"
+                className="text-gray-400 transition-colors hover:text-white"
+              >
                 <Instagram size={20} />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-gray-400 transition-colors hover:text-white">
+              <Link
+                href="#"
+                className="text-gray-400 transition-colors hover:text-white"
+              >
                 <Facebook size={20} />
                 <span className="sr-only">Facebook</span>
               </Link>
-              <Link href="#" className="text-gray-400 transition-colors hover:text-white">
+              <Link
+                href="#"
+                className="text-gray-400 transition-colors hover:text-white"
+              >
                 <Youtube size={20} />
                 <span className="sr-only">YouTube</span>
               </Link>
@@ -70,5 +102,5 @@ export default function SharedFooterComponent() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -43,7 +43,7 @@ const Navigation = () => {
       const data = await response.json();
       console.log("Fetched wishlist data:", data);
 
-      setWishlistCount(Array.isArray(data) ? data.length : 0); // ✅ Update here
+      setWishlistCount(Array.isArray(data) ? data.length : 0);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
     }
@@ -265,7 +265,11 @@ const Navigation = () => {
             {/* Shopping Cart Icon */}
             <button
               aria-label="cart"
-              onClick={() => router.push("/client/pages/cart")}
+              onClick={() =>
+                router.push(
+                  "/client/pages/shop/view/${productId}/checkout/cart/shopping",
+                )
+              }
               className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
