@@ -37,7 +37,7 @@ const Navigation = () => {
 
       // Fetch wishlist count
       const wishlistResponse = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/product/wishlist/count`,
+        `${process.env.API_BASE_URL}/client/shop/wishlist/count`,
         { headers },
       );
       if (wishlistResponse.ok) {
@@ -47,7 +47,7 @@ const Navigation = () => {
 
       // Fetch cart count
       const cartResponse = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/product/cart/count`,
+        `${process.env.API_BASE_URL}/client/shop/cart/count`,
         { headers },
       );
       if (cartResponse.ok) {

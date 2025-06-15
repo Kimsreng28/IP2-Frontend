@@ -6,6 +6,7 @@ import { mdiCircle, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function NewArrivals() {
@@ -15,6 +16,7 @@ export default function NewArrivals() {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(3); // Default to 3, will be updated from API
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchNewArrivals({ page });
@@ -95,63 +97,93 @@ export default function NewArrivals() {
     }
   };
 
+  // In your NewArrivals component
+
+  // Update your frontend API calls
+
+  // Add to Cart
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
+
+      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
+      }
+
+      alert("Product added to cart successfully!");
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error) {
+      console.error("Cart error:", error);
+      alert(error instanceof Error ? error.message : "Failed to add to cart");
+    }
+  };
+
+  // Toggle Wishlist
   const toggleFavorite = async (id: number) => {
     const item = newArrivals.find((item) => item.id === id);
     const isFavorite = item?.is_favorite;
 
-    // Optimistic UI update
-    setNewArrivals((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
-      ),
-    );
-
     try {
-      const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/product/${id}/wishlist`,
-        {
-          method: isFavorite ? "DELETE" : "POST",
-          headers: getHeaders(),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
       }
 
-      // Dispatch event to update counts in navigation
-      window.dispatchEvent(new Event("wishlistUpdated"));
-    } catch (error) {
-      // Revert change on error
+      // Optimistic UI update
       setNewArrivals((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
         ),
       );
-      console.error("Error updating favorite status:", error);
-    }
-  };
 
-  // Add similar logic for add to cart button
-  const handleAddToCart = async (productId: number) => {
-    try {
       const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/product/${productId}/cart`,
+        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
         {
-          method: "POST",
-          headers: getHeaders(),
-          body: JSON.stringify({ quantity: 1 }),
+          method: isFavorite ? "DELETE" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(data.message || "Failed to update wishlist");
       }
 
-      // Dispatch event to update counts in navigation
-      window.dispatchEvent(new Event("cartUpdated"));
+      window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error("Wishlist error:", error);
+      // Revert UI on error
+      setNewArrivals((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
+        ),
+      );
+      alert(
+        error instanceof Error ? error.message : "Failed to update wishlist",
+      );
     }
   };
 
