@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 export default function NewArrivals() {
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -16,8 +15,8 @@ export default function NewArrivals() {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(3); // Default to 3, will be updated from API
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+  const fileUrl = `${env.FILE_BASE_URL}`
   const router = useRouter();
-
   useEffect(() => {
     fetchNewArrivals({ page });
   }, [page]);
@@ -275,11 +274,8 @@ export default function NewArrivals() {
                     {/* Image Container with Hover Add to Cart */}
                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                       <img
-                        src={
-                          item.product_images.length > 0
-                            ? item.product_images[0].url
-                            : "/images/product/image.png"
-                        }
+                        onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
+                        src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
                         alt={item.name}
                         className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
