@@ -11,6 +11,7 @@ const Navigation = () => {
   const [currentPath, setCurrentPath] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   const router = useRouter();
   const pathUrl = usePathname();
@@ -23,29 +24,38 @@ const Navigation = () => {
     }
   };
 
-  const fetchWishlist = async () => {
+  const fetchCounts = async () => {
     try {
       const token = localStorage.getItem("token");
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
 
-      const response = await fetch(
-        `${process.env.API_BASE_URL}/vendor/product`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch wishlist");
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const data = await response.json();
-      console.log("Fetched wishlist data:", data);
+      // Fetch wishlist count
+      const wishlistResponse = await fetch(
+        `${process.env.API_BASE_URL}/client/shop/product/wishlist/count`,
+        { headers },
+      );
+      if (wishlistResponse.ok) {
+        const wishlistData = await wishlistResponse.json();
+        setWishlistCount(wishlistData.count || 0);
+      }
 
-      setWishlistCount(Array.isArray(data) ? data.length : 0);
+      // Fetch cart count
+      const cartResponse = await fetch(
+        `${process.env.API_BASE_URL}/client/shop/product/cart/count`,
+        { headers },
+      );
+      if (cartResponse.ok) {
+        const cartData = await cartResponse.json();
+        setCartCount(cartData.count || 0);
+      }
     } catch (error) {
-      console.error("Error fetching wishlist:", error);
+      console.error("Error fetching counts:", error);
     }
   };
 
@@ -87,7 +97,7 @@ const Navigation = () => {
 
     fetchAvatar();
 
-    fetchWishlist();
+    fetchCounts();
 
     // Listen for custom avatar update event
     const handleAvatarUpdated = async (e: Event) => {
@@ -96,6 +106,7 @@ const Navigation = () => {
     };
 
     window.addEventListener("avatarUpdated", handleAvatarUpdated);
+
     return () => {
       window.removeEventListener("avatarUpdated", handleAvatarUpdated);
     };
@@ -229,7 +240,7 @@ const Navigation = () => {
             {/* Heart Icon */}
             <button
               aria-label="wishlist"
-              onClick={handleWishlistClick}
+              onClick={() => router.push("/client/pages/profile/wishlist")}
               className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               <div className="relative">
@@ -272,7 +283,14 @@ const Navigation = () => {
               }
               className="flex items-center gap-2 rounded-full p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              <div className="relative">
+                <ShoppingCart className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-xs text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
             </button>
           </div>
         </div>
