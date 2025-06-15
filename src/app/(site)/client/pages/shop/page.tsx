@@ -1,9 +1,8 @@
 "use client";
-
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { Search } from "@/src/app/components/shared/ui/search";
 import env from "@/src/envs/env";
-import { mdiFilterOutline } from "@mdi/js";
+import { mdiFilterOutline, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Grid3X3, LayoutGrid, List, Menu, Star } from "lucide-react";
@@ -149,7 +148,8 @@ export default function ShopPage() {
 
         const formattedProducts = data.map((product: any) => ({
           ...product,
-          is_favorite: false,
+          // Use the is_favorite value from the API instead of hardcoding to false
+          is_favorite: product.is_favorite || false,
           stars: 3 + (product.id % 3),
           title: product.name,
           image: product.product_images?.[0]?.image_url || product.product_images?.[0]?.url || "/images/product/image.png",
@@ -175,14 +175,25 @@ export default function ShopPage() {
   }, [selectedCategoryId, priceRanges, sortBy, search, limit]);
 
   const toggleFavorite = async (id: number) => {
+    // Optimistically update the UI
     setProducts((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
       )
     );
+
     try {
-      // await homeClientApi.updateFavoriteStatus(id);
+      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${id}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update favorite status');
+      }
     } catch (error) {
+      console.error('Error updating favorite:', error);
+      // Revert the optimistic update on error
       setProducts((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
@@ -190,6 +201,7 @@ export default function ShopPage() {
       );
     }
   };
+
   return (
     <>
       <div className="container h-auto px-4 py-6 mx-auto">
@@ -375,6 +387,34 @@ export default function ShopPage() {
                               </div>
                             )}
 
+                            {/* Favorite Icon */}
+                            <motion.div
+                              className="absolute z-10 cursor-pointer right-2 top-2"
+                              onClick={() => toggleFavorite(item.id)}
+                              whileTap={{ scale: 0.8 }}
+                              whileHover={{ scale: 1.1 }}
+                              initial={{ scale: 1 }}
+                              animate={{ scale: item.is_favorite ? 1.2 : 1 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 10,
+                              }}
+                            >
+                              {item.is_favorite ? (
+                                <Icon
+                                  className="text-red-400"
+                                  path={mdiHeart}
+                                  size={1}
+                                />
+                              ) : (
+                                <Icon
+                                  className="text-gray-400"
+                                  path={mdiHeartOutline}
+                                  size={1}
+                                />
+                              )}
+                            </motion.div>
 
 
                             <img

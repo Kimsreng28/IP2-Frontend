@@ -108,16 +108,14 @@ const Signup = () => {
     // Prepare data for signup request
     try {
       // Send signup request to the server
-      const response = await fetch(
-        "http://localhost:3001/api/account/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      const apiUrl = process.env.API_BASE_URL ?? "";
+      const response = await fetch(`${apiUrl}/account/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       // Check if the response is ok (status code 200-299)
       const result = await response.json();
@@ -126,14 +124,14 @@ const Signup = () => {
       localStorage.setItem("token", result.token);
 
       // Optionally store avatar in localStorage
-      localStorage.setItem("avatar", result.user.avatar);
+      localStorage.setItem("avatar", result.user?.avatar ?? "");
 
       console.log("Status:", response.status);
       console.log("Result:", result);
 
       // If the response is not ok, throw an error
       if (!response.ok) {
-        throw new Error(result.message || "Signup failed");
+        throw new Error(result.message ?? "Signup failed");
       }
 
       alert("Signup successful!");
@@ -147,8 +145,9 @@ const Signup = () => {
   // Handle Google signup
   const handleGoogleSignup = async () => {
     try {
+      const apiUrl = process.env.API_BASE_URL ?? "";
       // Redirect to Google authentication URL
-      window.location.href = "http://localhost:3001/api/account/auth/google";
+      window.location.href = `${apiUrl}/account/auth/google`;
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);

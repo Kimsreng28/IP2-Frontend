@@ -86,7 +86,7 @@ export default function BestSeller() {
 
     try {
       const currentItem = bestSellers.find(item => item.id === id);
-      const response = await fetch(`${env.API_BASE_URL}/client/home/favorites/${id}`, {
+      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ is_favorite: !currentItem?.is_favorite }),

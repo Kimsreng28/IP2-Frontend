@@ -103,7 +103,7 @@ export default function NewArrivals() {
     );
 
     try {
-      const response = await fetch(`${env.API_BASE_URL}/client/home/favorites/${id}`, {
+      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ is_favorite: !isFavorite }),
