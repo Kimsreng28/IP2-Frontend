@@ -152,8 +152,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   }, []);
 
   //TODO: Image is missing
+  const fileUrl = `${env.FILE_BASE_URL}`
   const images = Array.isArray(product?.product_images) && product.product_images.length > 0
-    ? product.product_images.map(img => img.image_url)
+    ? product.product_images.map(img => fileUrl + img.image_url)
     : ["/images/product/image1.png", "/images/product/image2.png"];
 
   const colors = [
@@ -499,8 +500,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     onClick={handleAddToWishlist}
                     disabled={isUpdatingWishlist}
                     className={`flex items-center justify-center px-6 py-3 font-semibold border-2 rounded-lg transition-colors ${product.is_favorite
-                        ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
-                        : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800 hover:bg-gray-50'
+                      ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
+                      : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800 hover:bg-gray-50'
                       } ${isUpdatingWishlist ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {product.is_favorite ? (
