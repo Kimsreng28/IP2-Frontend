@@ -6,14 +6,15 @@ import { mdiHeart, mdiHeartOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
-
 export default function BestSeller() {
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter();
+  const fileUrl = `${env.FILE_BASE_URL}`
   useEffect(() => {
     fetchBestSellers();
   }, [page]);
@@ -161,7 +162,8 @@ export default function BestSeller() {
                   {/* Image Container with Hover Add to Cart */}
                   <div className="relative w-full h-[240px] mb-4 overflow-hidden rounded">
                     <img
-                      src={item.product_images.length > 0 ? item.product_images[0].url : '/images/product/image.png'}
+                     onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
+                      src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
                       alt={item.name}
                       className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {

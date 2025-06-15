@@ -92,6 +92,7 @@ export default function ShopPage() {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([
     { id: 0, name: "All Electronic" },
   ]);
+  const fileUrl = `${env.FILE_BASE_URL}`
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [priceRanges, setPriceRanges] = useState(initialPriceRanges);
@@ -152,7 +153,7 @@ export default function ShopPage() {
           is_favorite: product.is_favorite || false,
           stars: 3 + (product.id % 3),
           title: product.name,
-          image: product.product_images?.[0]?.image_url || product.product_images?.[0]?.url || "/images/product/image.png",
+          image: fileUrl + product.product_images?.[0]?.image_url || fileUrl + product.product_images?.[0]?.image_url || "/images/product/image.png",
           is_new: product.is_new_arrival,
         }));
 
