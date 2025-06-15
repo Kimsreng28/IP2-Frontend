@@ -124,7 +124,7 @@ const Signup = () => {
       localStorage.setItem("token", result.token);
 
       // Optionally store avatar in localStorage
-      localStorage.setItem("avatar", result.user.avatar);
+      localStorage.setItem("avatar", result.user?.avatar ?? "");
 
       console.log("Status:", response.status);
       console.log("Result:", result);
