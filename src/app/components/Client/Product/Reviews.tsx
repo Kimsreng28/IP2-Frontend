@@ -1,7 +1,6 @@
 "use client";
 
 import env from "@/src/envs/env";
-import { formatDistanceToNow } from "date-fns";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -54,7 +53,41 @@ const getHeaders = (): HeadersInit => {
     }
     return headers;
 };
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
+    if (diffInSeconds < 60) {
+        return 'now';
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes === 1) {
+        return '1 min ago';
+    }
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes} mins ago`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours === 1) {
+        return '1 h ago';
+    }
+    if (diffInHours < 24) {
+        return `${diffInHours} h ago`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) {
+        return '1 d ago';
+    }
+    if (diffInDays < 7) {
+        return `${diffInDays} d ago`;
+    }
+
+    return date.toLocaleDateString(); // fallback to full date
+};
 const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [visibleCount, setVisibleCount] = useState(5);
@@ -242,7 +275,7 @@ const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
                                             {review.user.first_name} {review.user.last_name}
                                         </h3>
                                         <span className="text-xs text-gray-400">
-                                            {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
+                                            {formatDate(review.created_at)}
                                         </span>
                                     </div>
                                 </div>

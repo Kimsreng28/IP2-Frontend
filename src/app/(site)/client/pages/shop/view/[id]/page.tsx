@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronRightIcon,
+  Heart,
   HeartIcon,
   Minus,
   Plus,
@@ -32,6 +33,7 @@ interface Product {
   brand_id: number;
   is_new_arrival: boolean;
   is_best_seller: boolean;
+  is_favorite: boolean;
   created_at: string;
   category: {
     id: number;
@@ -87,6 +89,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdatingWishlist, setIsUpdatingWishlist] = useState(false);
 
   const router = useRouter();
   const productId = params.id;
@@ -173,9 +176,31 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     alert(`Added ${quantity} ${product?.name || 'item(s)'} to cart`);
   };
 
-  const handleAddToWishlist = () => {
-    console.log("Add to wishlist", { productId, product });
-    alert(`Added ${product?.name || 'item'} to wishlist`);
+  const handleAddToWishlist = async () => {
+    if (!product || isUpdatingWishlist) return;
+
+    setIsUpdatingWishlist(true);
+
+    // Optimistically update the UI
+    const previousFavoriteState = product.is_favorite;
+    setProduct(prev => prev ? { ...prev, is_favorite: !prev.is_favorite } : null);
+
+    try {
+      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${product.id}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update favorite status');
+      }
+    } catch (error) {
+      console.error('Error updating favorite:', error);
+      // Revert the optimistic update on error
+      setProduct(prev => prev ? { ...prev, is_favorite: previousFavoriteState } : null);
+    } finally {
+      setIsUpdatingWishlist(false);
+    }
   };
 
   // Calculate discounted price
@@ -472,35 +497,39 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   {/* Add to Wishlist */}
                   <button
                     onClick={handleAddToWishlist}
-                    className="flex items-center justify-center px-6 py-3 font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gray-800 hover:bg-gray-200 hover:text-gray-800"
+                    disabled={isUpdatingWishlist}
+                    className={`flex items-center justify-center px-6 py-3 font-semibold border-2 rounded-lg transition-colors ${product.is_favorite
+                        ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
+                        : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800 hover:bg-gray-50'
+                      } ${isUpdatingWishlist ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <HeartIcon className="w-5 h-5 mr-2" />
-                    Wishlist
+                    {product.is_favorite ? (
+                      <Heart className="w-5 h-5 mr-2 fill-current" />
+                    ) : (
+                      <HeartIcon className="w-5 h-5 mr-2" />
+                    )}
+                    {product.is_favorite ? 'In Wishlist' : 'Add to Wishlist'}
                   </button>
+
                   {/* Add to Cart */}
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={handleClickAddToCart}
-                      disabled={product.stock === 0}
-                      className={`flex items-center justify-center py-3 font-semibold rounded-lg px-8 ${product.stock === 0
-                        ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                        : 'text-white bg-black hover:bg-gray-800 hover:text-gray-100'
-                        }`}
-                    >
-                      <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                      {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleClickAddToCart}
+                    disabled={product.stock === 0}
+                    className={`flex items-center justify-center py-3 font-semibold rounded-lg px-8 ${product.stock === 0
+                      ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
+                      : 'text-white bg-black hover:bg-gray-800 hover:text-gray-100'
+                      }`}
+                  >
+                    <ShoppingCartIcon className="w-5 h-5 mr-2" />
+                    {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  </button>
                 </div>
               </div>
-
-
             </div>
           </div>
         </div>
 
         <div className="px-6 py-8 mx-auto max-w-7xl">
-
           {/* Tabs Navigation */}
           <div className="flex border-b border-gray-200">
             {["ratings", "questions", "reviews"].map((tab) => (
@@ -540,7 +569,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <>
               <Reviews productId={product.id} />
             </>
-
           )}
         </div>
       </div>

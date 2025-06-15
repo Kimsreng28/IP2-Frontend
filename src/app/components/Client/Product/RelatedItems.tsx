@@ -65,7 +65,7 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
             const newFavoriteStatus = !currentItem?.is_favorite;
 
             const response = await fetch(
-                `${env.API_BASE_URL}/client/home/favorites/${id}`,
+                `${env.API_BASE_URL}/client/home/wishlists/${id}`,
                 {
                     method: "PATCH",
                     headers: getHeaders(),
@@ -167,8 +167,8 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
                                                     <span
                                                         key={i}
                                                         className={`inline-block ${filled
-                                                                ? "text-black dark:text-gray-300"
-                                                                : "text-gray-300 dark:text-gray-600"
+                                                            ? "text-black dark:text-gray-300"
+                                                            : "text-gray-300 dark:text-gray-600"
                                                             }`}
                                                     >
                                                         <Star
