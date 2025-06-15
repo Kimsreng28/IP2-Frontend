@@ -123,7 +123,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
             ));
 
             const response = await fetch(
-                `${env.API_BASE_URL}/client/shop/product/${productId}/questions/${questionId}/like`,
+                `${env.API_BASE_URL}/client/shop/product/${productId}/question/${questionId}/like`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -155,7 +155,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
 
         try {
             const response = await fetch(
-                `${env.API_BASE_URL}/client/shop/product/${productId}/questions/${questionId}/comments`,
+                `${env.API_BASE_URL}/client/shop/product/${productId}/question/${questionId}/comments`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -179,14 +179,39 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
-        const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-        if (diffInHours < 24) {
-            return `${Math.floor(diffInHours)}h ago`;
-        } else {
-            return date.toLocaleDateString();
+        if (diffInSeconds < 60) {
+            return 'now';
         }
+
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes === 1) {
+            return '1 min ago';
+        }
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} mins ago`;
+        }
+
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours === 1) {
+            return '1 h ago';
+        }
+        if (diffInHours < 24) {
+            return `${diffInHours} h ago`;
+        }
+
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays === 1) {
+            return '1 d ago';
+        }
+        if (diffInDays < 7) {
+            return `${diffInDays} d ago`;
+        }
+
+        return date.toLocaleDateString(); // fallback to full date
     };
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
