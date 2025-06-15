@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface Order {
   trackingNo: string
@@ -19,65 +19,101 @@ interface Product {
   image: string
 }
 
-const recentOrders: Order[] = [
-  {
-    trackingNo: "#ER5364",
-    productName: "HeadPhones",
-    price: 100,
-    totalOrder: 100,
-    totalAmount: 100,
-    icon: "🎧",
-  },
-  {
-    trackingNo: "#ER5368",
-    productName: "Space Pro",
-    price: 100,
-    totalOrder: 20,
-    totalAmount: 100,
-    icon: "🎧",
-  },
-  {
-    trackingNo: "#ER5412",
-    productName: "SoundCore",
-    price: 100,
-    totalOrder: 52,
-    totalAmount: 100,
-    icon: "🎧",
-  },
-  {
-    trackingNo: "#ER5621",
-    productName: "EarBuds",
-    price: 100,
-    totalOrder: 48,
-    totalAmount: 100,
-    icon: "🎧",
-  },
-]
-
-const newProducts: Product[] = [
-  {
-    id: 1,
-    name: "SoundCore",
-    rating: 4,
-    price: 100,
-    image: "/placeholder.svg?height=60&width=60",
-  },
-  {
-    id: 2,
-    name: "Blaze Sounder",
-    rating: 4,
-    price: 100,
-    image: "/placeholder.svg?height=60&width=60",
-  },
-]
+interface ApiResponse {
+  products: {
+    data: {
+      id: number
+      uuid: string
+      name: string
+      description: string
+      price: number
+      stock: number
+      category_id: number
+      stars: number
+      brand_id: number
+      is_new_arrival: boolean
+      is_best_seller: boolean
+      created_at: string
+      category: {
+        id: number
+        name: string
+      }
+      brand: {
+        id: number
+        name: string
+      }
+    }[]
+    totalCount: number
+  }
+  users: {
+    totalCount: number
+  }
+  sales: number
+}
 
 export default function Dashboard() {
   const [timeFilter, setTimeFilter] = useState("This week")
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-
+  const [dashboardData, setDashboardData] = useState<ApiResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const toggleDropdown = (section: string) => {
     setOpenDropdown(openDropdown === section ? null : section)
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/admin/dashboard')
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard data')
+        }
+        const data: ApiResponse = await response.json()
+        setDashboardData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const recentOrders: Order[] = [
+    {
+      trackingNo: "#ER5364",
+      productName: "HeadPhones",
+      price: 100,
+      totalOrder: 100,
+      totalAmount: 100,
+      icon: "🎧",
+    },
+    {
+      trackingNo: "#ER5368",
+      productName: "Space Pro",
+      price: 100,
+      totalOrder: 20,
+      totalAmount: 100,
+      icon: "🎧",
+    },
+    {
+      trackingNo: "#ER5412",
+      productName: "SoundCore",
+      price: 100,
+      totalOrder: 52,
+      totalAmount: 100,
+      icon: "🎧",
+    },
+    {
+      trackingNo: "#ER5621",
+      productName: "EarBuds",
+      price: 100,
+      totalOrder: 48,
+      totalAmount: 100,
+      icon: "🎧",
+    },
+  ]
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -87,24 +123,41 @@ export default function Dashboard() {
     ))
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen dark:bg-gray-700 rounded-lg bg-gray-50 flex justify-center items-center">
+        <p>Loading dashboard data...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen dark:bg-gray-700 rounded-lg bg-gray-50 flex justify-center items-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen dark:bg-gray-700 rounded-lg bg-gray-50 flex">
       {/* Sidebar */}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-
         <main className="flex-1 p-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">2,761</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {dashboardData?.users.totalCount || 0}
+                  </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Vendors</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center text-xl">
-                  ��
+                  🏪
                 </div>
               </div>
             </div>
@@ -112,7 +165,9 @@ export default function Dashboard() {
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">2,761</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {dashboardData?.products.totalCount || 0}
+                  </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Products</p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center text-xl">
@@ -124,7 +179,9 @@ export default function Dashboard() {
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">2,761</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {dashboardData?.sales || 0}
+                  </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Sales</p>
                 </div>
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center text-xl">
@@ -268,25 +325,25 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {recentOrders.map((order, index) => (
+                    {dashboardData?.products?.data.map((order, index) => (
                       <tr
                         key={index}
                         className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
-                        <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">{order.trackingNo}</td>
+                        <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100"> #{order.uuid.slice(0, 8)}</td>
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
-                            <span className="text-lg">{order.icon}</span>
-                            <span className="text-sm text-gray-900 dark:text-gray-100">{order.productName}</span>
+                            {/* <span className="text-lg">{order.icon}</span> */}
+                            <span className="text-sm text-gray-900 dark:text-gray-100">{order.name}</span>
                           </div>
                         </td>
                         <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">${order.price}</td>
                         <td className="py-3 px-4">
                           <span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs">
-                            {order.totalOrder}
+                            {/* {order.totalOrder || 0} */} 0 
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">${order.totalAmount}</td>
+                        <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">${ (order.price * 0).toFixed(2) }</td>
                       </tr>
                     ))}
                   </tbody>
@@ -298,7 +355,7 @@ export default function Dashboard() {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Products New</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">New Products</h3>
                   <button
                     onClick={() => toggleDropdown("products")}
                     className="p-1 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100"
@@ -311,21 +368,19 @@ export default function Dashboard() {
               </div>
 
               <div className="p-6 space-y-4">
-                {newProducts.map((product) => (
+                {dashboardData?.products.data.filter(product => product.is_new_arrival).slice(0, 5).map((product) => (
                   <div
                     key={product.id}
                     className="flex items-center space-x-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
                   >
-                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0">
-                      <img
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      <span className="text-xl">📦</span>
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-900 dark:text-white">{product.name}</h4>
-                      <div className="flex items-center space-x-1 mt-1">{renderStars(product.rating)}</div>
+                      <div className="flex items-center space-x-1 mt-1">
+                        {renderStars(product.stars)}
+                      </div>
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1">${product.price}</p>
                     </div>
                   </div>
