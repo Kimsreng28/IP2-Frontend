@@ -34,20 +34,18 @@ const VerifyOTP = () => {
 
   const handleNewPassword = async () => {
     try {
-      const res = await fetch(
-        "http://localhost:3001/api/account/auth/verify-reset",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code: otp.join("") }),
+      const apiUrl = process.env.API_BASE_URL ?? "";
+      const res = await fetch(`${apiUrl}/account/auth/verify-reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ code: otp.join("") }),
+      });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Something went wrong");
+        throw new Error(err.message ?? "Something went wrong");
       }
 
       router.push("/auth/changecode");

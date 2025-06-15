@@ -28,7 +28,7 @@ const Navigation = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/api/vendor/product`,
+        `${process.env.API_BASE_URL}/vendor/product`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Navigation = () => {
 
     try {
       const res = await fetch(
-        `${process.env.API_BASE_URL}/api/account/auth/profile`,
+        `${process.env.API_BASE_URL}/account/auth/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

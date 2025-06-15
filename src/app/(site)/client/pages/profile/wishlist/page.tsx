@@ -26,7 +26,7 @@ const WishlistPage = () => {
 
         // Get Products from the API Wishlist
         const response = await fetch(
-          `${process.env.API_BASE_URL}/api/vendor/product`, // Adjust example catch from products automatically
+          `${process.env.API_BASE_URL}/vendor/product`, // Adjust example catch from products automatically
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -62,7 +62,7 @@ const WishlistPage = () => {
       );
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/api/wishlist/${productId}`,
+        `${process.env.API_BASE_URL}/wishlist/${productId}`,
         {
           method: "DELETE",
           headers: {

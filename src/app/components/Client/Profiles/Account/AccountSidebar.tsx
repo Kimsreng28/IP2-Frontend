@@ -32,7 +32,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `${process.env.API_BASE_URL}/api/account/auth/profile`,
+          `${process.env.API_BASE_URL}/account/auth/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
       formData.append("file", file);
 
       const res = await fetch(
-        `${process.env.API_BASE_URL}/api/account/auth/profile/upload-avatar`,
+        `${process.env.API_BASE_URL}/account/auth/profile/upload-avatar`,
         {
           method: "POST",
           headers: {

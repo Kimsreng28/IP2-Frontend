@@ -1,36 +1,18 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-
 const Signin = () => {
-  // State for email and password inputs
-  // and their error messages
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
-
-  // State for error messages
-  // for email and password inputs
-  const [error, setError] = useState({
-    email: "",
-    password: "",
-  });
-
-  // Initialize router for navigation
-  const router = useRouter();
-
-  // State for remember me functionality
-  // and show password toggle
+  const [data, setData] = useState({ email: "", password: "" });
+  const [error, setError] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  // Function to clear auth storage
   const clearAuthStorage = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -43,29 +25,21 @@ const Signin = () => {
 
   useEffect(() => {
     clearAuthStorage();
-    // check for token in url
+
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const avatar = urlParams.get("avatar");
     const role = urlParams.get("role");
     const user = urlParams.get("user");
 
-    // check for token in localStorage
     if (token) {
       localStorage.setItem("token", token);
+      if (avatar) localStorage.setItem("avatar", avatar);
 
-      // Store avatar if available
-      if (avatar) {
-        localStorage.setItem("avatar", avatar);
-      }
-
-      // Store user data if available
       if (user) {
         try {
           const userData = JSON.parse(user);
           localStorage.setItem("user", JSON.stringify(userData));
-
-          // Also store avatar from user data if it exists
           if (userData.avatar && !avatar) {
             localStorage.setItem("avatar", userData.avatar);
           }
@@ -74,7 +48,6 @@ const Signin = () => {
         }
       }
 
-      // Redirect based on role
       switch (role) {
         case "ADMIN":
           router.push("/admin/pages/dashboard");
@@ -82,42 +55,29 @@ const Signin = () => {
         case "VENDOR":
           router.push("/vendor/pages/dashboard");
           break;
-        case "CUSTOMER":
         default:
           router.push("/client/pages/home");
       }
     }
 
-    // check for user data in localStorage
     const storedEmail = localStorage.getItem("email");
     const storedPassword = localStorage.getItem("password");
 
-    // if user data exists, set it in state
-    // and set rememberMe to true
     if (storedEmail && storedPassword) {
-      setData({
-        email: storedEmail,
-        password: storedPassword,
-      });
+      setData({ email: storedEmail, password: storedPassword });
       setRememberMe(true);
     }
   }, []);
 
-  // Function to validate email and password inputs
   const validateInputs = () => {
-    const newErrors = {
-      email: "",
-      password: "",
-    };
+    const newErrors = { email: "", password: "" };
 
-    // Check if email is valid
     if (!data.email) {
       newErrors.email = "Email is required.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       newErrors.email = "Please enter a valid email.";
     }
 
-    // Check if password is valid
     if (!data.password) {
       newErrors.password = "Password is required.";
     } else if (data.password.length < 6) {
@@ -128,47 +88,34 @@ const Signin = () => {
     return !newErrors.email && !newErrors.password;
   };
 
-  // Function to handle sign in
-  // with email and password
-  const handleSignin = async () => {
-    // Check if inputs are valid
+  const handleSignin = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!validateInputs()) return;
 
     try {
-      // Send POST request to the server
-      // with email and password
-      const res = await fetch("http://localhost:3001/api/account/auth", {
+      const apiUrl = process.env.API_BASE_URL ?? "";
+      const res = await fetch(`${apiUrl}/account/auth`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Something went wrong");
+        throw new Error(err.message ?? "Something went wrong");
       }
 
       const result = await res.json();
 
-      // Clear previous localStorage items
       clearAuthStorage();
-
-      // Optionally store token in localStorage
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
 
-      //remember me functionality
       if (rememberMe) {
         localStorage.setItem("email", data.email);
         localStorage.setItem("password", data.password);
-      } else {
-        localStorage.removeItem("email");
-        localStorage.removeItem("password");
       }
 
-      // Force refresh of other tabs/windows
       window.dispatchEvent(new Event("storage"));
 
       switch (result.user.role) {
@@ -178,7 +125,6 @@ const Signin = () => {
         case "VENDOR":
           router.push("/vendor/pages/dashboard");
           break;
-        case "CUSTOMER":
         default:
           router.push("/client/pages/home");
       }
@@ -188,12 +134,12 @@ const Signin = () => {
     }
   };
 
-  // Function to handle Google Sign-in
-  const handleGoogleSignin = async () => {
+  const handleGoogleSignin = (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
       clearAuthStorage();
-      // Redirect to Google authentication URL
-      window.location.href = "http://localhost:3001/api/account/auth/google";
+      const apiUrl = process.env.API_BASE_URL ?? "";
+      window.location.href = `${apiUrl}/account/auth/google`;
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);
@@ -209,7 +155,6 @@ const Signin = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          {/* Left side image */}
           <motion.div
             className="flex w-full items-center justify-center p-6 transition-transform duration-500 hover:scale-105 md:w-1/2"
             whileHover={{ scale: 1.05 }}
@@ -219,25 +164,23 @@ const Signin = () => {
               alt="Logo"
               width={400}
               height={400}
-              className="h-auto w-full max-w-[300px] object-contain transition-all duration-500 hover:scale-105 md:max-w-[400px]"
+              className="h-auto w-full max-w-[300px] object-contain md:max-w-[400px]"
               priority
             />
           </motion.div>
 
-          {/* Right side form */}
           <motion.div
             className="w-full px-6 py-8 md:w-1/2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <h2 className="mb-6 text-center text-3xl font-semibold text-black transition-all duration-500 ease-in-out dark:text-white">
+            <h2 className="mb-6 text-center text-3xl font-semibold text-black dark:text-white">
               Sign In
             </h2>
 
-            <form className="flex flex-col gap-5 transition-all duration-300 ease-in-out">
-              {/* Or Signup */}
-              <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            <form className="flex flex-col gap-5" onSubmit={handleSignin}>
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}
                 <Link
                   href="/auth/signup"
@@ -247,7 +190,6 @@ const Signin = () => {
                 </Link>
               </p>
 
-              {/* Email */}
               <input
                 name="email"
                 type="email"
@@ -256,17 +198,14 @@ const Signin = () => {
                 onChange={(e) =>
                   setData({ ...data, [e.target.name]: e.target.value })
                 }
-                className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
-                  error.email ? "border-red-500 " : "border-stroke"
+                className={`w-full border-b px-2 py-2 outline-none focus:border-primary dark:border-strokedark dark:focus:border-manatee ${
+                  error.email ? "border-red-500" : "border-stroke"
                 }`}
               />
               {error.email && (
-                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
-                  {error.email}
-                </p>
+                <p className="text-sm text-red-500">{error.email}</p>
               )}
 
-              {/* Password input */}
               <div className="relative">
                 <input
                   name="password"
@@ -276,15 +215,14 @@ const Signin = () => {
                   onChange={(e) =>
                     setData({ ...data, [e.target.name]: e.target.value })
                   }
-                  className={`w-full border-b px-2 py-2 pb-2 outline-none transition-all duration-300 ease-in-out focus:border-primary focus:placeholder:text-black dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white ${
+                  className={`w-full border-b px-2 py-2 outline-none focus:border-primary dark:border-strokedark dark:focus:border-manatee ${
                     error.password ? "border-red-500" : "border-stroke"
                   }`}
                 />
-                {/* Toggle password visibility */}
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 transform"
-                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
                   <Image
                     src={
@@ -299,27 +237,19 @@ const Signin = () => {
                 </button>
               </div>
               {error.password && (
-                <p className="text-sm text-red-500 transition-all duration-300 ease-in-out">
-                  {error.password}
-                </p>
+                <p className="text-sm text-red-500">{error.password}</p>
               )}
 
-              {/* Remember me */}
-              <div className="flex items-start justify-between gap-3 text-sm">
-                <div className="flex items-center justify-center gap-3 text-sm">
+              <div className="flex items-start justify-between text-sm">
+                <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                   <input
                     id="rememberMe"
                     type="checkbox"
                     checked={rememberMe}
-                    onChange={() => setRememberMe(!rememberMe)}
+                    onChange={() => setRememberMe((prev) => !prev)}
                   />
-                  <label
-                    htmlFor="rememberMe"
-                    className="text-gray-600 dark:text-gray-300"
-                  >
-                    Remember me
-                  </label>
-                </div>
+                  Remember me
+                </label>
 
                 <Link
                   href="/auth/forgotpassword"
@@ -329,14 +259,9 @@ const Signin = () => {
                 </Link>
               </div>
 
-              {/* Submit */}
               <motion.button
-                aria-label="signin"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleSignin();
-                }}
-                className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white transition duration-300 hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
+                type="submit"
+                className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-medium text-white hover:bg-black/90 dark:bg-btndark dark:hover:bg-blackho"
                 whileTap={{ scale: 0.95 }}
               >
                 Sign In
@@ -352,7 +277,6 @@ const Signin = () => {
               </motion.button>
             </form>
 
-            {/* Divider */}
             <div className="my-6 flex items-center gap-4">
               <hr className="w-full border-gray-300 dark:border-gray-700" />
               <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -361,14 +285,9 @@ const Signin = () => {
               <hr className="w-full border-gray-300 dark:border-gray-700" />
             </div>
 
-            {/* Google Sign in */}
             <motion.button
-              aria-label="signin with Google"
-              onClick={(e) => {
-                e.preventDefault();
-                handleGoogleSignin();
-              }}
-              className="flex w-full items-center justify-center rounded-md border border-stroke bg-gray-50 px-4 py-3 text-gray-600 transition duration-300 hover:border-primary hover:bg-primary/10 dark:bg-[#2C303B] dark:text-white"
+              onClick={handleGoogleSignin}
+              className="flex w-full items-center justify-center rounded-md border border-stroke bg-gray-50 px-4 py-3 text-gray-600 hover:border-primary hover:bg-primary/10 dark:bg-[#2C303B] dark:text-white"
               whileHover={{ scale: 1.05 }}
             >
               <Image
