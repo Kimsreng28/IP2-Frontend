@@ -261,7 +261,7 @@ const Navigation = () => {
             >
               {avatar ? (
                 <img
-                  src={`${process.env.FILE_BASE_URL}/api/file/${avatar}`}
+                  src={`${process.env.FILE_BASE_URL}/${avatar}`}
                   alt="Profile"
                   className="h-8 w-22 rounded-full object-cover"
                   onError={() => setAvatar(null)} // Fallback if image fails to load

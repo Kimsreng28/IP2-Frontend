@@ -148,7 +148,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
 
     return (
       <Image
-        src={`${process.env.FILE_BASE_URL}/api/file/${avatar}`}
+        src={`${process.env.FILE_BASE_URL}/${avatar}`}
         alt="User Avatar"
         width={80}
         height={80}
