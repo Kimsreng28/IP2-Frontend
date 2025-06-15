@@ -1,11 +1,14 @@
-// next.config.js
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["localhost", "cdn-icons-png.flaticon.com", "cdn.sanity.io"],
+    domains: [
+      "localhost",
+      "cdn-icons-png.flaticon.com",
+      "cdn.sanity.io",
+      "images.pexels.com" // ✅ Add this line
+    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -22,6 +25,11 @@ const nextConfig = {
         hostname: "localhost",
         port: "8080",
         pathname: "/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com", // ✅ Add this for better safety (optional if domains is enough)
+        port: "",
       },
     ],
   },
