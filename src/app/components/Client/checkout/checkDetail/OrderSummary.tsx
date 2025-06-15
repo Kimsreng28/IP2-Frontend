@@ -18,7 +18,7 @@ type CartItem = {
   color: string;
   price: number;
   quantity: number;
-  subtotal: number;
+  subtotal: number; // Now required
 };
 
 type CartSummaryProps = {
@@ -75,7 +75,7 @@ export const OrderSummary = ({
                   {item.product}
                 </p>
                 <p className="font-poppins text-base font-bold text-gray-700">
-                  ${item.subtotal.toFixed(2)}
+                  ${(item.subtotal || item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
               <p className="text-sm text-gray-400">Color: {item.color}</p>

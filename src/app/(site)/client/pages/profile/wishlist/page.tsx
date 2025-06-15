@@ -23,12 +23,16 @@ const WishlistPage = () => {
     const fetchWishlist = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/client/auth");
+          return;
+        }
 
-        // Get Products from the API Wishlist
         const response = await fetch(
-          `${process.env.API_BASE_URL}/vendor/product`, // Adjust example catch from products automatically
+          `${process.env.API_BASE_URL}/client/shop/wishlist`,
           {
             headers: {
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           },
@@ -41,7 +45,17 @@ const WishlistPage = () => {
         const data = await response.json();
         console.log("Fetched wishlist data:", data);
 
-        setWishlistItems(data);
+        // Transform the data to match your frontend structure
+        const transformedData = data.map((item: any) => ({
+          id: item.id,
+          product_id: item.product_id,
+          name: item.name,
+          color: "Default", // You might want to get this from product details
+          price: `$${item.price}`,
+          image: item.image_url ?? "/images/product/image.png",
+        }));
+
+        setWishlistItems(transformedData);
       } catch (error) {
         console.error("Error fetching wishlist:", error);
       } finally {
@@ -55,6 +69,10 @@ const WishlistPage = () => {
   const removeFromWishlist = async (productId: number) => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
 
       // Optimistic UI update
       setWishlistItems((prev) =>
@@ -62,10 +80,11 @@ const WishlistPage = () => {
       );
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/wishlist/${productId}`,
+        `${process.env.API_BASE_URL}/client/shop/wishlist/${productId}`,
         {
           method: "DELETE",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         },
@@ -74,6 +93,9 @@ const WishlistPage = () => {
       if (!response.ok) {
         throw new Error("Failed to remove from wishlist");
       }
+
+      // Dispatch event to update counts in navigation
+      window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
       console.error("Error removing from wishlist:", error);
     }

@@ -24,13 +24,13 @@ export default function NewArrivals() {
   // Helper function to get headers with token if available
   const getHeaders = () => {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     // Get token from localStorage if available
     const token = localStorage.getItem("token");
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     return headers;
@@ -40,13 +40,16 @@ export default function NewArrivals() {
     setLoading(true);
     try {
       // Use environment variable or fallback to relative path
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
       const currentPage = params.page || 1;
 
-      const response = await fetch(`${env.API_BASE_URL}/client/home/new-arrival?page=${currentPage}&limit=10`, {
-        method: 'GET',
-        headers: getHeaders(),
-      });
+      const response = await fetch(
+        `${env.API_BASE_URL}/client/home/new-arrival?page=${currentPage}&limit=10`,
+        {
+          method: "GET",
+          headers: getHeaders(),
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -84,7 +87,8 @@ export default function NewArrivals() {
         setError(null);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load new arrivals';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load new arrivals";
       setError(errorMessage);
       setNewArrivals([]);
     } finally {
@@ -92,44 +96,93 @@ export default function NewArrivals() {
     }
   };
 
+  // In your NewArrivals component
+
+  // Update your frontend API calls
+
+  // Add to Cart
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
+
+      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
+      }
+
+      alert("Product added to cart successfully!");
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error) {
+      console.error("Cart error:", error);
+      alert(error instanceof Error ? error.message : "Failed to add to cart");
+    }
+  };
+
+  // Toggle Wishlist
   const toggleFavorite = async (id: number) => {
     const item = newArrivals.find((item) => item.id === id);
     const isFavorite = item?.is_favorite;
 
-    // Optimistic UI update
-    setNewArrivals((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
-      ),
-    );
-
     try {
-      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${id}`, {
-        method: 'PATCH',
-        headers: getHeaders(),
-        body: JSON.stringify({ is_favorite: !isFavorite }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
       }
 
-      const result = await response.json();
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-    } catch (error) {
-      // Revert change on error
+      // Optimistic UI update
       setNewArrivals((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
         ),
       );
 
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update favorite status';
-      console.error('Error updating favorite status:', errorMessage);
+      const response = await fetch(
+        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
+        {
+          method: isFavorite ? "DELETE" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update wishlist");
+      }
+
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (error) {
+      console.error("Wishlist error:", error);
+      // Revert UI on error
+      setNewArrivals((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
+        ),
+      );
+      alert(
+        error instanceof Error ? error.message : "Failed to update wishlist",
+      );
     }
   };
 
@@ -145,7 +198,7 @@ export default function NewArrivals() {
 
   return (
     <div className="container mx-auto mt-6">
-      <div className="flex items-center justify-between px-5 mb-4">
+      <div className="mb-4 flex items-center justify-between px-5">
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           New Arrivals
         </h2>
@@ -157,10 +210,11 @@ export default function NewArrivals() {
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: 1.1 }}
               disabled={loading}
-              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${page === num
-                ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
-                : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${
+                page === num
+                  ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
+                  : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
+              } ${loading ? "cursor-not-allowed opacity-50" : ""}`}
             >
               <Icon path={mdiCircle} size={0.5} />
             </motion.button>
@@ -175,22 +229,22 @@ export default function NewArrivals() {
       ) : newArrivals.length === 0 ? (
         <p className="text-center text-gray-500">No new arrivals available.</p>
       ) : (
-        <div className="pl-5 mb-4 overflow-x-auto scrollbar-hide">
-          <div className="flex gap-4 w-max">
+        <div className="scrollbar-hide mb-4 overflow-x-auto pl-5">
+          <div className="flex w-max gap-4">
             {newArrivals.map((item) => (
               <div key={item.id} className="flex gap-1">
                 <div className="">
                   <div className="group relative min-h-[20px] min-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
                     {/* NEW Badge */}
                     {item.is_new && (
-                      <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
+                      <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
                         NEW
                       </div>
                     )}
 
                     {/* Favorite Icon */}
                     <motion.div
-                      className="absolute z-10 cursor-pointer right-2 top-2"
+                      className="absolute right-2 top-2 z-10 cursor-pointer"
                       onClick={() => toggleFavorite(item.id)}
                       whileTap={{ scale: 0.8 }}
                       whileHover={{ scale: 1.1 }}
@@ -223,12 +277,15 @@ export default function NewArrivals() {
                         onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
                         src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
                         alt={item.name}
-                        className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/product/image.png';
+                          e.currentTarget.src = "/images/product/image.png";
                         }}
                       />
-                      <button className="absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 translate-y-full bg-black opacity-0 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700">
+                      <button
+                        onClick={() => handleAddToCart(item.id)}
+                        className="absolute inset-x-0 bottom-0 translate-y-full bg-black py-2 text-sm font-medium text-white opacity-0 transition-all duration-500 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700"
+                      >
                         Add to cart
                       </button>
                     </div>
@@ -236,17 +293,20 @@ export default function NewArrivals() {
 
                   <div>
                     {/* Stars */}
-                    <div className="flex items-center mt-1">
+                    <div className="mt-1 flex items-center">
                       {Array.from({ length: 5 }, (_, i) => {
                         const filled = i < Math.floor(item.stars || 0);
                         return (
                           <span
                             key={i}
-                            className={`inline-block ${filled ? "text-black dark:text-gray-300" : "text-gray-300 dark:text-gray-600"
-                              }`}
+                            className={`inline-block ${
+                              filled
+                                ? "text-black dark:text-gray-300"
+                                : "text-gray-300 dark:text-gray-600"
+                            }`}
                           >
                             <Star
-                              className={`w-5 h-5 ${filled ? "fill-current" : ""}`}
+                              className={`h-5 w-5 ${filled ? "fill-current" : ""}`}
                               strokeWidth={filled ? 0 : 1.5}
                             />
                           </span>
