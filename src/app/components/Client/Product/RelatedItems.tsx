@@ -6,8 +6,8 @@ import { mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 interface RelatedItemsProps {
     productId: number;
 }
@@ -16,7 +16,8 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const fileUrl = `${env.FILE_BASE_URL}`
+    const router = useRouter();
     useEffect(() => {
         fetchRelated();
     }, [productId]);
@@ -146,7 +147,7 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
                                     {/* Image */}
                                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                                         <img
-                                            src={item.product_images?.[0]?.url || "/images/product/image.png"}
+                                            src={fileUrl + item.product_images?.[0]?.image_url || "/images/product/image.png"}
                                             alt={item.name}
                                             className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
                                             onError={(e) => {
