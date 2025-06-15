@@ -26,7 +26,7 @@ const AddressPage = () => {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          `${process.env.API_BASE_URL}/api/account/auth/profile`,
+          `${process.env.API_BASE_URL}/account/auth/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -35,7 +35,7 @@ const AddressPage = () => {
         );
 
         const resAddress = await fetch(
-          `${process.env.API_BASE_URL}/api/profile/addresses`,
+          `${process.env.API_BASE_URL}/profile/addresses`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -107,8 +107,8 @@ const AddressPage = () => {
       };
 
       const url = addressData.id
-        ? `${process.env.API_BASE_URL}/api/profile/addresses/${addressData.id}`
-        : `${process.env.API_BASE_URL}/api/profile/addresses`;
+        ? `${process.env.API_BASE_URL}/profile/addresses/${addressData.id}`
+        : `${process.env.API_BASE_URL}/profile/addresses`;
 
       const method = addressData.id ? "PATCH" : "POST";
 

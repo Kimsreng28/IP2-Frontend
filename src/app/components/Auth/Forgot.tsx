@@ -36,20 +36,18 @@ const Forgot = () => {
     }
 
     try {
-      const res = await fetch(
-        "http://localhost:3001/api/account/auth/request-reset",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      const apiUrl = process.env.API_BASE_URL ?? "";
+      const res = await fetch(`${apiUrl}/account/auth/request-reset`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Something went wrong");
+        throw new Error(err.message ?? "Something went wrong");
       }
 
       const result = await res.json();

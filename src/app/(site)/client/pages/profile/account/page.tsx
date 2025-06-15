@@ -24,19 +24,17 @@ const AccountPage = () => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
+        const apiUrl = process.env.API_BASE_URL ?? "";
         if (!token) {
           router.push("/auth");
           return;
         }
 
-        const response = await fetch(
-          "http://localhost:3001/api/account/auth/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch(`${apiUrl}/account/auth/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
@@ -74,6 +72,7 @@ const AccountPage = () => {
 
     try {
       const token = localStorage.getItem("token");
+      const apiUrl = process.env.API_BASE_URL ?? "";
       if (!token) {
         router.push("/auth");
         return;
@@ -87,24 +86,21 @@ const AccountPage = () => {
         throw new Error("New passwords don't match");
       }
 
-      const response = await fetch(
-        "http://localhost:3001/api/account/auth/profile/update",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            displayName: formData.displayName,
-            email: formData.email,
-            oldPassword: formData.oldPassword,
-            newPassword: formData.newPassword,
-          }),
+      const response = await fetch(`${apiUrl}/account/auth/profile/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          displayName: formData.displayName,
+          email: formData.email,
+          oldPassword: formData.oldPassword,
+          newPassword: formData.newPassword,
+        }),
+      });
 
       const data = await response.json();
 
