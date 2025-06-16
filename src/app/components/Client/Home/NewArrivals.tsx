@@ -15,8 +15,9 @@ export default function NewArrivals() {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(3); // Default to 3, will be updated from API
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
-  const fileUrl = `${env.FILE_BASE_URL}`
+  const fileUrl = `${env.FILE_BASE_URL}`;
   const router = useRouter();
+  // Add this useEffect to NewArrivals component
   useEffect(() => {
     fetchNewArrivals({ page });
   }, [page]);
@@ -39,21 +40,19 @@ export default function NewArrivals() {
   const fetchNewArrivals = async (params: { page?: number }) => {
     setLoading(true);
     try {
-      // Use environment variable or fallback to relative path
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-      const currentPage = params.page || 1;
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
 
       const response = await fetch(
-        `${env.API_BASE_URL}/client/home/new-arrival?page=${currentPage}&limit=10`,
-        {
-          method: "GET",
-          headers: getHeaders(),
-        },
+        `${env.API_BASE_URL}/client/home/new-arrival?page=${params.page ?? 1}&limit=10`,
+        { headers },
       );
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       const result = await response.json();
 
@@ -61,25 +60,23 @@ export default function NewArrivals() {
         setError(result.error);
         setNewArrivals([]);
       } else if (result.status === 200 && result.data) {
-        // Filter only new arrivals and add default values for missing properties
         const newArrivalsData = result.data
           .filter((item: Product) => item.is_new_arrival)
           .map((item: Product) => ({
             ...item,
             is_favorite: item.is_favorite || false,
             is_new: item.is_new || item.is_new_arrival || false,
-            stars: item.stars || Math.floor(Math.random() * 5) + 1, // Random stars if not provided
+            stars: item.stars ?? Math.floor(Math.random() * 5) + 1,
           }));
 
         setNewArrivals(newArrivalsData);
         setError(null);
 
-        // Update pagination info if provided by API
+        // Update pagination
         if (result.pagination) {
-          setTotalPages(result.pagination.totalPages || 3);
-          setHasNextPage(result.pagination.hasNextPage || false);
+          setTotalPages(result.pagination.totalPages ?? 3);
+          setHasNextPage(result.pagination.hasNextPage ?? false);
         } else {
-          // Calculate based on data length (assuming 10 items per page)
           setHasNextPage(newArrivalsData.length === 10);
         }
       } else {
@@ -87,18 +84,61 @@ export default function NewArrivals() {
         setError(null);
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to load new arrivals";
-      setError(errorMessage);
+      setError(
+        err instanceof Error ? err.message : "Failed to load new arrivals",
+      );
       setNewArrivals([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // In your NewArrivals component
+  const toggleFavorite = async (id: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
 
-  // Update your frontend API calls
+      // Get current favorite status
+      const currentItem = newArrivals.find((item) => item.id === id);
+      const isFavorite = currentItem?.is_favorite || false;
+
+      // Optimistic UI update
+      setNewArrivals((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, is_favorite: !isFavorite } : item,
+        ),
+      );
+
+      // Use DELETE for removing, POST for adding
+      const method = isFavorite ? "DELETE" : "POST";
+      const response = await fetch(
+        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
+        {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        // Revert on error
+        setNewArrivals((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, isFavorite } : item)),
+        );
+        throw new Error("Failed to update wishlist");
+      }
+
+      // Dispatch update event
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   // Add to Cart
   const handleAddToCart = async (productId: number) => {
@@ -124,65 +164,17 @@ export default function NewArrivals() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to add to cart");
+        throw new Error(data.message ?? "Failed to add to cart");
       }
 
-      alert("Product added to cart successfully!");
-      window.dispatchEvent(new Event("cartUpdated"));
+      // Dispatch custom event with updated count
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", {
+          detail: { count: data.count }, // Ensure your API returns the new count
+        }),
+      );
     } catch (error) {
       console.error("Cart error:", error);
-      alert(error instanceof Error ? error.message : "Failed to add to cart");
-    }
-  };
-
-  // Toggle Wishlist
-  const toggleFavorite = async (id: number) => {
-    const item = newArrivals.find((item) => item.id === id);
-    const isFavorite = item?.is_favorite;
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/client/auth");
-        return;
-      }
-
-      // Optimistic UI update
-      setNewArrivals((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
-        ),
-      );
-
-      const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
-        {
-          method: isFavorite ? "DELETE" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update wishlist");
-      }
-
-      window.dispatchEvent(new Event("wishlistUpdated"));
-    } catch (error) {
-      console.error("Wishlist error:", error);
-      // Revert UI on error
-      setNewArrivals((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, is_favorite: !item.is_favorite } : item,
-        ),
-      );
-      alert(
-        error instanceof Error ? error.message : "Failed to update wishlist",
-      );
     }
   };
 
@@ -241,15 +233,20 @@ export default function NewArrivals() {
                         NEW
                       </div>
                     )}
-
                     {/* Favorite Icon */}
                     <motion.div
                       className="absolute right-2 top-2 z-10 cursor-pointer"
-                      onClick={() => toggleFavorite(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(item.id);
+                      }}
                       whileTap={{ scale: 0.8 }}
                       whileHover={{ scale: 1.1 }}
                       initial={{ scale: 1 }}
-                      animate={{ scale: item.is_favorite ? 1.2 : 1 }}
+                      animate={{
+                        scale: item.is_favorite ? [1, 1.2, 1] : 1,
+                        color: item.is_favorite ? "#ef4444" : "#9ca3af",
+                      }}
                       transition={{
                         type: "spring",
                         stiffness: 300,
@@ -258,13 +255,13 @@ export default function NewArrivals() {
                     >
                       {item.is_favorite ? (
                         <Icon
-                          className="text-red-400"
+                          className="text-red-500"
                           path={mdiHeart}
                           size={1}
                         />
                       ) : (
                         <Icon
-                          className="text-gray-400"
+                          className="text-gray-400 hover:text-gray-600"
                           path={mdiHeartOutline}
                           size={1}
                         />
@@ -274,8 +271,14 @@ export default function NewArrivals() {
                     {/* Image Container with Hover Add to Cart */}
                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                       <img
-                        onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
-                        src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
+                        onClick={() =>
+                          router.push(`/client/pages/shop/view/${item.id}`)
+                        }
+                        src={
+                          item.product_images.length > 0
+                            ? fileUrl + item.product_images[0].image_url
+                            : "/images/product/image.png"
+                        }
                         alt={item.name}
                         className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {

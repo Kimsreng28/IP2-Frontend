@@ -10,12 +10,38 @@ import { useEffect, useState } from "react";
 
 type CartItem = {
   id: number;
-  image: string;
-  product: string;
-  color: string;
-  price: number;
+  uuid: string;
+  name: string;
+  description: string;
   quantity: number;
-  subtotal: number;
+  price: number;
+  stock: number;
+  category_id: number;
+  stars: number;
+  brand_id: number;
+  is_new_arrival: boolean;
+  is_best_seller: boolean;
+  is_favorite: boolean;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  brand: {
+    id: number;
+    name: string;
+  };
+  product_images: Array<{
+    id: number;
+    image_url: string;
+  }>;
+  discounts: Array<{
+    id: number;
+    discount_percentage: number;
+    start_date: string;
+    end_date: string;
+  }>;
+  color: string;
 };
 
 type ShippingOption = {

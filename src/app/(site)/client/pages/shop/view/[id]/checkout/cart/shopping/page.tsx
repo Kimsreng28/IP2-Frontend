@@ -8,12 +8,38 @@ import { useEffect, useState } from "react";
 
 type CartItem = {
   id: number;
-  product_id: number;
+  uuid: string;
   name: string;
-  price: number;
+  description: string;
   quantity: number;
-  image_url: string | null;
+  price: number;
   stock: number;
+  category_id: number;
+  stars: number;
+  brand_id: number;
+  is_new_arrival: boolean;
+  is_best_seller: boolean;
+  is_favorite: boolean;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  brand: {
+    id: number;
+    name: string;
+  };
+  product_images: Array<{
+    id: number;
+    image_url: string;
+  }>;
+  discounts: Array<{
+    id: number;
+    discount_percentage: number;
+    start_date: string;
+    end_date: string;
+  }>;
+  color: string;
 };
 
 const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
@@ -83,12 +109,27 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
     setShippingOptions(updatedOptions);
   };
 
+  // In ShoppingCartPage component
   const handleCheckout = () => {
     const selectedShipping = shippingOptions.find((option) => option.selected);
     const cartData = {
-      items,
+      items: items.map((item) => ({
+        id: item.id,
+        product_id: item.uuid,
+        name: item.name,
+        image:
+          item.product_images?.[0]?.image_url || "/images/product/image.png",
+        color: "Default", // You might want to get this from product details
+        price: item.price,
+        quantity: item.quantity,
+        subtotal: item.price * item.quantity,
+        stock: item.stock, // Include stock information
+      })),
       subtotal,
       shippingOption: selectedShipping,
+      // Include any additional metadata you need
+      timestamp: new Date().toISOString(),
+      cartId: params.id, // The cart ID from URL params
     };
 
     // Encode the cart data for URL
@@ -107,9 +148,13 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
         return;
       }
 
-      // Optimistic UI update
-      setItems((prev) => prev.filter((item) => item.id !== cartItemId));
-      calculateSubtotal(items.filter((item) => item.id !== cartItemId));
+      // Store current items for potential rollback
+      const currentItems = [...items];
+
+      // Optimistic update
+      const updatedItems = items.filter((item) => item.id !== cartItemId);
+      setItems(updatedItems);
+      calculateSubtotal(updatedItems);
 
       const response = await fetch(
         `${process.env.API_BASE_URL}/client/shop/cart/${cartItemId}`,
@@ -123,13 +168,15 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to remove item from cart");
+        // Revert on error
+        setItems(currentItems);
+        calculateSubtotal(currentItems);
+        throw new Error((await response.text()) || "Failed to remove item");
       }
 
-      // Dispatch event to update cart count in navigation
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      console.error("Error removing item from cart:", error);
+      console.error("Error removing item:", error);
     }
   };
 
@@ -197,7 +244,9 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
             items={items.map((item) => ({
               id: item.id,
               product: item.name,
-              image: item.image_url ?? "/images/product/image.png",
+              image:
+                item.product_images?.[0]?.image_url ||
+                "/images/product/image.png",
               color: "Default", // You might want to get this from product details
               price: item.price,
               quantity: item.quantity,
