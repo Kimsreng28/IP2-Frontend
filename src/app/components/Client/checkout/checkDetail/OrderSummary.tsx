@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { PercentIcon } from "lucide-react";
+import Image from "next/image"; // Import Next.js Image component
 import { useState } from "react";
 
 type ShippingOption = {
@@ -13,12 +14,38 @@ type ShippingOption = {
 
 type CartItem = {
   id: number;
-  image: string;
-  product: string;
-  color: string;
-  price: number;
+  uuid: string;
+  name: string;
   quantity: number;
-  subtotal: number; // Now required
+  description: string;
+  price: number;
+  stock: number;
+  category_id: number;
+  stars: number;
+  brand_id: number;
+  is_new_arrival: boolean;
+  is_best_seller: boolean;
+  is_favorite: boolean;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  brand: {
+    id: number;
+    name: string;
+  };
+  product_images: Array<{
+    id: number;
+    image_url: string;
+  }>;
+  discounts: Array<{
+    id: number;
+    discount_percentage: number;
+    start_date: string;
+    end_date: string;
+  }>;
+  color: string;
 };
 
 type CartSummaryProps = {
@@ -59,34 +86,71 @@ export const OrderSummary = ({
         Order summary
       </h3>
 
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-6">
         {items.map((item) => (
-          <div key={item.id} className="flex gap-2">
-            <div className="flex h-20 w-20 items-center justify-center rounded border bg-[#F3F5F7]">
-              <img
-                src={item.image}
-                alt={item.product}
-                className="max-h-full max-w-full object-contain"
-              />
+          <div
+            key={item.id}
+            className="flex gap-4 rounded-lg border border-gray-200 bg-white p-3 transition-shadow hover:shadow-sm"
+          >
+            {/* Image Container */}
+            <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border bg-gray-50">
+              {item.product_images ? (
+                <Image
+                  src={item.product_images[0].image_url}
+                  alt={item.name}
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "/images/product/image.png";
+                  }}
+                />
+              ) : (
+                <Image
+                  src="/images/product/image.png"
+                  alt="Placeholder"
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-contain p-2"
+                />
+              )}
             </div>
-            <div className="flex flex-col justify-between">
-              <div className="flex w-full justify-between">
-                <p className="font-poppins text-sm text-gray-700">
-                  {item.product}
-                </p>
-                <p className="font-poppins text-base font-bold text-gray-700">
-                  ${(item.subtotal || item.price * item.quantity).toFixed(2)}
+
+            {/* Product Info */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="line-clamp-2 font-medium text-gray-900">
+                  {item.name}
+                </h3>
+                <p className="whitespace-nowrap font-semibold text-gray-900">
+                  ${(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
-              <p className="text-sm text-gray-400">Color: {item.color}</p>
-              <div className="flex w-15 items-center justify-between gap-1 rounded-md border px-2 py-0.5">
-                <span className="text-xs font-medium">{item.quantity}</span>
+
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-sm text-gray-500">Color:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  {item.color}
+                </span>
+              </div>
+
+              <div className="mt-2 flex items-center justify-between">
+                <div className="flex w-fit items-center rounded-md border">
+                  <span className="px-3 py-1 text-sm text-gray-700">
+                    Qty: {item.quantity}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  ${item.price.toFixed(2)} each
+                </p>
               </div>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Rest of the component remains the same */}
       <div className="my-4 border-t" />
 
       <div className="flex gap-2">

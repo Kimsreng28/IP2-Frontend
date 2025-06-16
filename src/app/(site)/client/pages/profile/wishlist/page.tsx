@@ -1,5 +1,6 @@
 "use client";
 
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -50,7 +51,7 @@ const WishlistPage = () => {
           id: item.id,
           product_id: item.product_id,
           name: item.name,
-          color: "Default", // You might want to get this from product details
+          color: "Default",
           price: `$${item.price}`,
           image: item.image_url ?? "/images/product/image.png",
         }));
@@ -91,13 +92,69 @@ const WishlistPage = () => {
       );
 
       if (!response.ok) {
+        // Revert on error
+        const response = await fetch(
+          `${process.env.API_BASE_URL}/client/shop/wishlist`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        const data = await response.json();
+        setWishlistItems(data);
         throw new Error("Failed to remove from wishlist");
       }
 
-      // Dispatch event to update counts in navigation
+      // Dispatch event with productId to update other components
+      window.dispatchEvent(
+        new CustomEvent("wishlistItemRemoved", {
+          detail: { productId },
+        }),
+      );
+
+      // Also dispatch the general update event
       window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
       console.error("Error removing from wishlist:", error);
+    }
+  };
+
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
+
+      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message ?? "Failed to add to cart");
+      }
+
+      // Dispatch custom event with updated count
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", {
+          detail: { count: data.count }, // Ensure your API returns the new count
+        }),
+      );
+    } catch (error) {
+      console.error("Cart error:", error);
     }
   };
 
@@ -163,8 +220,11 @@ const WishlistPage = () => {
                   >
                     <td className="px-4">
                       <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFromWishlist(item.product_id);
+                        }}
                         className="hover:scale-10 transition"
-                        onClick={() => removeFromWishlist(item.product_id)}
                       >
                         <X className="h-4 w-4 text-gray-400 transition-colors duration-200 hover:text-red-500" />
                       </button>
@@ -196,6 +256,7 @@ const WishlistPage = () => {
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         className="rounded-md bg-black px-4 py-2 text-sm text-white transition hover:bg-gray-800"
+                        onClick={() => handleAddToCart(item.product_id)}
                       >
                         Add to cart
                       </motion.button>

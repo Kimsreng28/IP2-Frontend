@@ -87,30 +87,48 @@ const Navigation = () => {
     }
   };
 
-  useEffect(() => {
-    setCurrentPath(pathUrl);
+ useEffect(() => {
+  setCurrentPath(pathUrl);
 
-    const fetchAvatar = async () => {
-      const currentAvatar = await getAvatar();
-      setAvatar(currentAvatar);
-    };
+  const fetchAvatar = async () => {
+    const currentAvatar = await getAvatar();
+    setAvatar(currentAvatar);
+  };
 
-    fetchAvatar();
+  fetchAvatar();
+  fetchCounts();
 
+  // Enhanced event listeners for real-time updates
+  const handleWishlistUpdate = () => {
     fetchCounts();
+    // Visual feedback
+    const wishlistIcon = document.getElementById("wishlist-icon");
+    if (wishlistIcon) {
+      wishlistIcon.classList.add("animate-pulse");
+      setTimeout(() => wishlistIcon.classList.remove("animate-pulse"), 1000);
+    }
+  };
 
-    // Listen for custom avatar update event
-    const handleAvatarUpdated = async (e: Event) => {
-      const currentAvatar = await getAvatar();
-      setAvatar(currentAvatar);
-    };
+  const handleCartUpdate = () => {
+    fetchCounts();
+    // Visual feedback
+    const cartIcon = document.getElementById("cart-icon");
+    if (cartIcon) {
+      cartIcon.classList.add("animate-bounce");
+      setTimeout(() => cartIcon.classList.remove("animate-bounce"), 1000);
+    }
+  };
 
-    window.addEventListener("avatarUpdated", handleAvatarUpdated);
+  window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+  window.addEventListener("cartUpdated", handleCartUpdate);
+  window.addEventListener("avatarUpdated", fetchAvatar);
 
-    return () => {
-      window.removeEventListener("avatarUpdated", handleAvatarUpdated);
-    };
-  }, [pathUrl]);
+  return () => {
+    window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
+    window.removeEventListener("cartUpdated", handleCartUpdate);
+    window.removeEventListener("avatarUpdated", fetchAvatar);
+  };
+}, [pathUrl]);
 
   // Sticky menu
   const handleStickyMenu = () => {

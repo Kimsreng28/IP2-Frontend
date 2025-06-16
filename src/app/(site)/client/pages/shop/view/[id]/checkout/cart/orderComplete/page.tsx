@@ -6,12 +6,38 @@ import { useEffect, useState } from "react";
 
 type CartItem = {
   id: number;
-  image: string;
-  product: string;
-  color: string;
-  price: number;
+  uuid: string;
+  name: string;
+  description: string;
   quantity: number;
-  subtotal: number;
+  price: number;
+  stock: number;
+  category_id: number;
+  stars: number;
+  brand_id: number;
+  is_new_arrival: boolean;
+  is_best_seller: boolean;
+  is_favorite: boolean;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  brand: {
+    id: number;
+    name: string;
+  };
+  product_images: Array<{
+    id: number;
+    image_url: string;
+  }>;
+  discounts: Array<{
+    id: number;
+    discount_percentage: number;
+    start_date: string;
+    end_date: string;
+  }>;
+  color: string;
 };
 
 const OrderCompletePage = ({ params }: { params: { id: string } }) => {
@@ -99,8 +125,11 @@ const OrderCompletePage = ({ params }: { params: { id: string } }) => {
               {/* Image container */}
               <div className="flex h-20 w-20 items-center justify-center rounded border border-gray-700 bg-[#F3F5F7]">
                 <img
-                  src={item.image}
-                  alt={item.product}
+                  src={
+                    item.product_images?.[0]?.image_url ||
+                    "/images/product/image.png"
+                  }
+                  alt={item.name}
                   className="max-h-full max-w-full object-contain"
                 />
               </div>
