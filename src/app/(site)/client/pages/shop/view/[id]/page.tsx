@@ -204,29 +204,50 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
   };
 
-  // Calculate discounted price
-  const getDiscountedPrice = () => {
-    if (!product) return null;
+ const getDiscountedPrice = () => {
+  // Early return if no product or invalid product data
+  if (!product || typeof product !== 'object' || !('price' in product)) {
+    return null;
+  }
 
-    const activeDiscount = product.discounts.find(discount => {
+  // Safely check for discounts array
+  const discounts = Array.isArray(product?.discounts) ? product.discounts : [];
+
+  // Find active discount with date validation
+  const activeDiscount = discounts.find(discount => {
+    try {
+      if (!discount || !discount.start_date || !discount.end_date) return false;
+      
       const now = new Date();
       const startDate = new Date(discount.start_date);
       const endDate = new Date(discount.end_date);
+      
+      // Additional date validation
+      if (isNaN(endDate.getTime())) return false;
+      
       return now >= startDate && now <= endDate;
-    });
-
-    if (activeDiscount) {
-      const discountedPrice = product.price * (1 - activeDiscount.discount_percentage / 100);
-      return {
-        original: product.price,
-        discounted: discountedPrice,
-        percentage: activeDiscount.discount_percentage
-      };
+    } catch (e) {
+      console.error('Error processing discount dates:', e);
+      return false;
     }
+  });
 
-    return null;
-  };
+  // Calculate discount if valid
+  if (activeDiscount && 
+      typeof activeDiscount.discount_percentage === 'number' &&
+      !isNaN(product.price)) {
+    const percentage = Math.min(100, Math.max(0, activeDiscount.discount_percentage));
+    const discountedPrice = product.price * (1 - percentage / 100);
+    
+    return {
+      original: product.price,
+      discounted: parseFloat(discountedPrice.toFixed(2)),
+      percentage
+    };
+  }
 
+  return null;
+};
   const priceInfo = getDiscountedPrice();
 
   // Render stars based on product rating

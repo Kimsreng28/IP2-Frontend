@@ -165,7 +165,7 @@ export default function BestSeller() {
                      onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
                       src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
                       alt={item.name}
-                      className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      className="object-contain w-full cursor-pointer h-full transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         e.currentTarget.src = '/images/product/image.png';
                       }}

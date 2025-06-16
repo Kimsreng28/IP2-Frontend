@@ -147,9 +147,10 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
                                     {/* Image */}
                                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                                         <img
+                                        onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
                                             src={fileUrl + item.product_images?.[0]?.image_url || "/images/product/image.png"}
                                             alt={item.name}
-                                            className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                            className="object-contain cursor-pointer w-full h-full transition-transform duration-300 group-hover:scale-105"
                                             onError={(e) => {
                                                 e.currentTarget.src = "/images/product/image.png";
                                             }}

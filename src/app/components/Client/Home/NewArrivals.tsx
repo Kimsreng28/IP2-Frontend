@@ -277,7 +277,7 @@ export default function NewArrivals() {
                         onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
                         src={item.product_images.length > 0 ? fileUrl + item.product_images[0].image_url : '/images/product/image.png'}
                         alt={item.name}
-                        className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                        className="h-full w-full cursor-pointer object-contain transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
                           e.currentTarget.src = "/images/product/image.png";
                         }}

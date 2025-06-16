@@ -368,8 +368,8 @@ export default function ShopPage() {
                       <div
                         key={item.id}
                         className={`${viewMode === "list"
-                          ? "flex gap-4 items-center p-4 border rounded-xl hover:shadow-md transition"
-                          : "bg-gray-100 rounded-xl shadow-sm p-4 hover:shadow-md transition"
+                          ? "flex gap-4  dark:border-white items-center p-4 border rounded-xl hover:shadow-md transition"
+                          : "bg-gray-100 dark:bg-transparent dark:border dark:border-gray-300 rounded-xl shadow-sm p-4 hover:shadow-md transition"
                           }`}
                       >
                         <div
