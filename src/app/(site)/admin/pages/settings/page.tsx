@@ -1,14 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface Category {
   id: number
   name: string
-  subtitle: string
-  image: string
-  totalProducts: number
-  totalEarning: number
+  subtitle?: string  // Make optional since it's not in the API data
+  image?: string     // Make optional
+  totalProducts?: number  // Will use _count.products instead
+  totalEarning?: number   // Not in API, we'll calculate or ignore
+  _count?: {
+    products: number
+    discounts: number
+  }
 }
 
 interface PaymentStatus {
@@ -28,25 +32,6 @@ interface DeliveryStatus {
   isActive: boolean
   createdDate: string
 }
-
-const categories: Category[] = [
-  {
-    id: 1,
-    name: "iphone",
-    subtitle: "Apple iPhone",
-    image: "/placeholder.svg?height=40&width=40",
-    totalProducts: 198784.0,
-    totalEarning: 98784.0,
-  },
-  {
-    id: 2,
-    name: "iphone",
-    subtitle: "Apple iPhone",
-    image: "/placeholder.svg?height=40&width=40",
-    totalProducts: 198784.0,
-    totalEarning: 98784.0,
-  },
-]
 
 const paymentStatuses: PaymentStatus[] = [
   {
@@ -142,6 +127,33 @@ export default function Settings() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingItem, setEditingItem] = useState<Category | PaymentStatus | DeliveryStatus | null>(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  
+
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const fetchCategories = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch('http://localhost:3001/api/admin/setting/category')
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories')
+      }
+      const data = await response.json()
+      setCategories(data.data)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+useEffect(() => {
+  if (activeTab === 'categories') {
+    fetchCategories()
+  }
+}, [activeTab])
 
   const getCurrentData = () => {
     switch (activeTab) {
@@ -379,24 +391,24 @@ export default function Settings() {
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0">
                               <img
-                                src={(item as Category).image || "/placeholder.svg"}
-                                alt={(item as Category).name}
+                                src={item.image || "/placeholder.svg"}
+                                alt={item.name}
                                 className="w-full h-full object-cover"
                               />
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900 dark:text-white">{(item as Category).name}</div>
+                              <div className="font-medium text-gray-900 dark:text-white">{item.name}</div>
                               <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {(item as Category).subtitle}
+                                {item.subtitle || "No subtitle"}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="py-4 px-4 text-gray-700 dark:text-gray-300 font-medium">
-                          {formatNumber((item as Category).totalProducts)}
+                          {formatNumber(item._count?.products || 0)}
                         </td>
                         <td className="py-4 px-4 text-gray-700 dark:text-gray-300 font-medium">
-                          {formatCurrency((item as Category).totalEarning)}
+                          {formatCurrency(item.totalEarning || 0)}
                         </td>
                       </>
                     ) : (
@@ -521,7 +533,7 @@ export default function Settings() {
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">Total Products</p>
                       <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                        {formatNumber(categories.reduce((sum, cat) => sum + cat.totalProducts, 0))}
+                        {formatNumber(categories.reduce((sum, cat) => sum + (cat._count?.products || 0), 0))}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center text-xl">
@@ -532,13 +544,13 @@ export default function Settings() {
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Total Earnings</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Total Discounts</p>
                       <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                        {formatCurrency(categories.reduce((sum, cat) => sum + cat.totalEarning, 0))}
+                        {formatNumber(categories.reduce((sum, cat) => sum + (cat._count?.discounts || 0), 0))}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center text-xl">
-                      💰
+                      🏷️
                     </div>
                   </div>
                 </div>
