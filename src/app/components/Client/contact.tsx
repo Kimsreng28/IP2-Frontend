@@ -3,8 +3,10 @@
 import { ArrowRight, ChevronRight, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import SharedFooterComponent from "../shared/footer";
+import { Resend } from 'resend';
 
 // Mock data for service shops with proper typing
+const resend = new Resend('re_PPTQo3N3_5pccgqwpWSqqrAwEC5kSEv5f');
 interface ServiceShop {
     id: number;
     icon: any;
@@ -42,23 +44,50 @@ export default function Contact() {
         message: "",
     })
 
+    const [isSending, setIsSending] = useState(false)
+    const [sendStatus, setSendStatus] = useState<{ success?: boolean; message?: string }>({})
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
+        setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Handle form submission here
-        console.log("Form submitted:", formData)
+        setIsSending(true)
+        setSendStatus({})
+
+        try {
+        const response = await fetch("/api/send-email", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || "Failed to send message")
+        }
+
+        setSendStatus({ success: true, message: "Message sent successfully!" })
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
+        } catch (error) {
+        console.error("Error sending email:", error)
+        setSendStatus({
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to send message",
+        })
+        } finally {
+        setIsSending(false)
+        }
     }
 
     const handleHomeClick = () => {
         // Mock router push functionality
-        console.log("Navigate to home");
+        console.log("Navigate to home")
     }
 
     return (
@@ -145,97 +174,131 @@ export default function Contact() {
                 </div>
             </div>
 
-            {/* Contact Form */}
-            <div className="max-w-4xl px-5 mx-auto mb-16">
-                <div className="p-8 transition-colors bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                    <h2 className="mb-6 text-2xl font-bold text-center text-gray-900 transition-colors dark:text-white">Send us a Message</h2>
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300">
-                                    Full Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                                    placeholder="Enter your full name"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300">
-                                    Email Address
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                                    placeholder="Enter your email"
-                                />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300">
-                                    Phone Number
-                                </label>
-                                <input
-                                    type="tel"
-                                    id="phone"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                                    placeholder="Enter your phone number"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="subject" className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300">
-                                    Subject
-                                </label>
-                                <input
-                                    type="text"
-                                    id="subject"
-                                    name="subject"
-                                    value={formData.subject}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                                    placeholder="Enter subject"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300">
-                                Message
-                            </label>
-                            <textarea
-                                id="message"
-                                name="message"
-                                rows={5}
-                                value={formData.message}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg resize-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                                placeholder="Enter your message"
-                            />
-                        </div>
-                        <div className="text-center">
-                            <button
-                                onClick={handleSubmit}
-                                className="px-8 py-3 font-semibold text-white transition-colors duration-200 bg-gray-600 rounded-lg shadow-lg dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 hover:shadow-xl"
-                            >
-                                Send Message
-                            </button>
-                        </div>
-                    </div>
-                </div>
+      {/* Contact Form */}
+      <div className="max-w-4xl px-5 mx-auto mb-16">
+        <div className="p-8 transition-colors bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="mb-6 text-2xl font-bold text-center text-gray-900 transition-colors dark:text-white">
+            Send us a Message
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300"
+                >
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300"
+                >
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
+                  placeholder="Enter your email"
+                />
+              </div>
             </div>
-            <SharedFooterComponent />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300"
+                >
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="subject"
+                  className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300"
+                >
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
+                  placeholder="Enter subject"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="message"
+                className="block mb-2 text-sm font-medium text-gray-700 transition-colors dark:text-gray-300"
+              >
+                Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                value={formData.message}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 transition-colors bg-white border border-gray-300 rounded-lg resize-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
+                placeholder="Enter your message"
+              />
+            </div>
+            <div className="text-center">
+              <button
+                type="submit"
+                disabled={isSending}
+                className={`px-8 py-3 font-semibold text-white transition-colors duration-200 rounded-lg shadow-lg ${
+                  isSending
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gray-600 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600"
+                } focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 hover:shadow-xl`}
+              >
+                {isSending ? "Sending..." : "Send Message"}
+              </button>
+              {sendStatus.message && (
+                <p
+                  className={`mt-4 text-sm ${
+                    sendStatus.success ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {sendStatus.message}
+                </p>
+              )}
+            </div>
+          </form>
         </div>
-    )
+      </div>
+      <SharedFooterComponent />
+    </div>
+  )
 }
