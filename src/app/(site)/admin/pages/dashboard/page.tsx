@@ -41,14 +41,17 @@ interface ApiResponse {
       brand: {
         id: number
         name: string
-      }
+      },
+      total_ordered: number
     }[]
     totalCount: number
   }
   users: {
     totalCount: number
   }
-  sales: number
+  sales: {
+    totalOrders: number
+  }
 }
 
 export default function Dashboard() {
@@ -79,41 +82,6 @@ export default function Dashboard() {
 
     fetchData()
   }, [])
-
-  const recentOrders: Order[] = [
-    {
-      trackingNo: "#ER5364",
-      productName: "HeadPhones",
-      price: 100,
-      totalOrder: 100,
-      totalAmount: 100,
-      icon: "🎧",
-    },
-    {
-      trackingNo: "#ER5368",
-      productName: "Space Pro",
-      price: 100,
-      totalOrder: 20,
-      totalAmount: 100,
-      icon: "🎧",
-    },
-    {
-      trackingNo: "#ER5412",
-      productName: "SoundCore",
-      price: 100,
-      totalOrder: 52,
-      totalAmount: 100,
-      icon: "🎧",
-    },
-    {
-      trackingNo: "#ER5621",
-      productName: "EarBuds",
-      price: 100,
-      totalOrder: 48,
-      totalAmount: 100,
-      icon: "🎧",
-    },
-  ]
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -180,7 +148,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {dashboardData?.sales || 0}
+                    {dashboardData?.sales.totalOrders || 0}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Total Sales</p>
                 </div>
@@ -340,7 +308,7 @@ export default function Dashboard() {
                         <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">${order.price}</td>
                         <td className="py-3 px-4">
                           <span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded text-xs">
-                            {/* {order.totalOrder || 0} */} 0 
+                            {order.total_ordered}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-100">${ (order.price * 0).toFixed(2) }</td>
