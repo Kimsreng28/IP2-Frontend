@@ -459,11 +459,18 @@ export default function ShopPage() {
                     {products.map((item) => (
                       <div
                         key={item.id}
+<<<<<<< HEAD
+                        className={`${viewMode === "list"
+                          ? "flex gap-4  dark:border-white items-center p-4 border rounded-xl hover:shadow-md transition"
+                          : "bg-gray-100 dark:bg-transparent dark:border dark:border-gray-300 rounded-xl shadow-sm p-4 hover:shadow-md transition"
+                          }`}
+=======
                         className={`${
                           viewMode === "list"
                             ? "flex items-center gap-4 rounded-xl border p-4 transition hover:shadow-md"
                             : "rounded-xl bg-gray-100 p-4 shadow-sm transition hover:shadow-md"
                         }`}
+>>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
                       >
                         <div
                           className={`${
