@@ -167,7 +167,7 @@ export default function BestSeller() {
 
   return (
     <div className="container mx-auto mt-10">
-      <div className="mb-4 flex items-center justify-between px-5">
+      <div className="flex items-center justify-between px-5 mb-4">
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           Best Sellers
         </h2>
@@ -187,14 +187,14 @@ export default function BestSeller() {
                 <div className="group relative min-h-[20px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
                   {/* Hot Badge */}
                   {item.is_hot && (
-                    <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
+                    <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
                       HOT
                     </div>
                   )}
 
                   {/* Favorite Icon */}
                   <motion.div
-                    className="absolute right-2 top-2 z-10 cursor-pointer"
+                    className="absolute z-10 cursor-pointer right-2 top-2"
                     onClick={() => toggleFavorite(item.id)}
                     whileTap={{ scale: 0.8 }}
                     whileHover={{ scale: 1.1 }}
@@ -225,18 +225,14 @@ export default function BestSeller() {
                           : "/images/product/image.png"
                       }
                       alt={item.name}
-<<<<<<< HEAD
-                      className="object-contain w-full cursor-pointer h-full transition-transform duration-300 group-hover:scale-105"
-=======
-                      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
->>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
+                      className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         e.currentTarget.src = "/images/product/image.png";
                       }}
                     />
                     <button
                       onClick={() => handleAddToCart(item.id)}
-                      className="absolute inset-x-0 bottom-0 translate-y-full bg-black py-2 text-sm font-medium text-white opacity-0 transition-all duration-500 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700"
+                      className="absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 translate-y-full bg-black opacity-0 hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700"
                     >
                       Add to cart
                     </button>
@@ -245,7 +241,7 @@ export default function BestSeller() {
 
                 <div>
                   {/* Stars */}
-                  <div className="mt-1 flex items-center">
+                  <div className="flex items-center mt-1">
                     {Array.from({ length: 5 }, (_, i) => {
                       const filled = i < Math.floor(item.stars || 0);
                       return (

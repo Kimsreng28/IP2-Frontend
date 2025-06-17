@@ -33,27 +33,27 @@ export default function Header({
   };
 
   return (
-    <header className="flex items-center justify-between bg-white p-4 font-poppins shadow dark:bg-gray-900 dark:text-white">
-      <h1 className="font-poppins text-xl font-bold">
+    <header className="flex items-center justify-between p-4 bg-white shadow font-poppins dark:bg-gray-900 dark:text-white">
+      <h1 className="text-xl font-bold font-poppins">
         {userRole === "VENDOR" ? "VENDOR DASHBOARD" : "ADMIN DASHBOARD"}
       </h1>
 
       <div className="flex items-center gap-4">
         <button
           onClick={toggleDarkMode}
-          className="rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          className="p-2 transition rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           {darkMode ? (
-            <Sun className="h-6 w-6" />
+            <Sun className="w-6 h-6" />
           ) : (
-            <Moon className="h-6 w-6" />
+            <Moon className="w-6 h-6" />
           )}
         </button>
 
-        <button className="relative rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700">
-          <Bell className="h-6 w-6" />
+        <button className="relative p-2 transition rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+          <Bell className="w-6 h-6" />
           {notifications > 0 && (
-            <span className="absolute right-0 top-0 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+            <span className="absolute top-0 right-0 flex items-center justify-center w-3 h-3 text-xs text-white bg-red-500 rounded-full">
               {notifications}
             </span>
           )}
@@ -61,9 +61,9 @@ export default function Header({
 
         <button
           onClick={() => router.push(getSettingsPath())}
-          className="flex items-center gap-2 rounded p-2 transition hover:bg-gray-200 dark:hover:bg-gray-700"
+          className="flex items-center gap-2 p-2 transition rounded hover:bg-gray-200 dark:hover:bg-gray-700"
         >
-          <User className="h-6 w-6" />
+          <User className="w-6 h-6" />
           <span className="hidden md:inline">Profile</span>
         </button>
       </div>
