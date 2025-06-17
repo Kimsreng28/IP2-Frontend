@@ -56,20 +56,13 @@ const menuDashboardVendor = [
   },
   {
     id: 3,
-    title: "Event",
-    path: "/vendor/pages/event",
-    icon: TicketPercent,
-    newTab: false,
-  },
-  {
-    id: 4,
     title: "Order History",
-    path: "/vendor/pages/report",
+    path: "/vendor/pages/orderHistory",
     icon: BarChart,
     newTab: false,
   },
   {
-    id: 5,
+    id: 4,
     title: "Settings",
     path: "/vendor/pages/settings",
     icon: Settings,
