@@ -1,52 +1,45 @@
 "use client";
+
+import { getUserRole } from "@/src/utils/auth";
 import { LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { menuDashboardAdmin, menuDashboardVendor } from "./menuDashboard";
 
 export default function Sidebar() {
   const { theme } = useTheme();
   const pathname = usePathname();
-
+  const router = useRouter();
   const [userRole, setUserRole] = useState<string | null>(null);
 
-  // Fetch the user role from localStorage after the component mounts
   useEffect(() => {
-    const storedUser = localStorage.getItem("token");
-    if (storedUser) setUserRole("");
-  }, []);
+    const role = getUserRole();
+    if (!role) {
+      router.push("/login");
+    }
+    setUserRole(role);
+  }, [router]);
 
-  // If userRole is not set yet, render a loading state
-  if (userRole === null) {
+  if (!userRole) {
     return (
       <div
         className={`flex h-full w-64 flex-col justify-between p-5 font-poppins shadow-md ${
           theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-600"
         }`}
       >
-        {/* Loading state */}
-        <h2
-          className={`mb-6 text-lg font-bold ${
-            theme === "dark" ? "text-white" : "text-gray-800"
-          }`}
-        >
-          Loading...
-        </h2>
+        <h2 className="mb-6 text-lg font-bold">Loading...</h2>
       </div>
     );
   }
 
-  // Choose the appropriate menu based on the user role
   const menuItems =
     userRole === "ADMIN" ? menuDashboardAdmin : menuDashboardVendor;
 
   const handleLogout = () => {
-    // Clear user session or token here
-    localStorage.removeItem("role"); // Remove role from localStorage (or clear session)
-    // Redirect to the login page or homepage
-    window.location.href = "/login"; // Redirect to login page
+    localStorage.removeItem("token");
+    router.push("/login");
   };
 
   return (
@@ -55,27 +48,18 @@ export default function Sidebar() {
         theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-600"
       }`}
     >
-      {/* Title */}
-      <h2
-        className={`mb-6 text-lg font-bold ${
-          theme === "dark" ? "text-white" : "text-gray-800"
-        }`}
-      >
-        Ele-Sale
-      </h2>
+      <h2 className="mb-6 text-lg font-bold">Ele-Sale</h2>
 
-      {/* Menu Items */}
       <ul className="flex-grow space-y-2">
         {menuItems.map((item) => (
           <li key={item.id}>
             <Link
-              href={item.path || "#"}
-              className={`flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-all duration-200 ease-in-out ${
+              href={item.path}
+              className={`flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-all ${
                 pathname === item.path
                   ? "bg-blue-700 text-white"
                   : "hover:bg-blue-200 hover:text-gray-900"
               }`}
-              target={item.newTab ? "_blank" : "_self"}
             >
               <item.icon className="h-5 w-5" />
               {item.title}
@@ -84,12 +68,11 @@ export default function Sidebar() {
         ))}
       </ul>
 
-      {/* Logout Button at the Bottom */}
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 rounded-lg p-3 text-sm font-medium transition-all duration-300 ease-in-out hover:bg-red-500 hover:text-white"
+        className="flex items-center gap-3 rounded-lg p-3 text-sm font-medium hover:bg-red-500 hover:text-white"
       >
-        <LogOut className="text-white-700 h-5 w-5 " />
+        <LogOut className="h-5 w-5" />
         Logout
       </button>
     </div>

@@ -14,7 +14,7 @@ import {
   Minus,
   Plus,
   ShoppingCartIcon,
-  Star
+  Star,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -58,14 +58,14 @@ interface Product {
 // Helper function to get headers with token if available
 const getHeaders = () => {
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   // Get token from localStorage if available (only on client side)
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
@@ -74,7 +74,8 @@ const getHeaders = () => {
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<
-    "ratings" | "questions" | "reviews">("ratings");
+    "ratings" | "questions" | "reviews"
+  >("ratings");
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -101,10 +102,13 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       setError(null);
 
       try {
-        const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}`, {
-          method: 'GET',
-          headers: getHeaders(),
-        });
+        const response = await fetch(
+          `${env.API_BASE_URL}/client/shop/product/${productId}`,
+          {
+            method: "GET",
+            headers: getHeaders(),
+          },
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,8 +117,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         const result = await response.json();
         setProduct(result);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch product');
-        console.error('Error fetching product:', err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch product",
+        );
+        console.error("Error fetching product:", err);
       } finally {
         setLoading(false);
       }
@@ -152,10 +158,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   }, []);
 
   //TODO: Image is missing
-  const fileUrl = `${env.FILE_BASE_URL}`
-  const images = Array.isArray(product?.product_images) && product.product_images.length > 0
-    ? product.product_images.map(img => fileUrl + img.image_url)
-    : ["/images/product/image1.png", "/images/product/image2.png"];
+  const fileUrl = `${env.FILE_BASE_URL}`;
+  const images =
+    Array.isArray(product?.product_images) && product.product_images.length > 0
+      ? product.product_images.map((img) => fileUrl + img.image_url)
+      : ["/images/product/image1.png", "/images/product/image2.png"];
 
   const colors = [
     { name: "White", value: "bg-gray-100", selected: true },
@@ -172,11 +179,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     setSelectedImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const handleClickAddToCart = () => {
-    console.log("Add to cart", { productId, quantity, product });
-    alert(`Added ${quantity} ${product?.name || 'item(s)'} to cart`);
-  };
-
   const handleAddToWishlist = async () => {
     if (!product || isUpdatingWishlist) return;
 
@@ -184,23 +186,98 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
     // Optimistically update the UI
     const previousFavoriteState = product.is_favorite;
-    setProduct(prev => prev ? { ...prev, is_favorite: !prev.is_favorite } : null);
+    setProduct((prev) =>
+      prev ? { ...prev, is_favorite: !prev.is_favorite } : null,
+    );
 
     try {
-      const response = await fetch(`${env.API_BASE_URL}/client/home/wishlists/${product.id}`, {
-        method: 'PATCH',
-        headers: getHeaders(),
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
+
+      // Use DELETE for removing, POST for adding
+      const method = previousFavoriteState ? "DELETE" : "POST";
+      const response = await fetch(
+        `${env.API_BASE_URL}/client/shop/wishlist/${productId}`,
+        {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to update favorite status');
+        // Revert on error
+        setProduct((prev) =>
+          prev ? { ...prev, is_favorite: previousFavoriteState } : null,
+        );
+        throw new Error("Failed to update wishlist");
       }
+
+      // Dispatch update event
+      window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
-      console.error('Error updating favorite:', error);
-      // Revert the optimistic update on error
-      setProduct(prev => prev ? { ...prev, is_favorite: previousFavoriteState } : null);
+      console.error("Error:", error);
     } finally {
       setIsUpdatingWishlist(false);
+    }
+  };
+
+<<<<<<< HEAD
+ const getDiscountedPrice = () => {
+  // Early return if no product or invalid product data
+  if (!product || typeof product !== 'object' || !('price' in product)) {
+    return null;
+  }
+
+  // Safely check for discounts array
+  const discounts = Array.isArray(product?.discounts) ? product.discounts : [];
+
+  // Find active discount with date validation
+  const activeDiscount = discounts.find(discount => {
+    try {
+      if (!discount || !discount.start_date || !discount.end_date) return false;
+      
+=======
+  // Add to Cart
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/client/auth");
+        return;
+      }
+
+      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message ?? "Failed to add to cart");
+      }
+
+      // Dispatch custom event with updated count
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", {
+          detail: { count: data.count }, // Ensure your API returns the new count
+        }),
+      );
+    } catch (error) {
+      console.error("Cart error:", error);
     }
   };
 
@@ -208,36 +285,63 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const getDiscountedPrice = () => {
     if (!product) return null;
 
-    const activeDiscount = product.discounts.find(discount => {
+    const activeDiscount = product.discounts.find((discount) => {
+>>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
       const now = new Date();
       const startDate = new Date(discount.start_date);
       const endDate = new Date(discount.end_date);
+      
+      // Additional date validation
+      if (isNaN(endDate.getTime())) return false;
+      
       return now >= startDate && now <= endDate;
+<<<<<<< HEAD
+    } catch (e) {
+      console.error('Error processing discount dates:', e);
+      return false;
+=======
     });
 
     if (activeDiscount) {
-      const discountedPrice = product.price * (1 - activeDiscount.discount_percentage / 100);
+      const discountedPrice =
+        product.price * (1 - activeDiscount.discount_percentage / 100);
       return {
         original: product.price,
         discounted: discountedPrice,
-        percentage: activeDiscount.discount_percentage
+        percentage: activeDiscount.discount_percentage,
       };
+>>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
     }
+  });
 
-    return null;
-  };
+  // Calculate discount if valid
+  if (activeDiscount && 
+      typeof activeDiscount.discount_percentage === 'number' &&
+      !isNaN(product.price)) {
+    const percentage = Math.min(100, Math.max(0, activeDiscount.discount_percentage));
+    const discountedPrice = product.price * (1 - percentage / 100);
+    
+    return {
+      original: product.price,
+      discounted: parseFloat(discountedPrice.toFixed(2)),
+      percentage
+    };
+  }
 
+  return null;
+};
   const priceInfo = getDiscountedPrice();
 
   // Render stars based on product rating
   const renderStars = (rating: number, size: "sm" | "md" | "lg" = "sm") => {
-    const sizeClass = size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6";
+    const sizeClass =
+      size === "sm" ? "w-4 h-4" : size === "md" ? "w-5 h-5" : "w-6 h-6";
     return (
       <div className="flex">
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`${sizeClass} ${i < rating ? "text-black fill-black" : "text-gray-300"}`}
+            className={`${sizeClass} ${i < rating ? "fill-black text-black" : "text-gray-300"}`}
           />
         ))}
       </div>
@@ -248,9 +352,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="w-full bg-gray-50">
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <div className="w-32 h-32 mx-auto border-b-2 border-gray-900 rounded-full animate-spin"></div>
+            <div className="mx-auto h-32 w-32 animate-spin rounded-full border-b-2 border-gray-900"></div>
             <p className="mt-4 text-gray-600">Loading product...</p>
           </div>
         </div>
@@ -262,13 +366,17 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (error || !product) {
     return (
       <div className="w-full bg-gray-50">
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <h2 className="mb-2 text-2xl font-bold text-gray-900">Product Not Found</h2>
-            <p className="mb-4 text-gray-600">{error || 'The product you are looking for does not exist.'}</p>
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">
+              Product Not Found
+            </h2>
+            <p className="mb-4 text-gray-600">
+              {error || "The product you are looking for does not exist."}
+            </p>
             <button
               onClick={() => router.back()}
-              className="px-4 py-2 text-white bg-black rounded-lg hover:bg-gray-800"
+              className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
             >
               Go Back
             </button>
@@ -281,25 +389,35 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   return (
     <>
       <div className="w-full bg-gray-50">
-        <div className="flex items-start justify-start w-full p-5 py-8 mx-auto mt-30 max-w-7xl">
+        <div className="mx-auto mt-30 flex w-full max-w-7xl items-start justify-start p-5 py-8">
           <div className="flex items-start space-x-2 text-sm font-medium text-gray-700">
-            <span className="text-black cursor-pointer hover:text-blue-600" onClick={() => router.push('/')}>
+            <span
+              className="cursor-pointer text-black hover:text-blue-600"
+              onClick={() => router.push("/")}
+            >
               Home
             </span>
-            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
-            <span className="cursor-pointer hover:text-blue-600" onClick={() => router.push('/client/pages/shop')}>Shop</span>
-            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
-            <span className="cursor-pointer hover:text-blue-600">{product.category.name}</span>
-            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
+            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+            <span
+              className="cursor-pointer hover:text-blue-600"
+              onClick={() => router.push("/client/pages/shop")}
+            >
+              Shop
+            </span>
+            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+            <span className="cursor-pointer hover:text-blue-600">
+              {product.category.name}
+            </span>
+            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
             <span className="text-gray-500">{product.name}</span>
           </div>
         </div>
 
-        <div className="px-6 py-8 mx-auto max-w-7xl">
+        <div className="mx-auto max-w-7xl px-6 py-8">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
             {/* Product Images */}
             <div className="space-y-4">
-              <div className="relative overflow-hidden bg-white rounded-lg">
+              <div className="relative overflow-hidden rounded-lg bg-white">
                 <div className="relative aspect-square">
                   <Image
                     src={images[selectedImage] || "/placeholder.svg"}
@@ -312,16 +430,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <>
                       <button
                         onClick={prevImage}
-                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md left-4 top-1/2 hover:bg-gray-50"
+                        className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50"
                       >
-                        <ChevronLeft className="w-5 h-5" />
+                        <ChevronLeft className="h-5 w-5" />
                       </button>
 
                       <button
                         onClick={nextImage}
-                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md right-4 top-1/2 hover:bg-gray-50"
+                        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50"
                       >
-                        <ChevronRight className="w-5 h-5" />
+                        <ChevronRight className="h-5 w-5" />
                       </button>
                     </>
                   )}
@@ -335,10 +453,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`h-20 w-20 overflow-hidden rounded-lg border-2 bg-white ${selectedImage === index
-                        ? "border-gray-900"
-                        : "border-gray-200"
-                        }`}
+                      className={`h-20 w-20 overflow-hidden rounded-lg border-2 bg-white ${
+                        selectedImage === index
+                          ? "border-gray-900"
+                          : "border-gray-200"
+                      }`}
                     >
                       <Image
                         src={image || "/placeholder.svg"}
@@ -364,7 +483,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {product.name}
+              </h1>
 
               {/* Brand */}
               <p className="text-lg text-gray-600">by {product.brand.name}</p>
@@ -384,7 +505,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <span className="text-xl text-gray-500 line-through">
                       ${priceInfo.original.toFixed(2)}
                     </span>
-                    <span className="px-2 py-1 text-sm font-medium text-red-600 bg-red-100 rounded">
+                    <span className="rounded bg-red-100 px-2 py-1 text-sm font-medium text-red-600">
                       {priceInfo.percentage}% OFF
                     </span>
                   </>
@@ -397,21 +518,25 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
               {/* Stock Status */}
               <div className="flex items-center space-x-2">
-                <span className={`inline-block w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${product.stock > 0 ? "bg-green-500" : "bg-red-500"}`}
+                ></span>
                 <span className="text-sm text-gray-600">
-                  {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                  {product.stock > 0
+                    ? `${product.stock} in stock`
+                    : "Out of stock"}
                 </span>
               </div>
 
               {/* Badges */}
               <div className="flex space-x-2">
                 {product.is_new_arrival && (
-                  <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
+                  <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600">
                     New Arrival
                   </span>
                 )}
                 {product.is_best_seller && (
-                  <span className="px-3 py-1 text-xs font-medium text-orange-600 bg-orange-100 rounded-full">
+                  <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-600">
                     Best Seller
                   </span>
                 )}
@@ -420,7 +545,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               {/* Countdown Timer (only show if there's an active discount) */}
               {priceInfo && (
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Offer discount ends in:</p>
+                  <p className="text-sm text-gray-600">
+                    Offer discount ends in:
+                  </p>
                   <div className="flex space-x-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-gray-900">
@@ -456,7 +583,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <span className="font-medium text-gray-900">
                     Choose Color
                   </span>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 </div>
                 <p className="text-gray-900">{colors[selectedColor].name}</p>
                 <div className="flex space-x-3">
@@ -464,10 +591,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <button
                       key={index}
                       onClick={() => setSelectedColor(index)}
-                      className={`h-12 w-12 rounded-lg border-2 ${selectedColor === index
-                        ? "border-gray-900"
-                        : "border-gray-200"
-                        } ${color.value}`}
+                      className={`h-12 w-12 rounded-lg border-2 ${
+                        selectedColor === index
+                          ? "border-gray-900"
+                          : "border-gray-200"
+                      } ${color.value}`}
                     />
                   ))}
                 </div>
@@ -476,22 +604,24 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               {/* Quantity and Actions */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center border border-gray-300 rounded-lg">
+                  <div className="flex items-center rounded-lg border border-gray-300">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-3 hover:bg-gray-100"
                     >
-                      <Minus className="w-4 h-4" />
+                      <Minus className="h-4 w-4" />
                     </button>
                     <span className="min-w-[60px] px-4 py-3 text-center">
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      onClick={() =>
+                        setQuantity(Math.min(product.stock, quantity + 1))
+                      }
                       className="p-3 hover:bg-gray-100"
                       disabled={quantity >= product.stock}
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="h-4 w-4" />
                     </button>
                   </div>
 
@@ -499,30 +629,32 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <button
                     onClick={handleAddToWishlist}
                     disabled={isUpdatingWishlist}
-                    className={`flex items-center justify-center px-6 py-3 font-semibold border-2 rounded-lg transition-colors ${product.is_favorite
-                      ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
-                      : 'bg-white border-gray-300 text-gray-900 hover:border-gray-800 hover:bg-gray-50'
-                      } ${isUpdatingWishlist ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`flex items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-colors ${
+                      product.is_favorite
+                        ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
+                        : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
+                    } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
                   >
                     {product.is_favorite ? (
-                      <Heart className="w-5 h-5 mr-2 fill-current" />
+                      <Heart className="mr-2 h-5 w-5 fill-current" />
                     ) : (
-                      <HeartIcon className="w-5 h-5 mr-2" />
+                      <HeartIcon className="mr-2 h-5 w-5" />
                     )}
-                    {product.is_favorite ? 'In Wishlist' : 'Add to Wishlist'}
+                    {product.is_favorite ? "In Wishlist" : "Add to Wishlist"}
                   </button>
 
                   {/* Add to Cart */}
                   <button
-                    onClick={handleClickAddToCart}
+                    onClick={() => handleAddToCart(product.id)}
                     disabled={product.stock === 0}
-                    className={`flex items-center justify-center py-3 font-semibold rounded-lg px-8 ${product.stock === 0
-                      ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
-                      : 'text-white bg-black hover:bg-gray-800 hover:text-gray-100'
-                      }`}
+                    className={`flex items-center justify-center rounded-lg px-8 py-3 font-semibold ${
+                      product.stock === 0
+                        ? "cursor-not-allowed bg-gray-100 text-gray-600"
+                        : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
+                    }`}
                   >
-                    <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                    {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                    <ShoppingCartIcon className="mr-2 h-5 w-5" />
+                    {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
                   </button>
                 </div>
               </div>
@@ -530,7 +662,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        <div className="px-6 py-8 mx-auto max-w-7xl">
+        <div className="mx-auto max-w-7xl px-6 py-8">
           {/* Tabs Navigation */}
           <div className="flex border-b border-gray-200">
             {["ratings", "questions", "reviews"].map((tab) => (
@@ -539,10 +671,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 onClick={() =>
                   setActiveTab(tab as "ratings" | "questions" | "reviews")
                 }
-                className={`px-4 py-2 font-medium capitalize ${activeTab === tab
-                  ? "border-b-2 border-gray-900 text-gray-900"
-                  : "text-gray-500 hover:text-gray-700"
-                  }`}
+                className={`px-4 py-2 font-medium capitalize ${
+                  activeTab === tab
+                    ? "border-b-2 border-gray-900 text-gray-900"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
               >
                 {tab === "ratings" && `Relate Items`}
                 {tab === "questions" && "Questions"}
