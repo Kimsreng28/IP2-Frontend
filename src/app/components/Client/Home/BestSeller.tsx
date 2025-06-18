@@ -225,11 +225,7 @@ export default function BestSeller() {
                           : "/images/product/image.png"
                       }
                       alt={item.name}
-<<<<<<< HEAD
-                      className="object-contain w-full cursor-pointer h-full transition-transform duration-300 group-hover:scale-105"
-=======
                       className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
->>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
                       onError={(e) => {
                         e.currentTarget.src = "/images/product/image.png";
                       }}

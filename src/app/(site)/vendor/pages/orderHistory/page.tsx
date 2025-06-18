@@ -3,7 +3,7 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
-export interface OrdersHistoryResponse {
+export interface OrdersHistories {
   ordersHistories: OrderHistory[];
   totalItems: number;
   page: number;
@@ -73,9 +73,9 @@ export default function analysis() {
   const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [ordersHistoryResponse, setOrdersHistoryResponse] = useState<OrdersHistoryResponse | null>(null);
+  const [ordersHistories, setOrdersHistories] = useState<OrdersHistories | null>(null);
   const [committedSearchTerm, setCommittedSearchTerm] = useState('');
-  const [priceSort, setPriceSort] = useState<'asc' | 'desc'>('asc');
+  const [sort, setSort] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -85,12 +85,12 @@ export default function analysis() {
   const FILE_BASE_URL = process.env.FILE_BASE_URL;
 
   useEffect(() => {
-    const fetchOrdersHistoryResponse = async () => {
+    const fetchOrdersHistories = async () => {
       try {
         const url = new URL(`${API_BASE_URL}/vendor/orderhistory`);
         url.searchParams.append('page', page.toString());
         url.searchParams.append('limit', limit.toString());
-        url.searchParams.append('sortByPrice', priceSort);
+        url.searchParams.append('sort', sort);
         if (committedSearchTerm) {
           url.searchParams.append('keySearch', committedSearchTerm);
         }
@@ -112,11 +112,11 @@ export default function analysis() {
         console.log('Response status:', response.status);
 
         if (!response.ok) {
-          throw new Error('Failed to fetch OrdersHistoryResponse');
+          throw new Error('Failed to fetch OrdersHistories');
         }
-        const data: OrdersHistoryResponse = await response.json();
-        console.log('Fetched OrdersHistoryResponse:', data);
-        setOrdersHistoryResponse(data);
+        const data: OrdersHistories = await response.json();
+        console.log('Fetched OrdersHistories:', data);
+        setOrdersHistories(data);
 
         // console.log('Recent Orders:', recentOrders);
 
@@ -127,9 +127,9 @@ export default function analysis() {
       }
     };
 
-    fetchOrdersHistoryResponse();
+    fetchOrdersHistories();
 
-  }, [API_BASE_URL, limit, page, priceSort, committedSearchTerm]);
+  }, [API_BASE_URL, limit, page, sort, committedSearchTerm]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,8 +138,8 @@ export default function analysis() {
   };
 
 
-  const togglePriceSort = () => {
-    setPriceSort(prev => prev === 'asc' ? 'desc' : 'asc');
+  const toggleSort = () => {
+    setSort(prev => prev === 'asc' ? 'desc' : 'asc');
     setPage(1);
   };
 
@@ -178,13 +178,13 @@ export default function analysis() {
             <div className="flex items-center">
               <span className="mr-2 text-sm text-gray-600">Price:</span>
               <button
-                onClick={togglePriceSort}
+                onClick={toggleSort}
                 className="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center"
               >
-                {priceSort === 'asc' ? 'Low to High' : 'High to Low'}
+                {sort === 'asc' ? 'Low to High' : 'High to Low'}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 ml-1 ${priceSort === 'asc' ? '' : 'transform rotate-180'}`}
+                  className={`h-5 w-5 ml-1 ${sort === 'asc' ? '' : 'transform rotate-180'}`}
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -200,7 +200,7 @@ export default function analysis() {
         </div>
       </div>
       <div className={`rounded-lg p-6 shadow-md flex flex-col gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
-        <div className="overflow-auto overflow-x-auto " >
+        <div className="overflow-auto overflow-x-auto h-[calc(100vh-24rem)] " >
           <table className="w-full divide-y divide-gray-200 ">
             <thead className="bg-white text-center">
               <tr>
@@ -222,7 +222,7 @@ export default function analysis() {
                         : `${FILE_BASE_URL}${primaryImage.image_url}`
                       : '/placeholder-product.png'; */}
 
-              {ordersHistoryResponse?.ordersHistories.map((items) => (
+              {ordersHistories?.ordersHistories.map((items) => (
                 <tr key={items.id} className="text-center">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {items.id}
@@ -247,6 +247,66 @@ export default function analysis() {
 
             </tbody>
           </table>
+        </div>
+        {/* Pagination */}
+        <div className="flex justify-center mt-6">
+          <nav className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              {/* <span className="text-sm">Items per page:</span> */}
+              <select
+                value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1); // Reset to first page when changing limit
+                }}
+                className="px-2 py-1 border rounded-md text-sm"
+              >
+                {[5, 10, 15, 20].map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (page <= 3) {
+                pageNum = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = page - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  className={`px-3 py-1 rounded-md ${page === pageNum ? 'bg-indigo-600 text-white' : 'border border-gray-300'}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </nav>
         </div>
       </div>
     </>
