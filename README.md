@@ -1,89 +1,49 @@
-# Solid - Free Next.js Web Template and Starter Kit for SaaS
+`README.md`
 
-Solid is a free Next.js template specifically crafted for startups, SaaS, and software websites. It provides an extensive array of necessary sections, elements, and pages required to build a fully-equipped website for any SaaS, software, or startup site. Comes with all cutting edge React and Next.js features - **Built with Next.js 13, React 18 and TypeScript.**
+## ⚙️ Environment Setup
 
-This Next.js template's homepage comes with an awesome hero area, logos of associated brands, a features section, an about section, another features section with tabs, counters, and star ratings, integration options, clear call-to-actions, an FAQ section with accordions, a testimonials section, pricing tables, a contact page, a blog, and a distinctive footer.
+Create a `.env.local` file at the root of the project:
 
-**Solid Next.js template packed with all necessary external pages** - such as login, registration, blog grids, and single blog pages, among others. This broad collection of pages provides all the necessary tools to create a feature-packed, comprehensive, and visually appealing website or landing page for software, a web application, or SaaS.
+```env
+API_BASE_URL        = {{API_BASE_URL}}
+FILE_BASE_URL       = {{FILE_BASE_URL}}
+RecaptchaSiteKey    = {{RecaptchaSiteKey}}
+RESEND_API_KEY      = {{RESEND_API_KEY}}
+````
 
-### [🔥 Get Solid Pro - Next.js SaaS Boilerplate and Starter Kit](https://nextjstemplates.com/templates/solid)
+---
 
-![Startup Pro](https://uideck.com/wp-content/uploads/edd/2023/07/solid-saas.png)
+## 🧪 Development
 
-### [🚀 Solid PRO Live Demo](https://solid.nextjstemplates.com/)
+Install dependencies:
 
-### [🚀 Solid FREE Live Demo](https://solid-free.nextjstemplates.com/)
-
-### TailAdmin React PRO vs TailAdmin React FREE Comparison 📊
-
-#### [Solid PRO](https://solid.nextjstemplates.com/)
-- SaaS Boilerplate + Starter Kit with Essential Integrations and Functionalities
-- Essential Integrations: Auth, DB, Stripe, MDX and More ...
-- Fully Functional, Ready to Use Sanity Blog Support
-- Premium Email Support
-- Functional External Pages
-- Free Lifetime Future Updates
-___
-#### [Solid FREE](https://solid-free.nextjstemplates.com/)
-- Only UI - Coded for Next.js
-- No Integrations
-- No Functional Blogging System
-- External Pages without Functions/Integrations
-- Community Support
-- Free Lifetime Future Updates
-___
-
-### [📦 Download](https://nextjstemplates.com/templates/solid)
-
-### [🔥 Get Pro](https://nextjstemplates.com/templates/solid)
-
-### [🔌 Documentation](https://nextjstemplates.com/docs)
-
-### ⚡ Deploy Now
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNextJSTemplates%2Fsolid-nextjs)
-
-[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/NextJSTemplates/solid-nextjs)
-
-
-## Installation
-
-Here are the steps you need to follow to install the dependencies.
-
-1.Download and extract the template from **Next.js Templates.**
-
-2.**cd** into the template directory then run this command to install all the dependencies
-    
 ```bash
-    npm install
+npm install
 ```
-    
-or
-    
+
+Start the development server:
+
 ```bash
-    yarn install
- ```
+npm run dev
+```
 
+---
 
-You can start the project on the local server
-    
+## 🚀 Production
+
+### 1. Build for Production
+
 ```bash
-    npm run dev
- ```
+npm run build
+```
 
-It’ll start the template on [localhost:3000](http://localhost:3000). 
+### 2. Start in Production Mode
 
-The documentation includes all the guides you need for the integrations. 
+```bash
+npm start
+```
+---
 
+## 📝 License
 
-### Deploying on PaaS
-
-If you are using a GitHub repo then you can go with free-of-cost and easy-to-use options like [Vercel](https://vercel.com/), or [Netlify](https://netlify.com/) they offer decent-free tiers for Next.js hosting.
-
-### 📄 License
-Solid Free is 100% free and open-source, feel free to use with your personal and commercial projects.
-
-### 💜 Support
-If you like the template, please star this repository to inspire the team to create more stuff like this and reach more users like you!
-
-### ✨ Browse and Download - Best Free [Next.js Templates](https://nextjstemplates.com/templates)
+Free to use under MIT License.
