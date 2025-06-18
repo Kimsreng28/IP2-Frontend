@@ -38,25 +38,25 @@ export default function ProfileLayout({
         animate="animate"
         exit="exit"
         variants={pageVariants}
-        className="mx-auto mt-5 flex max-w-6xl flex-col space-y-5 bg-white px-4 py-6 font-poppins text-gray-900 dark:bg-gray-900 dark:text-white sm:px-6"
+        className="flex h-screen flex-col max-w-6xl px-4 py-6 mx-auto mt-5 space-y-5 text-gray-900 bg-white font-poppins dark:bg-gray-900 dark:text-white sm:px-6 h-dvh"
       >
         <motion.h1
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-10 pt-10 text-center text-4xl font-bold"
+          className="pt-10 mt-10 text-4xl font-bold text-center"
         >
           My Account
         </motion.h1>
 
-        <div className="mb-6 flex items-center justify-between md:hidden">
+        <div className="flex items-center justify-between mb-6 md:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-md p-2 text-gray-700 hover:text-black dark:text-white dark:hover:text-gray-300"
+            className="p-2 text-gray-700 rounded-md hover:text-black dark:text-white dark:hover:text-gray-300"
             aria-label="Toggle menu"
           >
             <svg
-              className="h-6 w-6"
+              className="w-6 h-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
