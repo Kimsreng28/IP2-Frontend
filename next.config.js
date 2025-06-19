@@ -7,7 +7,8 @@ const nextConfig = {
       "localhost",
       "cdn-icons-png.flaticon.com",
       "cdn.sanity.io",
-      "images.pexels.com" // ✅ Add this line
+      "images.pexels.com", // ✅ Add this line
+      "localhost"
     ],
     remotePatterns: [
       {
