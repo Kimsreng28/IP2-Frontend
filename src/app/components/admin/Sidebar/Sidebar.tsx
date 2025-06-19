@@ -61,7 +61,7 @@ export default function Sidebar() {
                   : "hover:bg-blue-200 hover:text-gray-900"
               }`}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="w-5 h-5" />
               {item.title}
             </Link>
           </li>
@@ -70,9 +70,9 @@ export default function Sidebar() {
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 rounded-lg p-3 text-sm font-medium hover:bg-red-500 hover:text-white"
+        className="flex items-center gap-3 p-3 text-sm font-medium rounded-lg hover:bg-red-500 hover:text-white"
       >
-        <LogOut className="h-5 w-5" />
+        <LogOut className="w-5 h-5" />
         Logout
       </button>
     </div>

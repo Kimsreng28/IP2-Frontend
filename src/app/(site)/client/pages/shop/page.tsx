@@ -281,18 +281,18 @@ export default function ShopPage() {
 
   return (
     <>
-      <div className="container mx-auto h-auto px-4 py-6">
-        <div className="mb-6 mt-5 flex justify-center">
+      <div className="container h-auto px-4 py-6 mx-auto">
+        <div className="flex justify-center mt-5 mb-6">
           <img
             src="/images/banner/image.png"
             alt="Shop Banner"
-            className="w-full rounded-lg object-cover"
+            className="object-cover w-full rounded-lg"
           />
         </div>
 
         <div className="lg:flex lg:gap-8">
           {/* Sidebar Toggle on Mobile */}
-          <div className="mb-4 flex items-center justify-between lg:hidden">
+          <div className="flex items-center justify-between mb-4 lg:hidden">
             <h2 className="text-xl font-semibold">Filters</h2>
             <Button
               variant="outline"
@@ -300,7 +300,7 @@ export default function ShopPage() {
               onClick={() => setShowSidebar(!showSidebar)}
               className="flex items-center gap-2"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="w-4 h-4" />
               {showSidebar ? "Hide Filters" : "Show Filters"}
             </Button>
           </div>
@@ -366,7 +366,7 @@ export default function ShopPage() {
                   >
                     <label
                       htmlFor={`price-${index}`}
-                      className="cursor-pointer text-sm"
+                      className="text-sm cursor-pointer"
                     >
                       {range.label}
                     </label>
@@ -386,9 +386,9 @@ export default function ShopPage() {
           {/* Main Content */}
           <main className="flex-1">
             {/* Top controls */}
-            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
               <h2 className="text-xl font-medium">Shop Products</h2>
-              <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:w-auto">
+              <div className="flex flex-col w-full gap-3 sm:flex-row sm:items-center sm:justify-between md:w-auto">
                 <Search
                   placeholder="Search for products..."
                   className="w-full sm:w-64"
@@ -408,7 +408,7 @@ export default function ShopPage() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="flex justify-center gap-1 rounded-md border p-1 sm:justify-start">
+                <div className="flex justify-center gap-1 p-1 border rounded-md sm:justify-start">
                   {["grid", "large-grid", "list"].map((mode) => {
                     const IconComponent =
                       mode === "grid"
@@ -423,7 +423,7 @@ export default function ShopPage() {
                         className={`rounded-md p-2 ${viewMode === mode ? "bg-black text-white" : ""}`}
                         onClick={() => setViewMode(mode)}
                       >
-                        <IconComponent className="h-5 w-5" />
+                        <IconComponent className="w-5 h-5" />
                       </button>
                     );
                   })}
@@ -459,18 +459,11 @@ export default function ShopPage() {
                     {products.map((item) => (
                       <div
                         key={item.id}
-<<<<<<< HEAD
-                        className={`${viewMode === "list"
-                          ? "flex gap-4  dark:border-white items-center p-4 border rounded-xl hover:shadow-md transition"
-                          : "bg-gray-100 dark:bg-transparent dark:border dark:border-gray-300 rounded-xl shadow-sm p-4 hover:shadow-md transition"
-                          }`}
-=======
                         className={`${
                           viewMode === "list"
                             ? "flex items-center gap-4 rounded-xl border p-4 transition hover:shadow-md"
                             : "rounded-xl bg-gray-100 p-4 shadow-sm transition hover:shadow-md"
                         }`}
->>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
                       >
                         <div
                           className={`${
@@ -489,14 +482,14 @@ export default function ShopPage() {
                           >
                             {/* NEW Badge */}
                             {item.is_new && (
-                              <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
+                              <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
                                 NEW
                               </div>
                             )}
 
                             {/* Favorite Icon */}
                             <motion.div
-                              className="absolute right-2 top-2 z-10 cursor-pointer"
+                              className="absolute z-10 cursor-pointer right-2 top-2"
                               onClick={() => toggleFavorite(item.id)}
                               whileTap={{ scale: 0.8 }}
                               whileHover={{ scale: 1.1 }}
@@ -554,7 +547,7 @@ export default function ShopPage() {
                             className={`${viewMode === "list" ? "flex-1" : ""}`}
                           >
                             {/* Stars */}
-                            <div className="mt-1 flex items-center">
+                            <div className="flex items-center mt-1">
                               {Array.from({ length: 5 }, (_, i) => {
                                 const filled = i < Math.floor(item.stars);
                                 return (
@@ -596,7 +589,7 @@ export default function ShopPage() {
 
                             {/* Description for list view */}
                             {viewMode === "list" && (
-                              <p className="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                              <p className="mt-2 text-sm text-gray-600 line-clamp-2 dark:text-gray-400">
                                 {item.description}
                               </p>
                             )}
@@ -606,7 +599,7 @@ export default function ShopPage() {
                     ))}
                   </div>
                   {products.length < totalProducts && (
-                    <div className="mt-8 flex justify-center bg-gray-50">
+                    <div className="flex justify-center mt-8 bg-gray-50">
                       <Button
                         variant="outline"
                         onClick={handleSeeMore}
