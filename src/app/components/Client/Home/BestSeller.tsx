@@ -2,6 +2,7 @@
 
 import env from "@/src/envs/env";
 import { Product } from "@/src/interface/product.interface";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
@@ -10,12 +11,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export default function BestSeller() {
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const fileUrl = `${env.FILE_BASE_URL}`;
   useEffect(() => {
+    const user = getUserFromLocalStorage();
+    setUserId(user.id);
     fetchBestSellers();
   }, [page]);
 
@@ -38,7 +42,7 @@ export default function BestSeller() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${env.API_BASE_URL}/client/home/best-seller`,
+        `${env.API_BASE_URL}/client/home/best-seller/${userId}`,
         {
           method: "GET",
           headers: getHeaders(),
@@ -84,7 +88,7 @@ export default function BestSeller() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 

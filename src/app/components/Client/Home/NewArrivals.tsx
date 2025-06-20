@@ -2,6 +2,7 @@
 
 import env from "@/src/envs/env";
 import { Product } from "@/src/interface/product.interface";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { mdiCircle, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
@@ -13,12 +14,15 @@ export default function NewArrivals() {
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [totalPages, setTotalPages] = useState<number>(3); // Default to 3, will be updated from API
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const fileUrl = `${env.FILE_BASE_URL}`;
   const router = useRouter();
   // Add this useEffect to NewArrivals component
   useEffect(() => {
+    const user = getUserFromLocalStorage();
+    setUserId(user.id);
     fetchNewArrivals({ page });
   }, [page]);
 
@@ -47,7 +51,7 @@ export default function NewArrivals() {
       };
 
       const response = await fetch(
-        `${env.API_BASE_URL}/client/home/new-arrival?page=${params.page ?? 1}&limit=10`,
+        `${env.API_BASE_URL}/client/home/new-arrival?/${userId}?page=${params.page ?? 1}&limit=10`,
         { headers },
       );
 
@@ -97,7 +101,7 @@ export default function NewArrivals() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 
@@ -202,11 +206,10 @@ export default function NewArrivals() {
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: 1.1 }}
               disabled={loading}
-              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${
-                page === num
-                  ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
-                  : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
-              } ${loading ? "cursor-not-allowed opacity-50" : ""}`}
+              className={`rounded-full px-1 py-1 text-sm transition-all duration-200 ${page === num
+                ? "border border-black bg-white text-black dark:border-white dark:bg-black dark:text-white"
+                : "border-gray-300 text-gray-500 hover:text-black dark:border-gray-600 dark:text-gray-400 dark:hover:text-white"
+                } ${loading ? "cursor-not-allowed opacity-50" : ""}`}
             >
               <Icon path={mdiCircle} size={0.5} />
             </motion.button>
@@ -302,11 +305,10 @@ export default function NewArrivals() {
                         return (
                           <span
                             key={i}
-                            className={`inline-block ${
-                              filled
-                                ? "text-black dark:text-gray-300"
-                                : "text-gray-300 dark:text-gray-600"
-                            }`}
+                            className={`inline-block ${filled
+                              ? "text-black dark:text-gray-300"
+                              : "text-gray-300 dark:text-gray-600"
+                              }`}
                           >
                             <Star
                               className={`h-5 w-5 ${filled ? "fill-current" : ""}`}

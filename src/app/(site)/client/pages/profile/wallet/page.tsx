@@ -162,7 +162,7 @@ const WalletPage = () => {
         <div className="text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/auth")}
             className="px-6 py-3 text-white transition bg-blue-600 rounded hover:bg-blue-700"
           >
             Go to Login
