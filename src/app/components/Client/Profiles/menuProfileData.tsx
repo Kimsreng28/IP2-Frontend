@@ -27,6 +27,12 @@ const menuProfileData: Menu[] = [
   },
   {
     id: 5,
+    title: "Wallet",
+    newTab: false,
+    path: "/client/pages/profile/wallet",
+  },
+  {
+    id: 6,
     title: "Log Out",
     newTab: false,
     path: "/client/pages/profile/logout",
