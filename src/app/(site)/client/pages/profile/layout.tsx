@@ -38,25 +38,25 @@ export default function ProfileLayout({
         animate="animate"
         exit="exit"
         variants={pageVariants}
-        className="flex h-screen flex-col max-w-6xl px-4 py-6 mx-auto mt-5 space-y-5 text-gray-900 bg-white font-poppins dark:bg-gray-900 dark:text-white sm:px-6 h-dvh"
+        className="mx-auto mt-5 flex max-w-6xl flex-col space-y-5 bg-white px-4 py-6 font-poppins text-gray-900 dark:bg-gray-900 dark:text-white sm:px-6"
       >
         <motion.h1
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="pt-10 mt-10 text-4xl font-bold text-center"
+          className="mt-10 pt-10 text-center text-4xl font-bold"
         >
           My Account
         </motion.h1>
 
-        <div className="flex items-center justify-between mb-6 md:hidden">
+        <div className="mb-6 flex items-center justify-between md:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-gray-700 rounded-md hover:text-black dark:text-white dark:hover:text-gray-300"
+            className="rounded-md p-2 text-gray-700 hover:text-black dark:text-white dark:hover:text-gray-300"
             aria-label="Toggle menu"
           >
             <svg
-              className="w-6 h-6"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -95,13 +95,17 @@ export default function ProfileLayout({
             initial="hidden"
             animate="visible"
             variants={contentVariants}
-            className="flex-1"
+            className="flex-1 pb-20"
           >
             <AnimatePresence mode="wait">{children}</AnimatePresence>
           </motion.div>
         </div>
       </motion.div>
-      <SharedFooterComponent></SharedFooterComponent>
+
+      {/* Always visible footer below main content */}
+      <footer className="mt-10 bg-white dark:bg-gray-900">
+        <SharedFooterComponent />
+      </footer>
     </>
   );
 }
