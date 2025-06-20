@@ -37,13 +37,16 @@ export default function BannerRotator({ banners }: Props) {
   return (
     <motion.div
       key={banner.id} // This key will trigger motion animation on data change
-      className="w-full h-screen flex flex-col md:flex-row items-center dark:bg-transparent justify-center p-10"
+      className="flex flex-col items-center justify-center w-full h-screen p-10 md:flex-row dark:bg-transparent"
       style={{ backgroundColor: banner.color }}
       initial={{ opacity: 0.5, y: 40 }}         // Start lower & invisible
       animate={{ opacity: 1, y: 0.5 }}          // Move to center & fade in
       exit={{ opacity: 0, y: -30 }}           // Fade out & move up slightly
       transition={{ duration: 1, ease: 'easeInOut' }}  // Smooth and natural
     >
+      <div className="flex items-center justify-center w-full h-screen">
+
+      </div>
       {/* Banner Image */}
       <div className="w-full h-[300px] md:h-full flex justify-center xl:justify-end md:justify-end items-center xl:mt-[130px] sm:mt-[130px] md:mt-[130px] mt-0">
         <img
@@ -54,14 +57,14 @@ export default function BannerRotator({ banners }: Props) {
       </div>
 
       {/* Banner Content */}
-      <div className="w-full flex flex-col justify-center items-center text-center px-4 md:px-8 gap-6">
+      <div className="flex flex-col items-center justify-center w-full gap-6 px-4 text-center md:px-8">
         <h2 className="text-3xl sm:text-5xl md:text-7xl md:w-[500px] font-semibold leading-tight break-words text-gray-100">
           {banner.title}
         </h2>
-        <p className="text-base md:text-lg text-gray-100">{banner.description}</p>
+        <p className="text-base text-gray-100 md:text-lg">{banner.description}</p>
         <button
           type="button"
-          className="bg-black hover:bg-blue-700 text-white rounded-lg text-sm px-6 py-3 transition-all duration-200 dark:bg-blue-600 dark:hover:bg-blue-700"
+          className="px-6 py-3 text-sm text-white transition-all duration-200 bg-black rounded-lg hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
         >
           Shopping Now
         </button>

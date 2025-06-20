@@ -126,7 +126,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
   const renderAvatar = () => {
     if (!avatar) {
       return (
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700">
+        <div className="flex items-center justify-center w-20 h-20 bg-gray-300 rounded-full dark:bg-gray-700">
           <span className="text-white">No Avatar</span>
         </div>
       );
@@ -140,7 +140,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
         <img
           src={avatar}
           alt="User Avatar"
-          className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-md"
+          className="object-cover w-20 h-20 border-4 border-white rounded-full shadow-md"
           onError={() => setAvatar(null)}
         />
       );
@@ -152,7 +152,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
         alt="User Avatar"
         width={80}
         height={80}
-        className="rounded-full border-4 border-white shadow-md"
+        className="border-4 border-white rounded-full shadow-md"
         priority
       />
     );
@@ -176,12 +176,12 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
           {renderAvatar()}
           <label className="absolute bottom-0 right-0 cursor-pointer">
             {uploading ? (
-              <div className="h-6 w-6 rounded-full bg-white p-1 shadow-md dark:bg-gray-800">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-black dark:border-t-white"></div>
+              <div className="w-6 h-6 p-1 bg-white rounded-full shadow-md dark:bg-gray-800">
+                <div className="w-4 h-4 border-2 border-gray-300 rounded-full animate-spin border-t-black dark:border-t-white"></div>
               </div>
             ) : (
               <>
-                <CameraIcon className="h-6 w-6 rounded-full bg-white p-1 text-black shadow-md dark:bg-gray-800 dark:text-white dark:shadow" />
+                <CameraIcon className="w-6 h-6 p-1 text-black bg-white rounded-full shadow-md dark:bg-gray-800 dark:text-white dark:shadow" />
                 <input
                   type="file"
                   accept="image/jpeg, image/png, image/webp, image/gif"
@@ -206,14 +206,14 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
       </div>
 
       <motion.div
-        className="mt-6 border-t border-gray-300 pt-4 dark:border-gray-700"
+        className="pt-4 mt-6 border-t border-gray-300 dark:border-gray-700"
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
         custom={0.4}
       >
         <ul className="space-y-5">
-          {["account", "address", "orders", "wishlist"].map((item, i) => (
+          {["account", "address", "orders", "wishlist", "wallet"].map((item, i) => (
             <motion.li
               key={item}
               variants={fadeInUp}
@@ -237,7 +237,7 @@ const AccountSidebar = ({ activePage }: { activePage: string }) => {
               localStorage.removeItem("user");
               window.location.href = "/auth";
             }}
-            className="cursor-pointer text-red-600 hover:text-red-800"
+            className="text-red-600 cursor-pointer hover:text-red-800"
           >
             Log Out
           </motion.li>

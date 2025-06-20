@@ -95,13 +95,17 @@ export default function ProfileLayout({
             initial="hidden"
             animate="visible"
             variants={contentVariants}
-            className="flex-1"
+            className="flex-1 pb-20"
           >
             <AnimatePresence mode="wait">{children}</AnimatePresence>
           </motion.div>
         </div>
       </motion.div>
-      <SharedFooterComponent></SharedFooterComponent>
+
+      {/* Always visible footer below main content */}
+      <footer className="mt-10 bg-white dark:bg-gray-900">
+        <SharedFooterComponent />
+      </footer>
     </>
   );
 }

@@ -4,8 +4,7 @@ import {
   LayoutDashboard,
   Settings,
   Shield,
-  TicketPercent,
-  Users,
+  Users
 } from "lucide-react";
 
 const menuDashboardAdmin = [
