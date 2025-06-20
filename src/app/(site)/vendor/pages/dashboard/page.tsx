@@ -1,20 +1,17 @@
 "use client";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, Dot } from 'recharts';
 import Image from 'next/image';
+import { useEffect, useState } from "react";
 import {
-  FaUsers,           // For Total Vendors (Font Awesome)
-  FaBoxes,           // For Total Products (Font Awesome) 
-  FaDollarSign       // For Total Sales (Font Awesome)
+  FaBoxes, // For Total Products (Font Awesome) 
+  FaDollarSign // For Total Sales (Font Awesome)
+  ,
+
+  FaUsers
 } from 'react-icons/fa';
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 // or Material Design icons:
-import {
-  MdGroups,         // For Total Vendors
-  MdInventory,      // For Total Products
-  MdAttachMoney     // For Total Sales
-} from 'react-icons/md';
 
 interface DashboardTotals {
   message: string;
@@ -359,7 +356,7 @@ export default function Dashboard() {
 
                 <XAxis dataKey="month" tick={{ fill: '#94a3b8' }} />
                 <YAxis tick={{ fill: '#94a3b8' }} />
-                <Tooltip content={<CustomTooltip />} />
+                {/* <Tooltip content={<CustomTooltip />} /> */}
                 <Area
                   type="monotone"
                   dataKey="totalSales"
