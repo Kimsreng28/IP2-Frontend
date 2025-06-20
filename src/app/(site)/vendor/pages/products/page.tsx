@@ -6,6 +6,8 @@ import { useTheme } from 'next-themes';
 import { Box, EyeIcon } from 'lucide-react';
 import CreateProduct from './createProduct';
 import UpdateProduct from './updateProduct';
+import { FaEvernote, FaRegEdit } from 'react-icons/fa';
+import { MdDeleteForever } from 'react-icons/md';
 
 interface ProductImage {
   id: number;
@@ -78,7 +80,7 @@ const ProductTable: React.FC = () => {
 
 
   const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-  const FILE_BASE_URL = process.env.FILE_BASE_URL ;
+  const FILE_BASE_URL = process.env.FILE_BASE_URL;
 
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
@@ -519,8 +521,8 @@ const ProductTable: React.FC = () => {
         ) : null
       ) :
         (
-          <div className={`rounded-lg p-5 shadow-md overflow-hidden  ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
-            <div className="overflow-auto overflow-x-auto h-[calc(100vh-24rem)] " >
+          <div className={`rounded-lg p-5  shadow-md overflow-hidden  ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
+            <div className="overflow-auto overflow-x-auto  h-[calc(100vh-24rem)] " >
               <table className="w-full divide-y divide-gray-200 ">
                 <thead className="bg-white">
                   <tr>
@@ -584,7 +586,7 @@ const ProductTable: React.FC = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 relative">
+                        <td className="px-6 py-4  whitespace-nowrap text-sm text-gray-500 relative">
                           <div className="menu-container relative">
                             <button
                               onClick={() => setOpenMenuId(openMenuId === product.uuid ? null : product.uuid)}
@@ -594,7 +596,7 @@ const ProductTable: React.FC = () => {
                             </button>
 
                             {openMenuId === product.uuid && (
-                              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-md z-10">
+                              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-xl shadow-md z-10">
                                 <button
                                   className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 w-full"
                                   onClick={() => console.log('View', product.uuid)}
@@ -606,14 +608,15 @@ const ProductTable: React.FC = () => {
                                   className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 w-full"
                                   onClick={() => handleUpdateClick(product)}
                                 >
-
+                                  <FaRegEdit className='h-5 w-5' />
                                   <span className="ml-2">Update</span>
                                 </button>
                                 <button
                                   className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
                                   onClick={() => setProductToDelete(product)}
                                 >
-                                  Delete
+                                  <MdDeleteForever className="h-5 w-5"/>
+                                  <span className="ml-2">View</span>
                                 </button>
                               </div>
                             )}

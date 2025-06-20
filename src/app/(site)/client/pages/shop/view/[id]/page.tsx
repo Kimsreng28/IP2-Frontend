@@ -227,7 +227,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
   };
 
-<<<<<<< HEAD
  const getDiscountedPrice = () => {
   // Early return if no product or invalid product data
   if (!product || typeof product !== 'object' || !('price' in product)) {
@@ -242,51 +241,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     try {
       if (!discount || !discount.start_date || !discount.end_date) return false;
       
-=======
-  // Add to Cart
-  const handleAddToCart = async (productId: number) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/client/auth");
-        return;
-      }
-
-      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId,
-          quantity: 1,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message ?? "Failed to add to cart");
-      }
-
-      // Dispatch custom event with updated count
-      window.dispatchEvent(
-        new CustomEvent("cartUpdated", {
-          detail: { count: data.count }, // Ensure your API returns the new count
-        }),
-      );
-    } catch (error) {
-      console.error("Cart error:", error);
-    }
-  };
-
-  // Calculate discounted price
-  const getDiscountedPrice = () => {
-    if (!product) return null;
-
-    const activeDiscount = product.discounts.find((discount) => {
->>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
       const now = new Date();
       const startDate = new Date(discount.start_date);
       const endDate = new Date(discount.end_date);
@@ -295,22 +249,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       if (isNaN(endDate.getTime())) return false;
       
       return now >= startDate && now <= endDate;
-<<<<<<< HEAD
     } catch (e) {
       console.error('Error processing discount dates:', e);
       return false;
-=======
-    });
-
-    if (activeDiscount) {
-      const discountedPrice =
-        product.price * (1 - activeDiscount.discount_percentage / 100);
-      return {
-        original: product.price,
-        discounted: discountedPrice,
-        percentage: activeDiscount.discount_percentage,
-      };
->>>>>>> c81b56d90b2cd21d390a6f0b161d34f288709fa6
     }
   });
 
@@ -352,9 +293,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="w-full bg-gray-50">
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="mx-auto h-32 w-32 animate-spin rounded-full border-b-2 border-gray-900"></div>
+            <div className="w-32 h-32 mx-auto border-b-2 border-gray-900 rounded-full animate-spin"></div>
             <p className="mt-4 text-gray-600">Loading product...</p>
           </div>
         </div>
@@ -366,7 +307,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (error || !product) {
     return (
       <div className="w-full bg-gray-50">
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <h2 className="mb-2 text-2xl font-bold text-gray-900">
               Product Not Found
@@ -376,7 +317,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </p>
             <button
               onClick={() => router.back()}
-              className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
+              className="px-4 py-2 text-white bg-black rounded-lg hover:bg-gray-800"
             >
               Go Back
             </button>
@@ -389,35 +330,35 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   return (
     <>
       <div className="w-full bg-gray-50">
-        <div className="mx-auto mt-30 flex w-full max-w-7xl items-start justify-start p-5 py-8">
+        <div className="flex items-start justify-start w-full p-5 py-8 mx-auto mt-30 max-w-7xl">
           <div className="flex items-start space-x-2 text-sm font-medium text-gray-700">
             <span
-              className="cursor-pointer text-black hover:text-blue-600"
+              className="text-black cursor-pointer hover:text-blue-600"
               onClick={() => router.push("/")}
             >
               Home
             </span>
-            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
             <span
               className="cursor-pointer hover:text-blue-600"
               onClick={() => router.push("/client/pages/shop")}
             >
               Shop
             </span>
-            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
             <span className="cursor-pointer hover:text-blue-600">
               {product.category.name}
             </span>
-            <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+            <ChevronRightIcon className="w-4 h-4 text-gray-400" />
             <span className="text-gray-500">{product.name}</span>
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="px-6 py-8 mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
             {/* Product Images */}
             <div className="space-y-4">
-              <div className="relative overflow-hidden rounded-lg bg-white">
+              <div className="relative overflow-hidden bg-white rounded-lg">
                 <div className="relative aspect-square">
                   <Image
                     src={images[selectedImage] || "/placeholder.svg"}
@@ -430,16 +371,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <>
                       <button
                         onClick={prevImage}
-                        className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50"
+                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md left-4 top-1/2 hover:bg-gray-50"
                       >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="w-5 h-5" />
                       </button>
 
                       <button
                         onClick={nextImage}
-                        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-50"
+                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md right-4 top-1/2 hover:bg-gray-50"
                       >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="w-5 h-5" />
                       </button>
                     </>
                   )}
@@ -505,7 +446,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <span className="text-xl text-gray-500 line-through">
                       ${priceInfo.original.toFixed(2)}
                     </span>
-                    <span className="rounded bg-red-100 px-2 py-1 text-sm font-medium text-red-600">
+                    <span className="px-2 py-1 text-sm font-medium text-red-600 bg-red-100 rounded">
                       {priceInfo.percentage}% OFF
                     </span>
                   </>
@@ -531,12 +472,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               {/* Badges */}
               <div className="flex space-x-2">
                 {product.is_new_arrival && (
-                  <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600">
+                  <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
                     New Arrival
                   </span>
                 )}
                 {product.is_best_seller && (
-                  <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-600">
+                  <span className="px-3 py-1 text-xs font-medium text-orange-600 bg-orange-100 rounded-full">
                     Best Seller
                   </span>
                 )}
@@ -583,7 +524,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <span className="font-medium text-gray-900">
                     Choose Color
                   </span>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
                 </div>
                 <p className="text-gray-900">{colors[selectedColor].name}</p>
                 <div className="flex space-x-3">
@@ -604,12 +545,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               {/* Quantity and Actions */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center rounded-lg border border-gray-300">
+                  <div className="flex items-center border border-gray-300 rounded-lg">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-3 hover:bg-gray-100"
                     >
-                      <Minus className="h-4 w-4" />
+                      <Minus className="w-4 h-4" />
                     </button>
                     <span className="min-w-[60px] px-4 py-3 text-center">
                       {quantity}
@@ -621,7 +562,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                       className="p-3 hover:bg-gray-100"
                       disabled={quantity >= product.stock}
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus className="w-4 h-4" />
                     </button>
                   </div>
 
@@ -636,16 +577,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
                   >
                     {product.is_favorite ? (
-                      <Heart className="mr-2 h-5 w-5 fill-current" />
+                      <Heart className="w-5 h-5 mr-2 fill-current" />
                     ) : (
-                      <HeartIcon className="mr-2 h-5 w-5" />
+                      <HeartIcon className="w-5 h-5 mr-2" />
                     )}
                     {product.is_favorite ? "In Wishlist" : "Add to Wishlist"}
                   </button>
 
                   {/* Add to Cart */}
                   <button
-                    onClick={() => handleAddToCart(product.id)}
+                    // onClick={() => handleAddToCart(product.id)}
                     disabled={product.stock === 0}
                     className={`flex items-center justify-center rounded-lg px-8 py-3 font-semibold ${
                       product.stock === 0
@@ -653,7 +594,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                         : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
                     }`}
                   >
-                    <ShoppingCartIcon className="mr-2 h-5 w-5" />
+                    <ShoppingCartIcon className="w-5 h-5 mr-2" />
                     {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
                   </button>
                 </div>
@@ -662,7 +603,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="px-6 py-8 mx-auto max-w-7xl">
           {/* Tabs Navigation */}
           <div className="flex border-b border-gray-200">
             {["ratings", "questions", "reviews"].map((tab) => (

@@ -291,7 +291,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                                                 <div key={index} className="relative">
                                                     {'image_url' in image ? (
                                                         <img
-                                                            src={`${process.env.FILE_BASE_URL}/file/${image.image_url}`}
+                                                            src={`${process.env.FILE_BASE_URL}${image.image_url}`}
                                                             alt={`Preview ${index + 1}`}
                                                             className="h-20 w-20 object-cover rounded border"
                                                         />
