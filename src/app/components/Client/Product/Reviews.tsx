@@ -1,7 +1,8 @@
 "use client";
 
 import env from "@/src/envs/env";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
+import { ThumbsDown, ThumbsUp, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 interface ReviewsProps {
@@ -129,7 +130,7 @@ const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/review`, {
+            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/review/${userId}`, {
                 method: "POST",
                 headers: getHeaders(),
                 body: JSON.stringify({
@@ -209,10 +210,8 @@ const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            setUserId(1); // Matches sample data user_id; replace with actual token decoding
-        }
+        const user = getUserFromLocalStorage();
+        setUserId(user.id);
         fetchReviews();
     }, [productId]);
 
@@ -265,11 +264,9 @@ const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
                         >
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-3">
-                                    <img
-                                        src={review.user.avatar}
-                                        alt="User avatar"
-                                        className="w-10 h-10 rounded-full"
-                                    />
+                                    <div className="border border-gray-300 p-2 bg-gray-300 rounded-full">
+                                        <User className="w-5 h-5 text-gray-600" />
+                                    </div>
                                     <div>
                                         <h3 className="text-lg font-semibold text-gray-900">
                                             {review.user.first_name} {review.user.last_name}

@@ -5,6 +5,7 @@ import RelatedItems from "@/src/app/components/Client/Product/RelatedItems";
 import Reviews from "@/src/app/components/Client/Product/Reviews";
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import env from "@/src/envs/env";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import {
   ChevronLeft,
   ChevronRight,
@@ -91,12 +92,14 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isUpdatingWishlist, setIsUpdatingWishlist] = useState(false);
-
+  const [userId, setUserId] = useState<number | null>(null);
   const router = useRouter();
   const productId = params.id;
 
   // Fetch product data
   useEffect(() => {
+    const user = getUserFromLocalStorage();
+    setUserId(user.id);
     const fetchProduct = async () => {
       setLoading(true);
       setError(null);

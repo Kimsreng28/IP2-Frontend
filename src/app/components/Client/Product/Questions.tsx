@@ -1,6 +1,7 @@
 "use client";
 
 import env from "@/src/envs/env";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { Calendar, Heart, MessageCircle, Send, ThumbsUp, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -94,7 +95,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
         setSubmitLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/question`, {
+            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/question/${userId}`, {
                 method: "POST",
                 headers: getHeaders(),
                 body: JSON.stringify({
@@ -155,7 +156,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
 
         try {
             const response = await fetch(
-                `${env.API_BASE_URL}/client/shop/product/${productId}/question/${questionId}/comments`,
+                `${env.API_BASE_URL}/client/shop/product/${productId}/question/${questionId}/comments/${userId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -214,11 +215,8 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
 
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            // In a real app, decode the token to get user ID
-            setUserId(1); // Temporary - replace with actual user ID
-        }
+        const user = getUserFromLocalStorage();
+        setUserId(user.id);
         fetchQuestions();
     }, [productId]);
 

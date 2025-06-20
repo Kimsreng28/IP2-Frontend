@@ -2,6 +2,7 @@
 
 import env from "@/src/envs/env";
 import { Product } from "@/src/interface/product.interface";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
@@ -15,10 +16,13 @@ interface RelatedItemsProps {
 const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
     const fileUrl = `${env.FILE_BASE_URL}`
     const router = useRouter();
     useEffect(() => {
+        const user = getUserFromLocalStorage();
+        setUserId(user.id);
         fetchRelated();
     }, [productId]);
 
@@ -33,7 +37,7 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
         setLoading(true);
         try {
             const res = await fetch(
-                `${env.API_BASE_URL}/client/shop/product/${productId}/relative`,
+                `${env.API_BASE_URL}/client/shop/product/${productId}/relative/${userId}`,
                 { method: "GET", headers: getHeaders() }
             );
 
@@ -147,7 +151,7 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
                                     {/* Image */}
                                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                                         <img
-                                        onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
+                                            onClick={() => router.push(`/client/pages/shop/view/${item.id}`)}
                                             src={fileUrl + item.product_images?.[0]?.image_url || "/images/product/image.png"}
                                             alt={item.name}
                                             className="object-contain cursor-pointer w-full h-full transition-transform duration-300 group-hover:scale-105"
