@@ -57,7 +57,7 @@ export default function Contact() {
 
         try {
       const apiUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://api.ele-sale.shop/api/send-email'
+        ? 'https://ele-sale.shop/api/send-email'
         : '/api/send-email';
 
         const response = await fetch(apiUrl, {
