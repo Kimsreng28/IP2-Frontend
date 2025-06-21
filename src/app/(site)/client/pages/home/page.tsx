@@ -10,7 +10,7 @@ import BannerRotator, { Banner } from "../../../../components/Client/Home/Banner
 const mockData = [
   {
     id: 1,
-    title: 'Enjoyed the electronic products',
+    title: 'Enjoyed the electronic productsqqqq',
     image: '/images/product/image.png',
     color: '#377dff',
     description: 'Experience sale-online like never before',
