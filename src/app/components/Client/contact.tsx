@@ -56,7 +56,11 @@ export default function Contact() {
         // setSendStatus({})
 
         try {
-        const response = await fetch("/api/send-email", {
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://api.ele-sale.shop/api/send-email'
+        : '/api/send-email';
+
+        const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
