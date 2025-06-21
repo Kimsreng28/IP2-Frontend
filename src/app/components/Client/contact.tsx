@@ -3,10 +3,8 @@
 import { ArrowRight, ChevronRight, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import SharedFooterComponent from "../shared/footer";
-import { Resend } from 'resend';
 
 // Mock data for service shops with proper typing
-const resend = new Resend('re_PPTQo3N3_5pccgqwpWSqqrAwEC5kSEv5f');
 interface ServiceShop {
     id: number;
     icon: any;
@@ -55,7 +53,7 @@ export default function Contact() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSending(true)
-        setSendStatus({})
+        // setSendStatus({})
 
         try {
         const response = await fetch("/api/send-email", {
@@ -67,6 +65,7 @@ export default function Contact() {
         })
 
         const data = await response.json()
+        // console.log("API Response:", data); 
 
         if (!response.ok) {
             throw new Error(data.error?.message || "Failed to send message")
