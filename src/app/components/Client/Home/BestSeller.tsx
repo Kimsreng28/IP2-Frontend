@@ -18,10 +18,15 @@ export default function BestSeller() {
   const router = useRouter();
   const fileUrl = `${env.FILE_BASE_URL}`;
   useEffect(() => {
-    const user = getUserFromLocalStorage();
-    setUserId(user.id);
+    const init = async () => {
+      const user = await getUserFromLocalStorage(); // ensures it's fully completed
+      setUserId(user.id);
+    };
+    init();
+  }, []);
+  useEffect(() => {
     fetchBestSellers();
-  }, [page]);
+  }, [page, userId]);
 
   // Helper function to get headers with token if available
   const getHeaders = () => {
@@ -104,11 +109,11 @@ export default function BestSeller() {
       );
 
       // Use DELETE for removing, POST for adding
-      const method = isFavorite ? "DELETE" : "POST";
+      const method = isFavorite ? "PATCH" : "PATCH";
       const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
+        `${env.API_BASE_URL}/client/home/wishlists/${id}/${userId}`,
         {
-          method,
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -136,7 +141,7 @@ export default function BestSeller() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 

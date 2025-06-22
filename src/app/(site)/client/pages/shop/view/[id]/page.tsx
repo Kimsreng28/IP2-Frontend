@@ -95,10 +95,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const [userId, setUserId] = useState<number | null>(null);
   const router = useRouter();
   const productId = params.id;
-
   // Fetch product data
   useEffect(() => {
-    const user = getUserFromLocalStorage();
+    const user = getUserFromLocalStorage(); // ensures it's fully completed
     setUserId(user.id);
     const fetchProduct = async () => {
       setLoading(true);
@@ -106,7 +105,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
       try {
         const response = await fetch(
-          `${env.API_BASE_URL}/client/shop/product/${productId}`,
+          `${env.API_BASE_URL}/client/shop/product/${productId}/${userId}`,
           {
             method: "GET",
             headers: getHeaders(),
@@ -127,11 +126,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         setLoading(false);
       }
     };
-
-    if (productId) {
+    console.log(userId)
+    if (productId && userId) {
       fetchProduct();
     }
-  }, [productId]);
+  }, [productId, userId]);
 
   // Countdown timer
   useEffect(() => {
@@ -195,16 +194,14 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 
-      // Use DELETE for removing, POST for adding
-      const method = previousFavoriteState ? "DELETE" : "POST";
       const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/wishlist/${productId}`,
+        `${env.API_BASE_URL}/client/home/wishlists/${productId}/${userId}`,
         {
-          method,
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -291,6 +288,44 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     );
   };
 
+  // Add to Cart
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/auth");
+        return;
+      }
+
+      const response = await fetch(`${env.API_BASE_URL}/client/shop/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message ?? "Failed to add to cart");
+      }
+
+      // Dispatch custom event with updated count
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", {
+          detail: { count: data.count }, // Ensure your API returns the new count
+        }),
+      );
+    } catch (error) {
+      console.error("Cart error:", error);
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -336,7 +371,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           <div className="flex items-start space-x-2 text-sm font-medium text-gray-700">
             <span
               className="text-black cursor-pointer hover:text-blue-600"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/client/home")}
             >
               Home
             </span>
@@ -574,8 +609,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                       onClick={handleAddToWishlist}
                       disabled={isUpdatingWishlist}
                       className={`flex items-center justify-center rounded-lg border-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-colors ${product.is_favorite
-                          ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
-                          : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
+                        ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
+                        : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
                         } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
                     >
                       {product.is_favorite ? (
@@ -590,11 +625,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
                     {/* Add to Cart */}
                     <button
-                      // onClick={() => handleAddToCart(product.id)}
+                      onClick={() => handleAddToCart(product.id)}
                       disabled={product.stock === 0}
                       className={`flex items-center justify-center rounded-lg px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-colors ${product.stock === 0
-                          ? "cursor-not-allowed bg-gray-100 text-gray-600"
-                          : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
+                        ? "cursor-not-allowed bg-gray-100 text-gray-600"
+                        : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
                         }`}
                     >
                       <ShoppingCartIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />

@@ -9,39 +9,41 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function NewArrivals() {
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(3); // Default to 3, will be updated from API
+  const [totalPages, setTotalPages] = useState<number>(3);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
   const fileUrl = `${env.FILE_BASE_URL}`;
   const router = useRouter();
-  // Add this useEffect to NewArrivals component
+
+  // 1️⃣ Set userId on component mount
   useEffect(() => {
-    const user = getUserFromLocalStorage();
-    setUserId(user.id);
-    fetchNewArrivals({ page });
-  }, [page]);
-
-  // Helper function to get headers with token if available
-  const getHeaders = () => {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
+    const init = async () => {
+      const user = await getUserFromLocalStorage(); // ensures it's fully completed
+      setUserId(user.id);
     };
+    init();
+  }, []);
 
-    // Get token from localStorage if available
-    const token = localStorage.getItem("token");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+  // 2️⃣ Fetch data when page or userId changes
+  useEffect(() => {
+    if (userId) {
+      fetchNewArrivals({ page, userId });
     }
+  }, [page, userId]);
 
-    return headers;
-  };
-
-  const fetchNewArrivals = async (params: { page?: number }) => {
+  const fetchNewArrivals = async ({
+    page,
+    userId,
+  }: {
+    page?: number;
+    userId: number;
+  }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -51,12 +53,11 @@ export default function NewArrivals() {
       };
 
       const response = await fetch(
-        `${env.API_BASE_URL}/client/home/new-arrival?/${userId}?page=${params.page ?? 1}&limit=10`,
-        { headers },
+        `${env.API_BASE_URL}/client/home/new-arrival/${userId}?page=${page ?? 1}&limit=10`,
+        { headers }
       );
 
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const result = await response.json();
 
@@ -76,7 +77,6 @@ export default function NewArrivals() {
         setNewArrivals(newArrivalsData);
         setError(null);
 
-        // Update pagination
         if (result.pagination) {
           setTotalPages(result.pagination.totalPages ?? 3);
           setHasNextPage(result.pagination.hasNextPage ?? false);
@@ -88,9 +88,7 @@ export default function NewArrivals() {
         setError(null);
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load new arrivals",
-      );
+      setError(err instanceof Error ? err.message : "Failed to load new arrivals");
       setNewArrivals([]);
     } finally {
       setLoading(false);
@@ -105,51 +103,46 @@ export default function NewArrivals() {
         return;
       }
 
-      // Get current favorite status
       const currentItem = newArrivals.find((item) => item.id === id);
       const isFavorite = currentItem?.is_favorite || false;
 
-      // Optimistic UI update
       setNewArrivals((prev) =>
         prev.map((item) =>
-          item.id === id ? { ...item, is_favorite: !isFavorite } : item,
-        ),
+          item.id === id ? { ...item, is_favorite: !isFavorite } : item
+        )
       );
 
-      // Use DELETE for removing, POST for adding
-      const method = isFavorite ? "DELETE" : "POST";
       const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
+        `${env.API_BASE_URL}/client/home/wishlists/${id}/${userId}`,
         {
-          method,
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       if (!response.ok) {
-        // Revert on error
         setNewArrivals((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, isFavorite } : item)),
+          prev.map((item) =>
+            item.id === id ? { ...item, is_favorite: isFavorite } : item
+          )
         );
         throw new Error("Failed to update wishlist");
       }
 
-      // Dispatch update event
       window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  // Add to Cart
   const handleAddToCart = async (productId: number) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 
@@ -171,11 +164,10 @@ export default function NewArrivals() {
         throw new Error(data.message ?? "Failed to add to cart");
       }
 
-      // Dispatch custom event with updated count
       window.dispatchEvent(
         new CustomEvent("cartUpdated", {
-          detail: { count: data.count }, // Ensure your API returns the new count
-        }),
+          detail: { count: data.count },
+        })
       );
     } catch (error) {
       console.error("Cart error:", error);
@@ -183,13 +175,7 @@ export default function NewArrivals() {
   };
 
   const getPageNumbers = () => {
-    const pages: number[] = [];
-
-    for (let i = 1; i <= 3; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   };
 
   return (
@@ -198,7 +184,7 @@ export default function NewArrivals() {
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           New Arrivals
         </h2>
-        <div className="flex gap-2 ">
+        <div className="flex gap-2">
           {getPageNumbers().map((num) => (
             <motion.button
               key={num}
@@ -228,15 +214,14 @@ export default function NewArrivals() {
           <div className="flex w-max gap-4">
             {newArrivals.map((item) => (
               <div key={item.id} className="flex gap-1">
-                <div className="">
+                <div>
                   <div className="group relative min-h-[20px] min-w-[260px] max-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
-                    {/* NEW Badge */}
                     {item.is_new && (
                       <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
                         NEW
                       </div>
                     )}
-                    {/* Favorite Icon */}
+
                     <motion.div
                       className="absolute right-2 top-2 z-10 cursor-pointer"
                       onClick={(e) => {
@@ -257,11 +242,7 @@ export default function NewArrivals() {
                       }}
                     >
                       {item.is_favorite ? (
-                        <Icon
-                          className="text-red-500"
-                          path={mdiHeart}
-                          size={1}
-                        />
+                        <Icon className="text-red-500" path={mdiHeart} size={1} />
                       ) : (
                         <Icon
                           className="text-gray-400 hover:text-gray-600"
@@ -271,7 +252,6 @@ export default function NewArrivals() {
                       )}
                     </motion.div>
 
-                    {/* Image Container with Hover Add to Cart */}
                     <div className="relative mb-4 h-[240px] w-full overflow-hidden rounded">
                       <img
                         onClick={() =>
@@ -298,7 +278,6 @@ export default function NewArrivals() {
                   </div>
 
                   <div>
-                    {/* Stars */}
                     <div className="mt-1 flex items-center">
                       {Array.from({ length: 5 }, (_, i) => {
                         const filled = i < Math.floor(item.stars || 0);
@@ -319,12 +298,10 @@ export default function NewArrivals() {
                       })}
                     </div>
 
-                    {/* Title */}
                     <h3 className="mb-1 min-w-[220px] max-w-[220px] text-base font-semibold text-black dark:text-gray-300">
                       {item.name}
                     </h3>
 
-                    {/* Price */}
                     <p className="text-[13px] font-bold text-black dark:text-gray-300">
                       ${item.price.toFixed(2)}
                     </p>
