@@ -584,7 +584,7 @@ export default function ShopPage() {
                                 viewMode === "list" ? "text-lg" : "text-[13px]"
                               }`}
                             >
-                              ${item.price}
+                              ${item.price.toFixed(2)}
                             </p>
 
                             {/* Description for list view */}

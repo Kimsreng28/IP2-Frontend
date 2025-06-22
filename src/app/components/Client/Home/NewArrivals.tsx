@@ -198,7 +198,7 @@ export default function NewArrivals() {
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           New Arrivals
         </h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           {getPageNumbers().map((num) => (
             <motion.button
               key={num}
@@ -229,7 +229,7 @@ export default function NewArrivals() {
             {newArrivals.map((item) => (
               <div key={item.id} className="flex gap-1">
                 <div className="">
-                  <div className="group relative min-h-[20px] min-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
+                  <div className="group relative min-h-[20px] min-w-[260px] max-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
                     {/* NEW Badge */}
                     {item.is_new && (
                       <div className="absolute left-2 top-2 rounded bg-white px-2 py-1 text-xs font-bold text-black">
