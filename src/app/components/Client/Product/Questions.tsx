@@ -218,7 +218,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
         const user = getUserFromLocalStorage();
         setUserId(user.id);
         fetchQuestions();
-    }, [productId]);
+    }, [productId, userId]);
 
     return (
         <div className="max-w-4xl px-4 py-8 mx-auto">

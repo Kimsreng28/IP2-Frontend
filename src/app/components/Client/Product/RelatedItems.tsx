@@ -20,11 +20,11 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
     const [error, setError] = useState<string | null>(null);
     const fileUrl = `${env.FILE_BASE_URL}`
     const router = useRouter();
+    
     useEffect(() => {
-        const user = getUserFromLocalStorage();
-        setUserId(user.id);
         fetchRelated();
-    }, [productId]);
+    }, [productId, userId]);
+
 
     const getHeaders = () => {
         const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -68,9 +68,8 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
         try {
             const currentItem = relatedProducts.find((item) => item.id === id);
             const newFavoriteStatus = !currentItem?.is_favorite;
-
             const response = await fetch(
-                `${env.API_BASE_URL}/client/home/wishlists/${id}`,
+                `${env.API_BASE_URL}/client/home/wishlists/${id}/${userId}`,
                 {
                     method: "PATCH",
                     headers: getHeaders(),

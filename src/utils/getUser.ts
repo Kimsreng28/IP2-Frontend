@@ -10,6 +10,7 @@ export function getUserFromLocalStorage(): { id: number } {
     }
 
     const user = JSON.parse(userRaw);
+    console.log(user)
 
     if (!user?.id || typeof user.id !== "number") {
       console.warn("Invalid or missing user ID. Using default ID 1.");

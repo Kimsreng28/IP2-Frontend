@@ -2,6 +2,7 @@
 import SharedFooterComponent from "@/src/app/components/shared/footer";
 import { Search } from "@/src/app/components/shared/ui/search";
 import env from "@/src/envs/env";
+import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { mdiFilterOutline, mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -45,6 +46,7 @@ interface FetchOptions {
   sortBy?: string;
   search?: string;
   limit?: number;
+  userId?: number;
 }
 
 async function fetchDataSetup() {
@@ -64,6 +66,7 @@ async function fetchFilteredProducts({
   sortBy,
   search,
   limit = 20,
+  userId = 1,
 }: FetchOptions) {
   const params = new URLSearchParams();
 
@@ -82,7 +85,7 @@ async function fetchFilteredProducts({
   params.append("limit", limit.toString());
 
   const res = await fetch(
-    `${env.API_BASE_URL}/client/shop/products?${params.toString()}`,
+    `${env.API_BASE_URL}/client/shop/${userId}/products?${params.toString()}`,
     {
       method: "GET",
       headers: getHeaders(),
@@ -114,6 +117,7 @@ export default function ShopPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [limit, setLimit] = useState(20);
   const [totalProducts, setTotalProducts] = useState(0);
+  const [userId, setUserId] = useState<number | null>(null);
 
   const displayedCategories = showAllCategories
     ? categories
@@ -137,6 +141,8 @@ export default function ShopPage() {
   };
 
   useEffect(() => {
+    const user = getUserFromLocalStorage();
+    setUserId(user.id);
     const fetchSetup = async () => {
       try {
         const setupData = await fetchDataSetup();
@@ -159,6 +165,7 @@ export default function ShopPage() {
           sortBy,
           search,
           limit,
+          userId: user?.id
         });
 
         const formattedProducts = data.map((product: any) => ({
@@ -196,7 +203,7 @@ export default function ShopPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 
@@ -211,12 +218,10 @@ export default function ShopPage() {
         ),
       );
 
-      // Use DELETE for removing, POST for adding
-      const method = isFavorite ? "DELETE" : "POST";
       const response = await fetch(
-        `${env.API_BASE_URL}/client/shop/wishlist/${id}`,
+        `${env.API_BASE_URL}/client/home/wishlists/${id}/${userId}`,
         {
-          method,
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -246,7 +251,7 @@ export default function ShopPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/client/auth");
+        router.push("/auth");
         return;
       }
 
@@ -333,11 +338,10 @@ export default function ShopPage() {
                       exit={{ opacity: 0, y: -5 }}
                       transition={{ duration: 0.2 }}
                       onClick={() => setSelectedCategoryId(category.id)}
-                      className={`block w-full px-2 py-1 text-left text-sm hover:text-black ${
-                        selectedCategoryId === category.id
-                          ? "font-medium text-black underline dark:text-gray-300"
-                          : "text-gray-600"
-                      }`}
+                      className={`block w-full px-2 py-1 text-left text-sm hover:text-black ${selectedCategoryId === category.id
+                        ? "font-medium text-black underline dark:text-gray-300"
+                        : "text-gray-600"
+                        }`}
                     >
                       {category.name}
                     </motion.button>
@@ -448,37 +452,33 @@ export default function ShopPage() {
               {!loading && products.length > 0 && (
                 <>
                   <div
-                    className={`grid gap-4 ${
-                      viewMode === "list"
-                        ? "grid-cols-1"
-                        : viewMode === "large-grid"
-                          ? "grid-cols-2 md:grid-cols-3"
-                          : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-                    }`}
+                    className={`grid gap-4 ${viewMode === "list"
+                      ? "grid-cols-1"
+                      : viewMode === "large-grid"
+                        ? "grid-cols-2 md:grid-cols-3"
+                        : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+                      }`}
                   >
                     {products.map((item) => (
                       <div
                         key={item.id}
-                        className={`${
-                          viewMode === "list"
-                            ? "flex items-center gap-4 rounded-xl border p-4 transition hover:shadow-md"
-                            : "rounded-xl bg-gray-100 dark:bg-transparent dark:border dark:border-gray-400 p-4 shadow-sm transition hover:shadow-md"
-                        }`}
+                        className={`${viewMode === "list"
+                          ? "flex items-center gap-4 rounded-xl border p-4 transition hover:shadow-md"
+                          : "rounded-xl bg-gray-100 dark:bg-transparent dark:border dark:border-gray-400 p-4 shadow-sm transition hover:shadow-md"
+                          }`}
                       >
                         <div
-                          className={`${
-                            viewMode === "list"
-                              ? "flex flex-1 items-center gap-4"
-                              : "w-full"
-                          }`}
+                          className={`${viewMode === "list"
+                            ? "flex flex-1 items-center gap-4"
+                            : "w-full"
+                            }`}
                         >
                           {/* Image Container */}
                           <div
-                            className={`group relative overflow-hidden rounded ${
-                              viewMode === "list"
-                                ? "h-32 w-32 min-w-[128px]"
-                                : "mb-4 h-[240px] w-full"
-                            }`}
+                            className={`group relative overflow-hidden rounded ${viewMode === "list"
+                              ? "h-32 w-32 min-w-[128px]"
+                              : "mb-4 h-[240px] w-full"
+                              }`}
                           >
                             {/* NEW Badge */}
                             {item.is_new && (
@@ -524,18 +524,16 @@ export default function ShopPage() {
                                   `/client/pages/shop/view/${item.id}`,
                                 )
                               }
-                              className={`h-full w-full cursor-pointer object-contain transition-transform duration-300 ${
-                                viewMode === "list"
-                                  ? ""
-                                  : "group-hover:scale-105"
-                              }`}
+                              className={`h-full w-full cursor-pointer object-contain transition-transform duration-300 ${viewMode === "list"
+                                ? ""
+                                : "group-hover:scale-105"
+                                }`}
                             />
                             <button
-                              className={`absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 ${
-                                viewMode === "list"
-                                  ? "translate-y-0 bg-black/70 opacity-100"
-                                  : "translate-y-full opacity-0"
-                              } hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700`}
+                              className={`absolute inset-x-0 bottom-0 py-2 text-sm font-medium text-white transition-all duration-500 ${viewMode === "list"
+                                ? "translate-y-0 bg-black/70 opacity-100"
+                                : "translate-y-full opacity-0"
+                                } hover:bg-gray-800 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-gray-300 dark:text-gray-700`}
                               onClick={() => handleAddToCart(item.id)}
                             >
                               Add to cart
@@ -553,11 +551,10 @@ export default function ShopPage() {
                                 return (
                                   <span
                                     key={i}
-                                    className={`inline-block ${
-                                      filled
-                                        ? "text-black dark:text-gray-300"
-                                        : "text-gray-300 dark:text-gray-600"
-                                    }`}
+                                    className={`inline-block ${filled
+                                      ? "text-black dark:text-gray-300"
+                                      : "text-gray-300 dark:text-gray-600"
+                                      }`}
                                   >
                                     <Star
                                       className={`h-5 w-5 ${filled ? "fill-current" : ""}`}
@@ -569,20 +566,18 @@ export default function ShopPage() {
                             </div>
                             {/* Title */}
                             <h3
-                              className={`font-semibold text-black dark:text-gray-300 ${
-                                viewMode === "list"
-                                  ? "mb-2 text-lg"
-                                  : "mb-1 min-w-[220px] max-w-[220px] text-base"
-                              }`}
+                              className={`font-semibold text-black dark:text-gray-300 ${viewMode === "list"
+                                ? "mb-2 text-lg"
+                                : "mb-1 min-w-[220px] max-w-[220px] text-base"
+                                }`}
                             >
                               {item.title}
                             </h3>
 
                             {/* Price */}
                             <p
-                              className={`font-bold text-black dark:text-gray-300 ${
-                                viewMode === "list" ? "text-lg" : "text-[13px]"
-                              }`}
+                              className={`font-bold text-black dark:text-gray-300 ${viewMode === "list" ? "text-lg" : "text-[13px]"
+                                }`}
                             >
                               ${item.price.toFixed(2)}
                             </p>
