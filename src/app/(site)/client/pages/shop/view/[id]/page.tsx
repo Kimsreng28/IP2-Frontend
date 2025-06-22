@@ -109,13 +109,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             headers: getHeaders(),
           },
         );
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        setProduct(result);
+        setProduct(result.data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch product",
@@ -227,50 +226,50 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
   };
 
- const getDiscountedPrice = () => {
-  // Early return if no product or invalid product data
-  if (!product || typeof product !== 'object' || !('price' in product)) {
-    return null;
-  }
-
-  // Safely check for discounts array
-  const discounts = Array.isArray(product?.discounts) ? product.discounts : [];
-
-  // Find active discount with date validation
-  const activeDiscount = discounts.find(discount => {
-    try {
-      if (!discount || !discount.start_date || !discount.end_date) return false;
-      
-      const now = new Date();
-      const startDate = new Date(discount.start_date);
-      const endDate = new Date(discount.end_date);
-      
-      // Additional date validation
-      if (isNaN(endDate.getTime())) return false;
-      
-      return now >= startDate && now <= endDate;
-    } catch (e) {
-      console.error('Error processing discount dates:', e);
-      return false;
+  const getDiscountedPrice = () => {
+    // Early return if no product or invalid product data
+    if (!product || typeof product !== 'object' || !('price' in product)) {
+      return null;
     }
-  });
 
-  // Calculate discount if valid
-  if (activeDiscount && 
+    // Safely check for discounts array
+    const discounts = Array.isArray(product?.discounts) ? product.discounts : [];
+
+    // Find active discount with date validation
+    const activeDiscount = discounts.find(discount => {
+      try {
+        if (!discount || !discount.start_date || !discount.end_date) return false;
+
+        const now = new Date();
+        const startDate = new Date(discount.start_date);
+        const endDate = new Date(discount.end_date);
+
+        // Additional date validation
+        if (isNaN(endDate.getTime())) return false;
+
+        return now >= startDate && now <= endDate;
+      } catch (e) {
+        console.error('Error processing discount dates:', e);
+        return false;
+      }
+    });
+
+    // Calculate discount if valid
+    if (activeDiscount &&
       typeof activeDiscount.discount_percentage === 'number' &&
       !isNaN(product.price)) {
-    const percentage = Math.min(100, Math.max(0, activeDiscount.discount_percentage));
-    const discountedPrice = product.price * (1 - percentage / 100);
-    
-    return {
-      original: product.price,
-      discounted: parseFloat(discountedPrice.toFixed(2)),
-      percentage
-    };
-  }
+      const percentage = Math.min(100, Math.max(0, activeDiscount.discount_percentage));
+      const discountedPrice = product.price * (1 - percentage / 100);
 
-  return null;
-};
+      return {
+        original: product.price,
+        discounted: parseFloat(discountedPrice.toFixed(2)),
+        percentage
+      };
+    }
+
+    return null;
+  };
   const priceInfo = getDiscountedPrice();
 
   // Render stars based on product rating
@@ -347,7 +346,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </span>
             <ChevronRightIcon className="w-4 h-4 text-gray-400" />
             <span className="cursor-pointer hover:text-blue-600">
-              {product.category.name}
+              {product.category?.name}
             </span>
             <ChevronRightIcon className="w-4 h-4 text-gray-400" />
             <span className="text-gray-500">{product.name}</span>
@@ -394,11 +393,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`h-20 w-20 overflow-hidden rounded-lg border-2 bg-white ${
-                        selectedImage === index
-                          ? "border-gray-900"
-                          : "border-gray-200"
-                      }`}
+                      className={`h-20 w-20 overflow-hidden rounded-lg border-2 bg-white ${selectedImage === index
+                        ? "border-gray-900"
+                        : "border-gray-200"
+                        }`}
                     >
                       <Image
                         src={image || "/placeholder.svg"}
@@ -429,7 +427,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               </h1>
 
               {/* Brand */}
-              <p className="text-lg text-gray-600">by {product.brand.name}</p>
+              <p className="text-lg text-gray-600">by {product.brand?.name}</p>
 
               {/* Description */}
               <p className="leading-relaxed text-gray-600">
@@ -452,7 +450,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-gray-900">
-                    ${product.price.toFixed(2)}
+                    ${product.price?.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -532,11 +530,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     <button
                       key={index}
                       onClick={() => setSelectedColor(index)}
-                      className={`h-12 w-12 rounded-lg border-2 ${
-                        selectedColor === index
-                          ? "border-gray-900"
-                          : "border-gray-200"
-                      } ${color.value}`}
+                      className={`h-12 w-12 rounded-lg border-2 ${selectedColor === index
+                        ? "border-gray-900"
+                        : "border-gray-200"
+                        } ${color.value}`}
                     />
                   ))}
                 </div>
@@ -570,11 +567,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <button
                     onClick={handleAddToWishlist}
                     disabled={isUpdatingWishlist}
-                    className={`flex items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-colors ${
-                      product.is_favorite
-                        ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
-                        : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
-                    } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
+                    className={`flex items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-colors ${product.is_favorite
+                      ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
+                      : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
+                      } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
                   >
                     {product.is_favorite ? (
                       <Heart className="w-5 h-5 mr-2 fill-current" />
@@ -588,11 +584,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <button
                     // onClick={() => handleAddToCart(product.id)}
                     disabled={product.stock === 0}
-                    className={`flex items-center justify-center rounded-lg px-8 py-3 font-semibold ${
-                      product.stock === 0
-                        ? "cursor-not-allowed bg-gray-100 text-gray-600"
-                        : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
-                    }`}
+                    className={`flex items-center justify-center rounded-lg px-8 py-3 font-semibold ${product.stock === 0
+                      ? "cursor-not-allowed bg-gray-100 text-gray-600"
+                      : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
+                      }`}
                   >
                     <ShoppingCartIcon className="w-5 h-5 mr-2" />
                     {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
@@ -612,11 +607,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 onClick={() =>
                   setActiveTab(tab as "ratings" | "questions" | "reviews")
                 }
-                className={`px-4 py-2 font-medium capitalize ${
-                  activeTab === tab
-                    ? "border-b-2 border-gray-900 text-gray-900"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`px-4 py-2 font-medium capitalize ${activeTab === tab
+                  ? "border-b-2 border-gray-900 text-gray-900"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 {tab === "ratings" && `Relate Items`}
                 {tab === "questions" && "Questions"}

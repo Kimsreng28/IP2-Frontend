@@ -109,9 +109,9 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
     };
 
     return (
-        <div className={`rounded-lg shadow p-6 mb-6 overflow-hidden h-[calc(100vh-17rem)] ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
+        <div className="overflow-auto p-3 h-[calc(100vh-15.5rem)]">
             <div className="overflow-hidden">
-                <h2 className="text-xl font-semibold mb-6">Update Product</h2>
+                <h2 className="text-lg font-semibold mb-4">Update Product</h2>
                 {error && (
                     <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
@@ -124,8 +124,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Product Name</label>
                             <input
                                 type="text"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={updatedProduct.name}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, name: e.target.value })}
                                 required
@@ -136,8 +135,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                         <div>
                             <label className="block text-sm font-medium mb-1">Category</label>
                             <select
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={updatedProduct.category_id}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, category_id: Number(e.target.value) })}
                                 required
@@ -155,8 +153,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                         <div>
                             <label className="block text-sm font-medium mb-1">Brand</label>
                             <select
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={updatedProduct.brand_id}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, brand_id: Number(e.target.value) })}
                                 required
@@ -175,8 +172,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Price</label>
                             <input
                                 type="number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={updatedProduct.price}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, price: Number(e.target.value) })}
                                 onFocus={(e) => {
@@ -200,8 +196,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Stock</label>
                             <input
                                 type="number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={updatedProduct.stock}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, stock: Number(e.target.value) })}
                                 onFocus={(e) => {
@@ -224,8 +219,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                             <div className='flex-1'>
                                 <label className="block text-sm font-medium mb-1">Description</label>
                                 <textarea
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                        }`}
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     rows={3}
                                     value={updatedProduct.description}
                                     onChange={(e) => setUpdatedProduct({ ...updatedProduct, description: e.target.value })}
@@ -244,7 +238,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                                             checked={updatedProduct.is_new_arrival}
                                             onChange={(e) => setUpdatedProduct({ ...updatedProduct, is_new_arrival: e.target.checked })}
                                         />
-                                        <span className="ml-2">New Arrival</span>
+                                        <span className="ml-2 text-sm">New Arrival</span>
                                     </label>
                                 </div>
                                 <div>
@@ -255,7 +249,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                                             checked={updatedProduct.is_best_seller}
                                             onChange={(e) => setUpdatedProduct({ ...updatedProduct, is_best_seller: e.target.checked })}
                                         />
-                                        <span className="ml-2">Best Seller</span>
+                                        <span className="ml-2 text-sm">Best Seller</span>
                                     </label>
                                 </div>
                             </div>
@@ -275,7 +269,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                                         accept="image/*"
                                         onChange={handleImageChange}
                                     />
-                                    <p className="mt-1 text-sm">
+                                    <p className="mt-1 text-sm pb-1 font-semibold">
                                         First image will be set as primary
                                     </p>
                                 </div>
@@ -288,7 +282,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                                         <h4 className="text-sm font-medium mb-2">Selected Images:</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {updatedProduct.product_images.map((image, index) => (
-                                                <div key={index} className="relative">
+                                                <div key={index} className="relative  border rounded-lg shadow-md">
                                                     {'image_url' in image ? (
                                                         <img
                                                             src={`${process.env.FILE_BASE_URL}${image.image_url}`}
@@ -327,7 +321,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className={`px-4 py-2 rounded-md ${theme === "dark"
+                            className={`px-4 py-2 text-sm rounded-md ${theme === "dark"
                                 ? "bg-gray-700 text-white hover:bg-gray-600"
                                 : "bg-gray-300 text-gray-800 hover:bg-gray-400"
                                 }`}
@@ -337,7 +331,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({
                         <button
                             type="submit"
                             disabled={isSubmitting || updatedProduct.category_id === 0 || updatedProduct.brand_id === 0}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                         >
                             {isSubmitting ? 'Updating...' : 'Update Product'}
                         </button>

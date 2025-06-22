@@ -7,12 +7,34 @@ import { useEffect, useState } from "react";
 // Call /wallet/create/{userId} to create a wallet
 const connectWallet = async (userId: number) => {
   try {
+    const userRaw = localStorage.getItem("user");
+    if (!userRaw) {
+      throw new Error("User not logged in");
+    }
+
+    // Parse user data
+    let user;
+    try {
+      user = JSON.parse(userRaw);
+    } catch {
+      throw new Error("Invalid user data format");
+    }
+
+    if (!user?.id || typeof user.id !== "number") {
+      throw new Error("Invalid or missing user ID");
+    }
+
     const res = await fetch(`${env.WALLET_BASE_URL}/wallet/create/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Add authorization header if required, e.g., Authorization: `Bearer ${localStorage.getItem("token")}`
+        // Authorization: `Bearer ${localStorage.getItem("token")}`, // Optional
       },
+      body: JSON.stringify({
+        initialBalance: 100,
+        name: user.last_name,
+        email: user.email,
+      }),
     });
 
     if (!res.ok) {
@@ -26,6 +48,7 @@ const connectWallet = async (userId: number) => {
     throw error;
   }
 };
+
 
 const WalletPage = () => {
   const [loading, setLoading] = useState(true);

@@ -8,6 +8,7 @@ import CreateProduct from './createProduct';
 import UpdateProduct from './updateProduct';
 import { FaEvernote, FaRegEdit } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
+import ViewProduct from './view';
 
 interface ProductImage {
   id: number;
@@ -36,6 +37,7 @@ interface Product {
   stock: number;
   category_id: number;
   brand_id: number;
+  stars: number;
   is_new_arrival: boolean;
   is_best_seller: boolean;
   created_at: string;
@@ -77,6 +79,7 @@ const ProductTable: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const { theme } = useTheme(); // Get the current theme
   const [productToUpdate, setProductToUpdate] = useState<Product | null>(null);
+  const [productToView, setProductToView] = useState<Product | null>(null);
 
 
   const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
@@ -84,6 +87,7 @@ const ProductTable: React.FC = () => {
 
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
+  const [showViewForm, setShowViewForm] = useState<boolean>(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -307,6 +311,16 @@ const ProductTable: React.FC = () => {
   const handleUpdateCancel = () => {
     setShowUpdateForm(false);
   };
+  const handleViewClick = (product: Product) => {
+    setProductToView(product);
+    console.log('Viewing product:', product);
+    setShowViewForm(true);
+  };
+
+
+  const handleViewCancel = () => {
+    setShowViewForm(false);
+  };
 
   const handleUpdateSubmit = async (updatedProduct: {
     id: number;
@@ -425,8 +439,8 @@ const ProductTable: React.FC = () => {
   }
 
   return (
-    <div className="container m-2 ">
-      <div className={`rounded-lg px-6 py-8  shadow-md flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+    <div className="container ">
+      <div className={`rounded-lg px-6 py-6  shadow-md flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
         }`}>
         <div className='flex gap-2'>
           <Box className="h-8 w-8" />
@@ -434,11 +448,11 @@ const ProductTable: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto ">
-          <form onSubmit={handleSearch} className="flex">
+          <form onSubmit={handleSearch} className="flex text-sm">
             <input
               type="text"
               placeholder="Search products..."
-              className="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none  focus:border-indigo-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => {
@@ -449,7 +463,7 @@ const ProductTable: React.FC = () => {
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 "
             >
               Search
             </button>
@@ -457,10 +471,10 @@ const ProductTable: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <span className="mr-2 text-sm text-gray-600">Price:</span>
+              <span className="mr-2 text-sm text-gray-600 dark:text-white">Price:</span>
               <button
                 onClick={togglePriceSort}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center"
+                className="px-4 py-2 text-sm dark:text-white dark:bg-gray-800 bg-white border border-gray-300 rounded-md hover:bg-gray-50  flex items-center"
               >
                 {priceSort === 'asc' ? 'Low to High' : 'High to Low'}
                 <svg
@@ -483,7 +497,7 @@ const ProductTable: React.FC = () => {
                 // Add your create product logic here
                 handleCreateClick()
               }}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center gap-2"
+              className="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700  flex items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -502,226 +516,246 @@ const ProductTable: React.FC = () => {
           </div>
         </div>
       </div>
-      {showCreateForm ? (
-        <CreateProduct
-          brands={brands}
-          categories={categories}
-          onCancel={handleCreateCancel}
-          onSubmit={handleCreateSubmit}
-        />
-      ) : showUpdateForm ? (
-        productToUpdate ? (
-          <UpdateProduct
-            product={productToUpdate}
+
+      <div className={`rounded-lg p-3 pt-1 shadow-md overflow-hidden  ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
+
+        {showCreateForm ? (
+          <CreateProduct
             brands={brands}
             categories={categories}
-            onCancel={handleUpdateCancel}  // Fixed: removed the arrow function wrapper
-            onSubmit={handleUpdateSubmit}
+            onCancel={handleCreateCancel}
+            onSubmit={handleCreateSubmit}
           />
-        ) : null
-      ) :
-        (
-          <div className={`rounded-lg p-5  shadow-md overflow-hidden  ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
-            <div className="overflow-auto overflow-x-auto  h-[calc(100vh-24rem)] " >
-              <table className="w-full divide-y divide-gray-200 ">
-                <thead className="bg-white">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider"></th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Product Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Brand</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Price</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Stock</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-bold text-gray-500 uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
-                  {products.map((product) => {
-                    const primaryImage = getPrimaryImage(product.product_images);
-                    const imageUrl = primaryImage?.image_url
-                      ? primaryImage.image_url.startsWith('https://') || primaryImage.image_url.startsWith('http://')
-                        ? primaryImage.image_url  // already full URL
-                        : `${FILE_BASE_URL}${primaryImage.image_url}`
-                      : '/placeholder-product.png';
+        ) : showUpdateForm ? (
+          productToUpdate ? (
+            <UpdateProduct
+              product={productToUpdate}
+              brands={brands}
+              categories={categories}
+              onCancel={handleUpdateCancel}  // Fixed: removed the arrow function wrapper
+              onSubmit={handleUpdateSubmit}
+            />
+          ) : null
+        ) : showViewForm ? (
+          productToView ? (
+            <ViewProduct
+              product={productToView}
+              onClose={handleViewCancel}  // Fixed: removed the arrow function wrapper
+            />
+          ) : null
+        ) :
+          (
+            <div>
+              <div className="overflow-auto overflow-x-auto  h-[calc(100vh-19.25rem)] " >
+                <table className="w-full divide-y  divide-gray-200 ">
+                  <thead className="bg-white dark:text-white dark:bg-gray-800 ">
+                    <tr className="text-sm">
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider"></th>
+                      <th className=" py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Product Name</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Brand</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Category</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Price</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Stock</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y dark:text-white dark:bg-gray-800 divide-gray-200 overflow-auto">
+                    {products.map((product) => {
+                      const primaryImage = getPrimaryImage(product.product_images);
+                      const imageUrl = `${FILE_BASE_URL}${primaryImage.image_url}`;
+
+                      return (
+                        <tr key={product.uuid}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <Image
+                                className="h-10 w-10 rounded-lg object-cover border-2 border-gray-500"
+                                src={imageUrl}
+                                alt={product.name}
+                                width={40}
+                                height={40}
+                                unoptimized={true}
+                              />
+                            </div>
+                          </td>
+                          <td className="px- py-4 whitespace-nowrap text-sm font-medium dark:text-white text-gray-900">
+                            {product.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
+                            {product.brand.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
+                            {product.category.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
+                            ${product.price.toFixed(2)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
+                            {product.stock}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {product.is_new_arrival && (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                New
+                              </span>
+                            )}
+                            {product.is_best_seller && (
+                              <span className="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-700">
+                                Best Seller
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-2 py-4  whitespace-nowrap text-sm text-gray-500 ">
+                            <div className="menu-container ">
+                              <button
+                                onClick={() => setOpenMenuId(openMenuId === product.uuid ? null : product.uuid)}
+                                className="hover:text-indigo-600 w-9 h-9 flex items-center justify-center text-gray-500 border-2 border-gray-500 hover:border-indigo-600 rounded-xl"
+                              >
+                                <Icon icon="mdi:dots-horizontal" className="w-5 h-5" />
+                              </button>
+
+                              {openMenuId === product.uuid && (
+                                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200  dark:bg-gray-800 rounded-xl shadow-md z-10">
+                                  <button
+                                    className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300 dark:hover:rounded-t-lg hover:bg-gray-100 w-full"
+                                    onClick={() => handleViewClick(product)}
+                                  >
+                                    <EyeIcon className="h-5 w-5" />
+                                    <span className="ml-2">View</span>
+                                  </button>
+
+                                  <button
+                                    className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300  hover:bg-gray-100 w-full"
+                                    onClick={() => handleUpdateClick(product)}
+                                  >
+                                    <FaRegEdit className='h-5 w-5' />
+                                    <span className="ml-2">Update</span>
+                                  </button>
+
+                                  <button
+                                    className="flex items-center px-4 py-2 text-sm text-red-600 dark:hover:rounded-b-lg hover:bg-gray-100 w-full"
+                                    onClick={() => setProductToDelete(product)}
+                                  >
+                                    <MdDeleteForever className="h-5 w-5" />
+                                    <span className="ml-2">Delete</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <div className="flex justify-center mt-6">
+                <nav className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    {/* <span className="text-sm">Items per page:</span> */}
+                    <select
+                      value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
+                      onChange={(e) => {
+                        setLimit(Number(e.target.value));
+                        setPage(1); // Reset to first page when changing limit
+                      }}
+                      className="px-2 py-1 border rounded-md text-sm"
+                    >
+                      {[5, 10, 15, 20].map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (page <= 3) {
+                      pageNum = i + 1;
+                    } else if (page >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = page - 2 + i;
+                    }
 
                     return (
-                      <tr key={product.uuid}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <Image
-                              className="h-10 w-10 rounded-lg object-cover border-2 border-gray-500"
-                              src={imageUrl}
-                              alt={product.name}
-                              width={40}
-                              height={40}
-                              unoptimized={true}
-                            />
-                          </div>
-                        </td>
-                        <td className="px- py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {product.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.brand.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.category.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ${product.price.toFixed(2)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.stock}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {product.is_new_arrival && (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              New
-                            </span>
-                          )}
-                          {product.is_best_seller && (
-                            <span className="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-700">
-                              Best Seller
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4  whitespace-nowrap text-sm text-gray-500 relative">
-                          <div className="menu-container relative">
-                            <button
-                              onClick={() => setOpenMenuId(openMenuId === product.uuid ? null : product.uuid)}
-                              className="hover:text-indigo-600 text-gray-500 border-2 border-gray-500 hover:border-indigo-600 p-2 rounded-xl"
-                            >
-                              <Icon icon="mdi:dots-horizontal" className="w-5 h-5" />
-                            </button>
-
-                            {openMenuId === product.uuid && (
-                              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-xl shadow-md z-10">
-                                <button
-                                  className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 w-full"
-                                  onClick={() => console.log('View', product.uuid)}
-                                >
-                                  <EyeIcon className="h-5 w-5" />
-                                  <span className="ml-2">View</span>
-                                </button>
-                                <button
-                                  className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 w-full"
-                                  onClick={() => handleUpdateClick(product)}
-                                >
-                                  <FaRegEdit className='h-5 w-5' />
-                                  <span className="ml-2">Update</span>
-                                </button>
-                                <button
-                                  className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
-                                  onClick={() => setProductToDelete(product)}
-                                >
-                                  <MdDeleteForever className="h-5 w-5"/>
-                                  <span className="ml-2">View</span>
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </td>
-
-                      </tr>
+                      <button
+                        key={pageNum}
+                        onClick={() => setPage(pageNum)}
+                        className={`px-3 py-1 rounded-md ${page === pageNum ? 'bg-indigo-600 text-white' : 'border border-gray-300'}`}
+                      >
+                        {pageNum}
+                      </button>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center mt-6">
-              <nav className="flex items-center gap-1">
-                <div className="flex items-center gap-2">
-                  {/* <span className="text-sm">Items per page:</span> */}
-                  <select
-                    value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1); // Reset to first page when changing limit
-                    }}
-                    className="px-2 py-1 border rounded-md text-sm"
+                  <button
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
                   >
-                    {[5, 10, 15, 20].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
-                >
-                  Previous
-                </button>
-
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
-
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setPage(pageNum)}
-                      className={`px-3 py-1 rounded-md ${page === pageNum ? 'bg-indigo-600 text-white' : 'border border-gray-300'}`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </nav>
+                    Next
+                  </button>
+                </nav>
+              </div>
             </div>
-
-          </div>
-        )}
+          )
+        }
+      </div>
 
       {productToDelete && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              Do you want to delete <span className="font-bold">{productToDelete.name}</span>?
+          <div className="bg-white rounded-xl shadow-lg p-6 w-96">
+            <h2 className="text-base  mb-4 text-center">
+              Do you want to delete
+              <span className="font-bold text-gray-700 text-lg"> {productToDelete.name} </span> ?
             </h2>
             <div className="flex justify-center gap-4">
               <button
+                onClick={() => setProductToDelete(null)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 w-25 text-sm shadow-md rounded hover:bg-gray-400"
+              >
+                No
+              </button>
+              <button
                 onClick={async () => {
                   // Call your delete logic here
-                  await fetch(`${API_BASE_URL}/vendor/product/${productToDelete.id}`, {
-                    method: 'DELETE',
+                  const token = localStorage.getItem('token'); // Adjust based on your auth storage
 
+                  if (!token) {
+                    throw new Error('Authentication token not found');
+                  }
+
+                  const response = await fetch(`${API_BASE_URL}/vendor/product/${productToDelete.id}`.toString(), {
+                    method: 'DELETE',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    }
                   });
                   setProducts(prev => prev.filter(p => p.id !== productToDelete.id));
 
                   setProductToDelete(null);
                 }}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="bg-red-600 text-white px-4 py-2 w-25 text-sm shadow-md rounded hover:bg-red-700"
               >
                 Yes
               </button>
-              <button
-                onClick={() => setProductToDelete(null)}
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                No
-              </button>
+
             </div>
           </div>
         </div>

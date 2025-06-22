@@ -2,7 +2,10 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-
+import { LuHistory } from "react-icons/lu";
+import { EyeIcon } from 'lucide-react';
+import Image from 'next/image';
+import ViewOrder from './view';
 export interface OrdersHistories {
   ordersHistories: OrderHistory[];
   totalItems: number;
@@ -26,6 +29,15 @@ export interface OrderHistory {
   user: User;
   vendor_orders: VendorOrder[];
   order_items: OrderItem[];
+
+}
+
+export interface ProductImage {
+  id: number;
+  product_id: number;
+  image_url: string;
+  is_primary: boolean;
+  created_at: string;
 }
 
 export interface User {
@@ -67,6 +79,7 @@ export interface Product {
   is_new_arrival: boolean;
   is_best_seller: boolean;
   created_at: string;
+  product_images: ProductImage[];
 }
 
 export default function analysis() {
@@ -80,6 +93,9 @@ export default function analysis() {
   const [limit, setLimit] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [showViewForm, setShowViewForm] = useState<boolean>(false);
+  const [orderToView, setOrderToView] = useState<OrderHistory | null>(null);
+
 
   const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
   const FILE_BASE_URL = process.env.FILE_BASE_URL;
@@ -115,8 +131,9 @@ export default function analysis() {
           throw new Error('Failed to fetch OrdersHistories');
         }
         const data: OrdersHistories = await response.json();
-        console.log('Fetched OrdersHistories:', data);
+        // console.log('Fetched response:', response);
         setOrdersHistories(data);
+        console.log('Fetched OrdersHistories:', data);
 
         // console.log('Recent Orders:', recentOrders);
 
@@ -143,21 +160,34 @@ export default function analysis() {
     setPage(1);
   };
 
+  const handleViewClick = (ordersHistory: OrderHistory) => {
+    setOrderToView(ordersHistory);
+    console.log('Viewing ordersHistory:', ordersHistory);
+    setShowViewForm(true);
+  };
+
+
+  const handleViewCancel = () => {
+    setShowViewForm(false);
+  };
+
   return (
     <>
-      <div className={`rounded-lg px-6 py-8  shadow-md flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+
+
+      <div className={`rounded-lg px-6 py-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
         }`}>
         <div className='flex gap-2'>
-          {/* <Box className="h-8 w-8" /> */}
+          <LuHistory className="h-8 w-8" />
           <h1 className="text-2xl font-bold">Order History</h1>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto ">
-          <form onSubmit={handleSearch} className="flex">
+          <form onSubmit={handleSearch} className="flex text-sm">
             <input
               type="text"
               placeholder="Search products..."
-              className="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none  focus:border-indigo-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => {
@@ -168,7 +198,7 @@ export default function analysis() {
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 "
             >
               Search
             </button>
@@ -176,10 +206,10 @@ export default function analysis() {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <span className="mr-2 text-sm text-gray-600">Price:</span>
+              <span className="mr-2 text-sm text-gray-600 dark:text-white">Price:</span>
               <button
                 onClick={toggleSort}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center"
+                className="px-4 py-2 text-sm dark:text-white dark:bg-gray-800 bg-white border border-gray-300 rounded-md hover:bg-gray-50  flex items-center"
               >
                 {sort === 'asc' ? 'Low to High' : 'High to Low'}
                 <svg
@@ -196,25 +226,35 @@ export default function analysis() {
                 </svg>
               </button>
             </div>
+
           </div>
         </div>
       </div>
-      <div className={`rounded-lg p-6 shadow-md flex flex-col gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
-        <div className="overflow-auto overflow-x-auto h-[calc(100vh-24rem)] " >
-          <table className="w-full divide-y divide-gray-200 ">
-            <thead className="bg-white text-center">
-              <tr>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Order</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Customer</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Payment</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Method</th>
-                <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Action</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
-              {/* {products.map((product) => {
+
+      {showViewForm ? (
+        orderToView ? (
+          <ViewOrder
+            orderHistory={orderToView}
+            onClose={handleViewCancel}  // Fixed: removed the arrow function wrapper
+          />
+        ) : null
+      ) : (
+        <div className={`rounded-lg p-6 shadow-md flex flex-col gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
+          <div className="overflow-auto overflow-x-auto h-[calc(100vh-22.25rem)] " >
+            <table className="w-full divide-y divide-gray-200 ">
+              <thead className="bg-white text-center ">
+                <tr>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Order Id</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Payment</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Method</th>
+                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
+                {/* {products.map((product) => {
                     const primaryImage = getPrimaryImage(product.product_images);
                     const imageUrl = primaryImage?.image_url
                       ? primaryImage.image_url.startsWith('https://') || primaryImage.image_url.startsWith('http://')
@@ -222,93 +262,121 @@ export default function analysis() {
                         : `${FILE_BASE_URL}${primaryImage.image_url}`
                       : '/placeholder-product.png'; */}
 
-              {ordersHistories?.ordersHistories.map((items) => (
-                <tr key={items.id} className="text-center">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {items.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {dayjs(items.order_date).format('DD-MM-YYYY')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {items.user.last_name} {items.user.first_name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {items.status}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {items.payment_status}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {items.payment_method}
-                  </td>
-                </tr>
-              ))}
+                {ordersHistories?.ordersHistories.map((items) => (
 
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination */}
-        <div className="flex justify-center mt-6">
-          <nav className="flex items-center gap-1">
-            <div className="flex items-center gap-2">
-              {/* <span className="text-sm">Items per page:</span> */}
-              <select
-                value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1); // Reset to first page when changing limit
-                }}
-                className="px-2 py-1 border rounded-md text-sm"
-              >
-                {[5, 10, 15, 20].map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+                  <tr key={items.id} className="text-center">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {items.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {dayjs(items.order_date).format('DD-MM-YYYY')}
+                    </td>
+                    <td className="px-6 py-4 flex items-center gap-2 justify-center whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <Image
+                          className="h-10 w-10 rounded-full object-cover border-2 border-gray-500"
+                          src={`${items.user.avatar}` || `${FILE_BASE_URL}${items.user.avatar}`}
+                          alt={items.user.first_name}
+                          width={40}
+                          height={40}
+                          unoptimized={true}
+                        />
+                      </div>
+                      <div className="">
+                        {items.user.last_name} {items.user.first_name}
+                      </div>
+
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {items.payment_status}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {items.status}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {items.payment_method}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300 dark:hover:rounded-t-lg hover:bg-gray-100 w-full"
+                        onClick={() => handleViewClick(items)}
+                      >
+                        <EyeIcon className="h-5 w-5" />
+                        <span className="ml-2">View</span>
+                      </button>
+                    </td>
+                  </tr>
                 ))}
-              </select>
-            </div>
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
-            >
-              Previous
-            </button>
 
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (page <= 3) {
-                pageNum = i + 1;
-              } else if (page >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = page - 2 + i;
-              }
-
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setPage(pageNum)}
-                  className={`px-3 py-1 rounded-md ${page === pageNum ? 'bg-indigo-600 text-white' : 'border border-gray-300'}`}
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination */}
+          <div className="flex justify-center mt-6">
+            <nav className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
+                {/* <span className="text-sm">Items per page:</span> */}
+                <select
+                  value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1); // Reset to first page when changing limit
+                  }}
+                  className="px-2 py-1 border rounded-md text-sm"
                 >
-                  {pageNum}
-                </button>
-              );
-            })}
+                  {[5, 10, 15, 20].map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
+              >
+                Previous
+              </button>
 
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </nav>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (page <= 3) {
+                  pageNum = i + 1;
+                } else if (page >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = page - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`px-3 py-1 rounded-md ${page === pageNum ? 'bg-indigo-600 text-white' : 'border border-gray-300'}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1 rounded-md border border-gray-300 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
+
+
+
+
     </>
   );
 }
