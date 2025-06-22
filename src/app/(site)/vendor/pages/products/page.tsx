@@ -189,17 +189,6 @@ const ProductTable: React.FC = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-
-
-  // const handlePageChange = (newPage: number) => {
-  //   setLoading(true);
-  //   setPage(newPage);
-  // };
-
-  // const limitChange = (newLimit: number) => {
-  //   setLimit(newLimit);
-  // };
-
   const handleCreateClick = () => {
     setShowCreateForm(true);
   };
@@ -291,17 +280,6 @@ const ProductTable: React.FC = () => {
     }
   };
 
-  // const removeImage = (index: number) => {
-  //   setNewProduct(prev => {
-  //     const updatedImages = [...prev.product_images];
-  //     updatedImages.splice(index, 1);
-  //     return {
-  //       ...prev,
-  //       product_images: updatedImages
-  //     };
-  //   });
-  // };
-
   const handleUpdateClick = (product: Product) => {
     setProductToUpdate(product);
     console.log('Updating product:', product);
@@ -367,12 +345,6 @@ const ProductTable: React.FC = () => {
       throw new Error('Authentication token not found');
     }
 
-    // const response = await fetch(url.toString(), {
-    //   headers: {
-    //     'Authorization': `Bearer ${token}`,
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
     try {
       const response = await fetch(`${API_BASE_URL}/vendor/product/${updatedProduct.id}`, {
         method: 'PUT',
