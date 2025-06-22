@@ -462,7 +462,7 @@ export default function ShopPage() {
                         className={`${
                           viewMode === "list"
                             ? "flex items-center gap-4 rounded-xl border p-4 transition hover:shadow-md"
-                            : "rounded-xl bg-gray-100 p-4 shadow-sm transition hover:shadow-md"
+                            : "rounded-xl bg-gray-100 dark:bg-transparent dark:border dark:border-gray-400 p-4 shadow-sm transition hover:shadow-md"
                         }`}
                       >
                         <div
