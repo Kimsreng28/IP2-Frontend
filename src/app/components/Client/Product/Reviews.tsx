@@ -102,7 +102,7 @@ const Reviews: React.FC<ReviewsProps> = ({ productId }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/review`, {
+            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/review/${productId}/review`, {
                 method: "GET",
                 headers: getHeaders(),
             });

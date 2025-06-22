@@ -62,7 +62,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/${productId}/question`, {
+            const response = await fetch(`${env.API_BASE_URL}/client/shop/product/question/${productId}/question`, {
                 method: "GET",
                 headers: getHeaders(),
             });
@@ -218,7 +218,7 @@ const Questions: React.FC<QuestionsProps> = ({ productId }) => {
         const user = getUserFromLocalStorage();
         setUserId(user.id);
         fetchQuestions();
-    }, [productId, userId]);
+    }, [productId]);
 
     return (
         <div className="max-w-4xl px-4 py-8 mx-auto">
