@@ -122,11 +122,8 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                             <tr className="text-sm">
                                 <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider"></th>
                                 <th className=" py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Product Name</th>
-                                {/* <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Brand</th>
-                                <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Category</th> */}
                                 <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Price</th>
                                 <th className="px-6 py-3 text-center  font-bold text-gray-500 uppercase tracking-wider">Quantity</th>
-                                {/* <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Status</th> */}
                                 <th className="px-6 py-3 text-center  font-bold text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>

@@ -254,13 +254,6 @@ export default function analysis() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
-                {/* {products.map((product) => {
-                    const primaryImage = getPrimaryImage(product.product_images);
-                    const imageUrl = primaryImage?.image_url
-                      ? primaryImage.image_url.startsWith('https://') || primaryImage.image_url.startsWith('http://')
-                        ? primaryImage.image_url  // already full URL
-                        : `${FILE_BASE_URL}${primaryImage.image_url}`
-                      : '/placeholder-product.png'; */}
 
                 {ordersHistories?.ordersHistories.map((items) => (
 

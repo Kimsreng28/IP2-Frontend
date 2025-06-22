@@ -85,11 +85,6 @@ export default function Dashboard() {
   const [chart, setChart] = useState<ChartDataItem[]>();
   const [newProducts, setNewProducts] = useState<vendorProduct[]>([]);
   const [recentOrders, setRecentOrders] = useState<ProductOrderSummary[]>([]);
-  // const [committedSearchTerm, setCommittedSearchTerm] = useState('');
-  // const [priceSort, setPriceSort] = useState<'asc' | 'desc'>('asc');
-  // const [page, setPage] = useState<number>(1);
-  // const [limit, setLimit] = useState<number>(10);
-  // const [totalPages, setTotalPages] = useState<number>(1);
 
   const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
   const FILE_BASE_URL = process.env.FILE_BASE_URL;
@@ -280,11 +275,6 @@ export default function Dashboard() {
     <div>
       <div className=" overflow-y-auto overflow-auto overflow-x-auto h-[calc(100vh-7.75rem)] ">
         <div className=" flex flex-col space-y-[2%]   ">
-          {/* <div className={`rounded-lg px-6 py-6  shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-        }`}>
-
-        <h1 className="text-2xl font-bold">📊 Dashboard Overview</h1>
-      </div> */}
 
           <div className="total flex justify-between gap-[5%] ">
 
