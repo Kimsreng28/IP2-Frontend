@@ -544,57 +544,65 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
               {/* Quantity and Actions */}
               <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center border border-gray-300 rounded-lg">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                  {/* Quantity Selector */}
+                  <div className="flex items-center border border-gray-300 rounded-lg w-fit">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="p-3 hover:bg-gray-100"
+                      className="p-2 sm:p-3 hover:bg-gray-100 transition-colors"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="min-w-[60px] px-4 py-3 text-center">
+                    <span className="min-w-[50px] sm:min-w-[60px] px-3 sm:px-4 py-2 sm:py-3 text-center font-medium">
                       {quantity}
                     </span>
                     <button
                       onClick={() =>
                         setQuantity(Math.min(product.stock, quantity + 1))
                       }
-                      className="p-3 hover:bg-gray-100"
+                      className="p-2 sm:p-3 hover:bg-gray-100 transition-colors"
                       disabled={quantity >= product.stock}
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
 
-                  {/* Add to Wishlist */}
-                  <button
-                    onClick={handleAddToWishlist}
-                    disabled={isUpdatingWishlist}
-                    className={`flex items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-colors ${product.is_favorite
-                      ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
-                      : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
-                      } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    {product.is_favorite ? (
-                      <Heart className="w-5 h-5 mr-2 fill-current" />
-                    ) : (
-                      <HeartIcon className="w-5 h-5 mr-2" />
-                    )}
-                    {product.is_favorite ? "In Wishlist" : "Add to Wishlist"}
-                  </button>
+                  {/* Action Buttons Container */}
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 flex-1">
+                    {/* Add to Wishlist */}
+                    <button
+                      onClick={handleAddToWishlist}
+                      disabled={isUpdatingWishlist}
+                      className={`flex items-center justify-center rounded-lg border-2 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-colors ${product.is_favorite
+                          ? "border-red-300 bg-red-50 text-red-600 hover:bg-red-100"
+                          : "border-gray-300 bg-white text-gray-900 hover:border-gray-800 hover:bg-gray-50"
+                        } ${isUpdatingWishlist ? "cursor-not-allowed opacity-50" : ""}`}
+                    >
+                      {product.is_favorite ? (
+                        <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2 fill-current" />
+                      ) : (
+                        <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      )}
+                      <span className="whitespace-nowrap">
+                        {product.is_favorite ? "In Wishlist" : "Add to Wishlist"}
+                      </span>
+                    </button>
 
-                  {/* Add to Cart */}
-                  <button
-                    // onClick={() => handleAddToCart(product.id)}
-                    disabled={product.stock === 0}
-                    className={`flex items-center justify-center rounded-lg px-8 py-3 font-semibold ${product.stock === 0
-                      ? "cursor-not-allowed bg-gray-100 text-gray-600"
-                      : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
-                      }`}
-                  >
-                    <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                    {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-                  </button>
+                    {/* Add to Cart */}
+                    <button
+                      // onClick={() => handleAddToCart(product.id)}
+                      disabled={product.stock === 0}
+                      className={`flex items-center justify-center rounded-lg px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base font-semibold transition-colors ${product.stock === 0
+                          ? "cursor-not-allowed bg-gray-100 text-gray-600"
+                          : "bg-black text-white hover:bg-gray-800 hover:text-gray-100"
+                        }`}
+                    >
+                      <ShoppingCartIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <span className="whitespace-nowrap">
+                        {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

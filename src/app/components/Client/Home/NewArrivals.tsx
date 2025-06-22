@@ -198,7 +198,7 @@ export default function NewArrivals() {
         <h2 className="text-2xl font-semibold text-black dark:text-gray-300">
           New Arrivals
         </h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           {getPageNumbers().map((num) => (
             <motion.button
               key={num}

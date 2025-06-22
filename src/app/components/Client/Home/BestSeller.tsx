@@ -190,7 +190,7 @@ export default function BestSeller() {
               <div key={item.id}>
                 <div className="group relative min-h-[20px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm transition hover:shadow-md dark:bg-transparent">
                   {/* Hot Badge */}
-                  {item.is_hot && (
+                  {item.is_best_seller && (
                     <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
                       HOT
                     </div>
