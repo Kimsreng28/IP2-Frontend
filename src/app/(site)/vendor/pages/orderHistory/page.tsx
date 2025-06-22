@@ -298,7 +298,7 @@ export default function analysis() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <button
-                        className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300 dark:hover:rounded-t-lg hover:bg-gray-100 w-full"
+                        className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300 hover:rounded-md hover:bg-gray-100 w-full"
                         onClick={() => handleViewClick(items)}
                       >
                         <EyeIcon className="h-5 w-5" />

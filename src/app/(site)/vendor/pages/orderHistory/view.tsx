@@ -108,7 +108,7 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                     <IoClose className="w-5 h-5 " />
                 </button>
             </div>
-            <div className="overflow-auto overflow-x-auto h-[calc(100vh-17.5rem)] flex flex-row justify-between " >
+            <div className="overflow-auto overflow-x-auto h-[calc(100vh-20.5rem)] flex flex-row justify-between " >
                 {error && (
                     <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
@@ -181,9 +181,9 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                 <div className="customer w-[25%] border-l-2">
                     <h2 className="text-lg font-semibold text-center mb-4">Customer</h2>
                     <div className="flex flex-col items-center gap-2">
-                        <div className="flex-shrink-0 h-10 w-10">
+                        <div className="flex-shrink-0 h-15 w-15">
                             <Image
-                                className="h-10 w-10 rounded-full object-cover border-2 border-gray-500"
+                                className="h-15 w-15 rounded-full object-cover border-2 border-gray-500"
                                 src={`${orderHistory.user.avatar}` || `${FILE_BASE_URL}${orderHistory.user.avatar}`}
                                 alt={orderHistory.user.first_name}
                                 width={40}
@@ -192,22 +192,39 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                             />
                         </div>
                         <div className="text-center border-b-2">
-                            <p className="text-sm pb-2 font-medium">{orderHistory.user.first_name} {orderHistory.user.last_name}</p>
-                            <p className="text-sm pb-1 text-gray-600">{orderHistory.user.email}</p>
-                            <p className="text-sm pb-1 text-gray-600">{orderHistory.shipping_address}</p>
+                            <p className="text-sm pb-3  font-semibold">{orderHistory.user.first_name} {orderHistory.user.last_name}</p>
+                            <p className="text-sm pb-2 text-gray-600">{orderHistory.user.email}</p>
+                            <p className="text-sm pb-2 text-gray-600">{orderHistory.shipping_address}</p>
                         </div>
-                        <div className="text-left">
-                            <p className="text-sm pb-2 text-gray-600">
-                                Order On: {new Date(orderHistory.order_date).toLocaleDateString('en-GB', {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric'
-                                })}
-                            </p>
-                            <p className="text-sm pb-2 text-gray-600">Payment Status: {orderHistory.payment_status}</p>
-                            <p className="text-sm pb-2 text-gray-600">Total Amount: {orderHistory.total_amount} $</p>
-                            <p className="text-sm pb-2 text-gray-600">By: {orderHistory.payment_method}</p>
-                            <p className="text-sm pb-2 text-gray-600">Delivery Status: {orderHistory.status}</p>
+                        <div className="flex flex-row">
+
+                            <div className="text-right">
+                                <p className="text-sm pb-2 text-gray-600"> Order On</p>
+                                <p className="text-sm pb-2 text-gray-600">Payment Status</p>
+                                <p className="text-sm pb-2 text-gray-600">Total Amount</p>
+                                <p className="text-sm pb-2 text-gray-600">By</p>
+                                <p className="text-sm pb-2 text-gray-600">Delivery Status</p>
+                            </div>
+                            <div className="px-2">
+                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                            </div>
+                            <div className="text-left">
+                                <p className="text-sm pb-2 text-gray-600">
+                                    {new Date(orderHistory.order_date).toLocaleDateString('en-GB', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                    })}
+                                </p>
+                                <p className="text-sm pb-2 text-gray-600">{orderHistory.payment_status}</p>
+                                <p className="text-sm pb-2 text-gray-600">{orderHistory.total_amount} $</p>
+                                <p className="text-sm pb-2 text-gray-600">{orderHistory.payment_method}</p>
+                                <p className="text-sm pb-2 text-gray-600">{orderHistory.status}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
