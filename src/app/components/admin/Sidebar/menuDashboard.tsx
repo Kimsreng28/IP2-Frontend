@@ -6,6 +6,7 @@ import {
   Shield,
   Users
 } from "lucide-react";
+import { LuHistory } from "react-icons/lu";
 
 const menuDashboardAdmin = [
   {
@@ -48,7 +49,7 @@ const menuDashboardVendor = [
   },
   {
     id: 2,
-    title: "Create Product",
+    title: "Products",
     path: "/vendor/pages/products",
     icon: Box,
     newTab: false,
@@ -57,7 +58,7 @@ const menuDashboardVendor = [
     id: 3,
     title: "Order History",
     path: "/vendor/pages/orderHistory",
-    icon: BarChart,
+    icon: LuHistory,
     newTab: false,
   },
   {

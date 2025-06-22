@@ -76,9 +76,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     };
 
     return (
-        <div className={`rounded-lg shadow p-6 mb-6 overflow-hidden h-[calc(100vh-17rem)] ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
-            <div className="">
-                <h2 className="text-xl font-semibold mb-6">Create New Product</h2>
+        // <div className={`rounded-lg shadow p-6 mb-6 overflow-hidden h-[calc(100vh-17rem)] ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
+            <div className="overflow-auto p-3 h-[calc(100vh-15.5rem)]">
+                <h2 className="text-lg font-semibold mb-4">Create New Product</h2>
                 {error && (
                     <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
@@ -91,8 +91,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Product Name</label>
                             <input
                                 type="text"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                // className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
+                                //     }`}
                                 value={newProduct.name}
                                 onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                                 required
@@ -103,8 +104,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         <div>
                             <label className="block text-sm font-medium mb-1">Category</label>
                             <select
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={newProduct.category_id}
                                 onChange={(e) => setNewProduct({ ...newProduct, category_id: Number(e.target.value) })}
                                 required
@@ -122,8 +122,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         <div>
                             <label className="block text-sm font-medium mb-1">Brand</label>
                             <select
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={newProduct.brand_id}
                                 onChange={(e) => setNewProduct({ ...newProduct, brand_id: Number(e.target.value) })}
                                 required
@@ -142,8 +141,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Price</label>
                             <input
                                 type="number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={newProduct.price}
                                 onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
                                 onFocus={(e) => {
@@ -167,8 +165,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <label className="block text-sm font-medium mb-1">Stock</label>
                             <input
                                 type="number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                    }`}
+                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 value={newProduct.stock}
                                 onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
                                 onFocus={(e) => {
@@ -191,8 +188,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <div className='flex-1'>
                                 <label className="block text-sm font-medium mb-1">Description</label>
                                 <textarea
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                        }`}
+                                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     rows={3}
                                     value={newProduct.description}
                                     onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
@@ -211,7 +207,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                             checked={newProduct.is_new_arrival}
                                             onChange={(e) => setNewProduct({ ...newProduct, is_new_arrival: e.target.checked })}
                                         />
-                                        <span className="ml-2">New Arrival</span>
+                                        <span className="ml-2 text-sm">New Arrival</span>
                                     </label>
                                 </div>
                                 <div>
@@ -222,7 +218,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                             checked={newProduct.is_best_seller}
                                             onChange={(e) => setNewProduct({ ...newProduct, is_best_seller: e.target.checked })}
                                         />
-                                        <span className="ml-2">Best Seller</span>
+                                        <span className="ml-2 text-sm">Best Seller</span>
                                     </label>
                                 </div>
                             </div>
@@ -251,7 +247,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                             }
                                         }}
                                     />
-                                    <p className="mt-1 text-sm">
+                                    <p className="mt-1 text-sm mb-1 font-semibold">
                                         First image will be set as primary
                                     </p>
                                 </div>
@@ -260,11 +256,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             {/* Preview/Message */}
                             <div className='col-span-2'>
                                 {newProduct.product_images.length > 0 && (
-                                    <div className="mt-2">
+                                    <div className="mt-2 ">
                                         <h4 className="text-sm font-medium mb-2">Selected Images:</h4>
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-2 ">
                                             {newProduct.product_images.map((file, index) => (
-                                                <div key={index} className="relative">
+                                                <div key={index} className="relative border rounded-lg shadow-md">
                                                     <img
                                                         src={URL.createObjectURL(file)}
                                                         alt={`Preview ${index + 1}`}
@@ -295,7 +291,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className={`px-4 py-2 rounded-md ${theme === "dark"
+                            className={`px-4 py-2 text-sm rounded-md ${theme === "dark"
                                 ? "bg-gray-700 text-white hover:bg-gray-600"
                                 : "bg-gray-300 text-gray-800 hover:bg-gray-400"
                                 }`}
@@ -305,14 +301,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         <button
                             type="submit"
                             disabled={isSubmitting || newProduct.category_id === 0 || newProduct.brand_id === 0}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                         >
                             {isSubmitting ? 'Creating...' : 'Create Product'}
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+        // </div>
     );
 };
 
