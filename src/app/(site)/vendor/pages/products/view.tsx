@@ -104,7 +104,7 @@ const ViewProduct: React.FC<ProductDetailViewProps> = ({
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                 {/* Product Images */}
                 <div className="space-y-4 ">
-                    <div className="relative overflow-hidden bg-white rounded-lg">
+                    <div className="relative overflow-hidden dark:bg-gray-500 bg-white rounded-lg">
                         <div className="relative aspect-square">
                             <Image
                                 src={images[selectedImage] || "/placeholder.svg"}
@@ -117,14 +117,14 @@ const ViewProduct: React.FC<ProductDetailViewProps> = ({
                                 <>
                                     <button
                                         onClick={prevImage}
-                                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md left-4 top-1/2 hover:bg-gray-50"
+                                        className="absolute flex items-center dark:bg-gray-800 justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md left-4 top-1/2 hover:bg-gray-50"
                                     >
                                         <ChevronLeft className="w-5 h-5" />
                                     </button>
 
                                     <button
                                         onClick={nextImage}
-                                        className="absolute flex items-center justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md right-4 top-1/2 hover:bg-gray-50"
+                                        className="absolute flex items-center dark:bg-gray-800 justify-center w-10 h-10 -translate-y-1/2 bg-white rounded-full shadow-md right-4 top-1/2 hover:bg-gray-50"
                                     >
                                         <ChevronRight className="w-5 h-5" />
                                     </button>
@@ -140,7 +140,7 @@ const ViewProduct: React.FC<ProductDetailViewProps> = ({
                                 <button
                                     key={index}
                                     onClick={() => setSelectedImage(index)}
-                                    className={`h-20 w-20 overflow-hidden rounded-lg border-2 bg-white ${selectedImage === index
+                                    className={`h-20 w-20 overflow-hidden rounded-lg border-2 dark:bg-gray-500 bg-white ${selectedImage === index
                                         ? "border-gray-900"
                                         : "border-gray-200"
                                         }`}
@@ -163,54 +163,32 @@ const ViewProduct: React.FC<ProductDetailViewProps> = ({
                     {/* Rating */}
                     <div className="flex items-center space-x-2">
                         {renderStars(product.stars)}
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm dark:text-white text-gray-600">
                             {product.stars} out of 5 stars
                         </span>
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-3xl font-bold text-gray-900">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                         {product.name}
                     </h1>
 
                     {/* Brand */}
-                    <p className="text-lg text-gray-600">by {product.brand?.name}</p>
+                    <p className="text-lg text-gray-600 dark:text-white">by {product.brand?.name}</p>
 
                     {/* Description */}
-                    <p className="leading-relaxed text-gray-600">
+                    <p className="leading-relaxed text-gray-600 dark:text-white">
                         {product.description}
                     </p>
-                    <p className="text-xl font-bold text-gray-900">
+                    <p className="text-xl font-bold text-gray-900 dark:text-white">
                         {product.price} $
                     </p>
-
-                    {/* Price */}
-                    {/* <div className="flex items-center space-x-3">
-                        {priceInfo ? (
-                            <>
-                                <span className="text-3xl font-bold text-gray-900">
-                                    ${priceInfo.discounted.toFixed(2)}
-                                </span>
-                                <span className="text-xl text-gray-500 line-through">
-                                    ${priceInfo.original.toFixed(2)}
-                                </span>
-                                <span className="px-2 py-1 text-sm font-medium text-red-600 bg-red-100 rounded">
-                                    {priceInfo.percentage}% OFF
-                                </span>
-                            </>
-                        ) : (
-                            <span className="text-3xl font-bold text-gray-900">
-                                ${product.price?.toFixed(2)}
-                            </span>
-                        )}
-                    </div> */}
-
                     {/* Stock Status */}
                     <div className="flex items-center space-x-2">
                         <span
                             className={`inline-block h-2 w-2 rounded-full ${product.stock > 0 ? "bg-green-500" : "bg-red-500"}`}
                         ></span>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-600 dark:text-white">
                             {product.stock > 0
                                 ? `${product.stock} in stock`
                                 : "Out of stock"}
@@ -230,43 +208,6 @@ const ViewProduct: React.FC<ProductDetailViewProps> = ({
                             </span>
                         )}
                     </div>
-
-                    {/* Countdown Timer (only show if there's an active discount) */}
-                    {/* {priceInfo && (
-                        <div className="space-y-2">
-                            <p className="text-sm text-gray-600">
-                                Offer discount ends in:
-                            </p>
-                            <div className="flex space-x-4">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-gray-900">
-                                        {timeLeft.days.toString().padStart(2, "0")}
-                                    </div>
-                                    <div className="text-xs text-gray-500">Days</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-gray-900">
-                                        {timeLeft.hours.toString().padStart(2, "0")}
-                                    </div>
-                                    <div className="text-xs text-gray-500">Hours</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-gray-900">
-                                        {timeLeft.minutes.toString().padStart(2, "0")}
-                                    </div>
-                                    <div className="text-xs text-gray-500">Minutes</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-gray-900">
-                                        {timeLeft.seconds.toString().padStart(2, "0")}
-                                    </div>
-                                    <div className="text-xs text-gray-500">Seconds</div>
-                                </div>
-                            </div>
-                        </div>
-                    )} */}
-
-
                 </div>
             </div>
         </div>

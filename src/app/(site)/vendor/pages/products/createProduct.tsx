@@ -92,8 +92,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <input
                                 type="text"
                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                // className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${theme === "dark" ? "bg-gray-700 border-gray-600" : "border-gray-300"
-                                //     }`}
                                 value={newProduct.name}
                                 onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                                 required

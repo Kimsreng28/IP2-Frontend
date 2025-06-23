@@ -1,17 +1,14 @@
 "use client";
+import env from "@/src/envs/env";
 import { useTheme } from "next-themes";
 import Image from 'next/image';
 import { useEffect, useState } from "react";
 import {
-  FaBoxes, // For Total Products (Font Awesome) 
-  FaDollarSign // For Total Sales (Font Awesome)
-  ,
-
+  FaBoxes, 
+  FaDollarSign, 
   FaUsers
 } from 'react-icons/fa';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
-// or Material Design icons:
 
 interface DashboardTotals {
   message: string;
@@ -63,7 +60,6 @@ export interface Product {
   created_at: string; // ISO date string
 }
 
-// interfaces/VendorSalesChart.ts
 
 export interface ChartDataItem {
   month: string;
@@ -85,10 +81,6 @@ export default function Dashboard() {
   const [chart, setChart] = useState<ChartDataItem[]>();
   const [newProducts, setNewProducts] = useState<vendorProduct[]>([]);
   const [recentOrders, setRecentOrders] = useState<ProductOrderSummary[]>([]);
-
-  const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-  const FILE_BASE_URL = process.env.FILE_BASE_URL;
-
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
@@ -106,10 +98,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchRecentOrders = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/dashboard/recentOrders`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/dashboard/recentOrders`);
 
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token');
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -142,10 +134,10 @@ export default function Dashboard() {
 
     const fetchTotals = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/dashboard/total`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/dashboard/total`);
 
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token'); 
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -177,10 +169,10 @@ export default function Dashboard() {
 
     const fetchNewProducts = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/dashboard/newProducts`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/dashboard/newProducts`);
 
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token'); 
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -212,10 +204,10 @@ export default function Dashboard() {
 
     const fetchChart = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/dashboard/chartData`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/dashboard/chartData`);
 
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token'); 
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -252,7 +244,7 @@ export default function Dashboard() {
     fetchChart();
     fetchNewProducts();
 
-  }, [API_BASE_URL]);
+  }, [env.API_BASE_URL]);
 
   if (loading) {
     return (
@@ -329,9 +321,9 @@ export default function Dashboard() {
 
           <div className="chart">
 
-            <div className="bg-white rounded-xl shadow px-6 py-2">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow px-6 py-2">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-700">Reports</h2>
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-white">Reports</h2>
                 <h3 className="text-sm bg-violet-100 text-violet-600 px-3 py-1 rounded">This Year</h3>
                 {/* <button className="text-sm bg-violet-100 text-violet-600 px-3 py-1 rounded">This week</button> */}
               </div>
@@ -369,11 +361,11 @@ export default function Dashboard() {
 
             <div className={`rounded-lg px-6 py-6 shadow-md w-[67%] ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"
               }`}>
-              <h2 className="text-lg font-semibold text-gray-700 mb-4">Most Ordered Products</h2>
+              <h2 className="text-lg font-semibold  dark:text-white text-gray-700 mb-4">Most Ordered Products</h2>
               <div className="overflow-auto overflow-x-auto bg-pink-300" >
-                <table className="w-full divide-y divide-gray-200 ">
-                  <thead className="bg-white">
-                    <tr className="text-center text-[12px] font-bold text-gray-500 uppercase tracking-wider">
+                <table className="w-full divide-y  divide-gray-200 ">
+                  <thead className="bg-white dark:bg-gray-800">
+                    <tr className="text-center text-[12px] font-bold dark:text-white text-gray-500 uppercase tracking-wider">
                       <th className="  ">Tracking Id</th>
                       <th className="  "></th>
                       <th className=" px-6 text-left ">Product Name</th>
@@ -382,25 +374,18 @@ export default function Dashboard() {
                       <th className="  ">Total Amount</th>
                     </tr>
                   </thead>
-                  {/* {products.map((product) => {
-                    const primaryImage = getPrimaryImage(product.product_images);
-                    const imageUrl = primaryImage?.image_url
-                      ? primaryImage.image_url.startsWith('https://') || primaryImage.image_url.startsWith('http://')
-                        ? primaryImage.image_url  // already full URL
-                        : `${FILE_BASE_URL}${primaryImage.image_url}`
-                      : '/placeholder-product.png'; */}
-                  <tbody className="bg-white divide-y  divide-gray-200 overflow-auto">
+                  <tbody className="bg-white divide-y dark:bg-gray-800  divide-gray-200 overflow-auto">
 
                     {recentOrders.map((items) => (
-                      <tr key={items.product_id} className="text-center">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <tr key={items.product_id} className="text-center ">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
                           {items.product_id}
                         </td>
                         <td className=" py-4 flex  justify-end whitespace-nowrap">
                           <div className="flex-shrink-0 h-10 w-10">
                             <div className="relative h-10 w-10 rounded overflow-hidden">
                               <Image
-                                src={`${FILE_BASE_URL}${items.product_image}`}
+                                src={`${env.FILE_BASE_URL}${items.product_image}`}
                                 alt={items.product_name}
                                 fill
                                 className="rounded-lg object-cover border-2 border-gray-300"
@@ -408,22 +393,20 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-[12px]  text-left whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-[12px]  text-left whitespace-nowrap text-sm text-gray-500 dark:text-white">
                           {items.product_name}
                         </td>
-                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500 dark:text-white">
                           {items.product_price} $
                         </td>
-                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500 dark:text-white">
                           {items.totalOrder}
                         </td>
-                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-[12px] whitespace-nowrap text-sm text-gray-500 dark:text-white">
                           {items.totalAmount}
                         </td>
                       </tr>
                     ))}
-
-
                   </tbody>
                 </table>
               </div>
@@ -433,7 +416,7 @@ export default function Dashboard() {
               }`}>
 
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-700">Recent Products</h2>
+                <h2 className="text-lg font-semibold dark:text-white text-gray-700">Recent Products</h2>
               </div>
               <div className="flex flex-col gap-4">
                 {newProducts.map((items) => (
@@ -442,7 +425,7 @@ export default function Dashboard() {
                     <div className="flex-shrink-0 h-10 w-10 m-1">
                       <div className="relative h-10 w-10 rounded overflow-hidden">
                         <Image
-                          src={`${FILE_BASE_URL}${items.product.product_images[0].image_url}`}
+                          src={`${env.FILE_BASE_URL}${items.product.product_images[0].image_url}`}
                           alt={items.product.name}
                           fill
                           className="rounded-lg object-cover border-2 border-gray-300"
@@ -452,10 +435,10 @@ export default function Dashboard() {
 
                     <div className="flex flex-col">
                       <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-sm text-gray-700">{items.product.name}</h2>
+                        <h2 className="text-sm dark:text-white text-gray-700">{items.product.name}</h2>
                       </div>
                       <div className="flex justify-between items-center ">
-                        <h2 className="text-sm text-gray-700">{items.product.price} $</h2>
+                        <h2 className="text-sm dark:text-white text-gray-700">{items.product.price} $</h2>
                       </div>
                     </div>
                   </div>
