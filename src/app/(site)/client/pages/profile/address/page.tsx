@@ -1,6 +1,7 @@
 "use client";
 
 import AddressSection from "@/src/app/components/Client/Profiles/Address/AddressSection";
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -25,17 +26,14 @@ const AddressPage = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(
-          `${process.env.API_BASE_URL}/account/auth/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const res = await fetch(`${env.API_BASE_URL}/account/auth/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         const resAddress = await fetch(
-          `${process.env.API_BASE_URL}/profile/addresses`,
+          `${env.API_BASE_URL}/profile/addresses`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -107,8 +105,8 @@ const AddressPage = () => {
       };
 
       const url = addressData.id
-        ? `${process.env.API_BASE_URL}/profile/addresses/${addressData.id}`
-        : `${process.env.API_BASE_URL}/profile/addresses`;
+        ? `${env.API_BASE_URL}/profile/addresses/${addressData.id}`
+        : `${env.API_BASE_URL}/profile/addresses`;
 
       const method = addressData.id ? "PATCH" : "POST";
 

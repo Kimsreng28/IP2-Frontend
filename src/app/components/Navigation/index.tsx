@@ -1,4 +1,5 @@
 "use client";
+import env from "@/src/envs/env";
 import { Heart, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,7 +38,7 @@ const Navigation = () => {
 
       // Fetch wishlist count
       const wishlistResponse = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/wishlist/count`,
+        `${env.API_BASE_URL}/client/shop/wishlist/count`,
         { headers },
       );
       if (wishlistResponse.ok) {
@@ -47,7 +48,7 @@ const Navigation = () => {
 
       // Fetch cart count
       const cartResponse = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/cart/count`,
+        `${env.API_BASE_URL}/client/shop/cart/count`,
         { headers },
       );
       if (cartResponse.ok) {
@@ -64,14 +65,11 @@ const Navigation = () => {
     if (!token) return null;
 
     try {
-      const res = await fetch(
-        `${process.env.API_BASE_URL}/account/auth/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`${env.API_BASE_URL}/account/auth/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (!res.ok) {
         console.error("Failed to fetch profile:", res.status);
@@ -87,48 +85,48 @@ const Navigation = () => {
     }
   };
 
- useEffect(() => {
-  setCurrentPath(pathUrl);
+  useEffect(() => {
+    setCurrentPath(pathUrl);
 
-  const fetchAvatar = async () => {
-    const currentAvatar = await getAvatar();
-    setAvatar(currentAvatar);
-  };
+    const fetchAvatar = async () => {
+      const currentAvatar = await getAvatar();
+      setAvatar(currentAvatar);
+    };
 
-  fetchAvatar();
-  fetchCounts();
-
-  // Enhanced event listeners for real-time updates
-  const handleWishlistUpdate = () => {
+    fetchAvatar();
     fetchCounts();
-    // Visual feedback
-    const wishlistIcon = document.getElementById("wishlist-icon");
-    if (wishlistIcon) {
-      wishlistIcon.classList.add("animate-pulse");
-      setTimeout(() => wishlistIcon.classList.remove("animate-pulse"), 1000);
-    }
-  };
 
-  const handleCartUpdate = () => {
-    fetchCounts();
-    // Visual feedback
-    const cartIcon = document.getElementById("cart-icon");
-    if (cartIcon) {
-      cartIcon.classList.add("animate-bounce");
-      setTimeout(() => cartIcon.classList.remove("animate-bounce"), 1000);
-    }
-  };
+    // Enhanced event listeners for real-time updates
+    const handleWishlistUpdate = () => {
+      fetchCounts();
+      // Visual feedback
+      const wishlistIcon = document.getElementById("wishlist-icon");
+      if (wishlistIcon) {
+        wishlistIcon.classList.add("animate-pulse");
+        setTimeout(() => wishlistIcon.classList.remove("animate-pulse"), 1000);
+      }
+    };
 
-  window.addEventListener("wishlistUpdated", handleWishlistUpdate);
-  window.addEventListener("cartUpdated", handleCartUpdate);
-  window.addEventListener("avatarUpdated", fetchAvatar);
+    const handleCartUpdate = () => {
+      fetchCounts();
+      // Visual feedback
+      const cartIcon = document.getElementById("cart-icon");
+      if (cartIcon) {
+        cartIcon.classList.add("animate-bounce");
+        setTimeout(() => cartIcon.classList.remove("animate-bounce"), 1000);
+      }
+    };
 
-  return () => {
-    window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
-    window.removeEventListener("cartUpdated", handleCartUpdate);
-    window.removeEventListener("avatarUpdated", fetchAvatar);
-  };
-}, [pathUrl]);
+    window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("avatarUpdated", fetchAvatar);
+
+    return () => {
+      window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+      window.removeEventListener("avatarUpdated", fetchAvatar);
+    };
+  }, [pathUrl]);
 
   // Sticky menu
   const handleStickyMenu = () => {

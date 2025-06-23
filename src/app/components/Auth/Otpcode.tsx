@@ -1,4 +1,5 @@
 "use client";
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,6 +10,7 @@ const VerifyOTP = () => {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState<string>("");
+  const fileUrl = `${env.FILE_BASE_URL}`;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
@@ -34,8 +36,7 @@ const VerifyOTP = () => {
 
   const handleNewPassword = async () => {
     try {
-      const apiUrl = process.env.API_BASE_URL ?? "";
-      const res = await fetch(`${apiUrl}/account/auth/verify-reset`, {
+      const res = await fetch(`${env.API_BASE_URL}/account/auth/verify-reset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +58,7 @@ const VerifyOTP = () => {
     setError(""); // Reset any previous error message
 
     try {
-      const response = await fetch("http://localhost:3001/auth/resend", {
+      const response = await fetch(`${env.API_BASE_URL}/auth/resend`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

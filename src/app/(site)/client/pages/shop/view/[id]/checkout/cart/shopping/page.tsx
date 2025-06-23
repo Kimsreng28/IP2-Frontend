@@ -2,6 +2,7 @@
 
 import { CartItems } from "@/src/app/components/Client/checkout/shopping/CartItem";
 import { CartSummary } from "@/src/app/components/Client/checkout/shopping/CartSummary";
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -157,7 +158,7 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
       calculateSubtotal(updatedItems);
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/cart/${cartItemId}`,
+        `${env.API_BASE_URL}/client/shop/cart/${cartItemId}`,
         {
           method: "DELETE",
           headers: {
@@ -204,7 +205,7 @@ const ShoppingCartPage = ({ params }: { params: { id: string } }) => {
 
       // Update on server
       const response = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/cart/${cartItemId}`,
+        `${env.API_BASE_URL}/client/shop/cart/${cartItemId}`,
         {
           method: "PUT",
           headers: {

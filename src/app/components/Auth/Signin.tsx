@@ -1,5 +1,6 @@
 "use client";
 
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +13,7 @@ const Signin = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const fileUrl = `${env.FILE_BASE_URL}`;
 
   const clearAuthStorage = () => {
     localStorage.removeItem("token");
@@ -93,8 +95,7 @@ const Signin = () => {
     if (!validateInputs()) return;
 
     try {
-      const apiUrl = process.env.API_BASE_URL ?? "";
-      const res = await fetch(`${apiUrl}/account/auth`, {
+      const res = await fetch(`${env.API_BASE_URL}/account/auth`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -138,8 +139,7 @@ const Signin = () => {
     e.preventDefault();
     try {
       clearAuthStorage();
-      const apiUrl = process.env.API_BASE_URL ?? "";
-      window.location.href = `${apiUrl}/account/auth/google`;
+      window.location.href = `${env.API_BASE_URL}/account/auth/google`;
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);
