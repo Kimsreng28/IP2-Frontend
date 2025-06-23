@@ -350,7 +350,7 @@ export default function analysis() {
                   }}
                   className="px-2 py-1 border rounded-md text-sm"
                 >
-                  {[1, 5, 10, 15, 20].map((option) => (
+                  {[ 5, 10, 15, 20].map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>
