@@ -334,7 +334,8 @@ const ProductTable: React.FC = () => {
       });
     }
     // Get the JWT token from where you store it (localStorage, cookies, etc.)
-    const token = localStorage.getItem('authToken'); 
+    const token = localStorage.getItem('token'); 
+    console.log(token)
 
     if (!token) {
       throw new Error('Authentication token not found');
@@ -346,7 +347,7 @@ const ProductTable: React.FC = () => {
         body: formData,
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/json'
         }
       });
 
@@ -632,7 +633,7 @@ const ProductTable: React.FC = () => {
                       }}
                       className="px-2 py-1 border rounded-md text-sm"
                     >
-                      {[1, 5, 10, 15, 20].map((option) => (
+                      {[ 5, 10, 15, 20].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
