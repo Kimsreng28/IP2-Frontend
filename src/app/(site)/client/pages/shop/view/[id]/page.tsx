@@ -159,10 +159,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   }, []);
 
   //TODO: Image is missing
-  const fileUrl = `${env.FILE_BASE_URL}`;
+  const fileUrl = env.FILE_BASE_URL || "https://files.ele-sale.shop/api/file/";
   const images =
     Array.isArray(product?.product_images) && product.product_images.length > 0
-      ? product.product_images.map((img) => fileUrl + img.image_url)
+      ? product.product_images.map((img) => new URL(img.image_url, fileUrl).href)
       : ["/images/product/image1.png", "/images/product/image2.png"];
 
   const colors = [
@@ -437,11 +437,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                         }`}
                     >
                       <Image
-                        src={image || "/placeholder.svg"}
+                        src={image || "/image2.png"}
                         alt={`${product.name} ${index + 1}`}
                         width={80}
                         height={80}
                         className="object-contain p-2"
+                        onError={() => console.error(`Failed to load image: ${image}`)}
                       />
                     </button>
                   ))}
