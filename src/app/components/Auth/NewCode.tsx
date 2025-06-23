@@ -1,5 +1,6 @@
 "use client";
 
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ const ChangeCode = () => {
   });
 
   const router = useRouter();
+  const fileUrl = `${env.FILE_BASE_URL}`;
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,14 +48,16 @@ const ChangeCode = () => {
       return;
     }
     try {
-      const apiUrl = process.env.API_BASE_URL ?? "";
-      const res = await fetch(`${apiUrl}/account/auth/complete-reset`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${env.API_BASE_URL}/account/auth/complete-reset`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message ?? "Something went wrong");

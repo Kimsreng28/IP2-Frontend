@@ -1,4 +1,5 @@
 "use client";
+import env from "@/src/envs/env";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,6 +27,9 @@ const Signup = () => {
 
   // Router for navigation
   const router = useRouter();
+
+  // File env
+  const fileUrl = `${env.FILE_BASE_URL}`;
 
   // State for terms and conditions checkbox
   // State for password visibility toggle
@@ -108,8 +112,8 @@ const Signup = () => {
     // Prepare data for signup request
     try {
       // Send signup request to the server
-      const apiUrl = process.env.API_BASE_URL ?? "";
-      const response = await fetch(`${apiUrl}/account/auth/signup`, {
+
+      const response = await fetch(`${env.API_BASE_URL}/account/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,9 +149,8 @@ const Signup = () => {
   // Handle Google signup
   const handleGoogleSignup = async () => {
     try {
-      const apiUrl = process.env.API_BASE_URL ?? "";
       // Redirect to Google authentication URL
-      window.location.href = `${apiUrl}/account/auth/google`;
+      window.location.href = `${env.API_BASE_URL}/account/auth/google`;
     } catch (err: any) {
       alert("Google Sign-in failed: " + err.message);
       console.error("Google Sign-in error:", err);

@@ -30,7 +30,7 @@ const WishlistPage = () => {
         }
 
         const response = await fetch(
-          `${process.env.API_BASE_URL}/client/shop/wishlist`,
+          `${env.API_BASE_URL}/client/shop/wishlist`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const WishlistPage = () => {
       );
 
       const response = await fetch(
-        `${process.env.API_BASE_URL}/client/shop/wishlist/${productId}`,
+        `${env.API_BASE_URL}/client/shop/wishlist/${productId}`,
         {
           method: "DELETE",
           headers: {
@@ -94,7 +94,7 @@ const WishlistPage = () => {
       if (!response.ok) {
         // Revert on error
         const response = await fetch(
-          `${process.env.API_BASE_URL}/client/shop/wishlist`,
+          `${env.API_BASE_URL}/client/shop/wishlist`,
           {
             headers: {
               "Content-Type": "application/json",
