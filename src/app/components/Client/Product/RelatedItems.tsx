@@ -2,7 +2,6 @@
 
 import env from "@/src/envs/env";
 import { Product } from "@/src/interface/product.interface";
-import { getUserFromLocalStorage } from "@/src/utils/getUser";
 import { mdiHeart, mdiHeartOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { motion } from "framer-motion";
@@ -118,7 +117,7 @@ const RelatedItems: React.FC<RelatedItemsProps> = ({ productId }) => {
                     <div className="flex gap-4 w-max">
                         {relatedProducts.map((item) => (
                             <div key={item.id} className="flex gap-1">
-                                <div className="group relative min-h-[20px] min-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm hover:shadow-md dark:bg-transparent">
+                                <div className="group relative min-h-[20px] min-w-[260px] max-w-[260px] overflow-hidden rounded-xl border bg-gray-100 p-4 shadow-sm hover:shadow-md dark:bg-transparent">
                                     {/* NEW Badge */}
                                     {item.is_new && (
                                         <div className="absolute px-2 py-1 text-xs font-bold text-black bg-white rounded left-2 top-2">
