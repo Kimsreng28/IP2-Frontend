@@ -6,6 +6,7 @@ import { LuHistory } from "react-icons/lu";
 import { EyeIcon } from 'lucide-react';
 import Image from 'next/image';
 import ViewOrder from './view';
+import env from '@/src/envs/env';
 export interface OrdersHistories {
   ordersHistories: OrderHistory[];
   totalItems: number;
@@ -96,14 +97,10 @@ export default function analysis() {
   const [showViewForm, setShowViewForm] = useState<boolean>(false);
   const [orderToView, setOrderToView] = useState<OrderHistory | null>(null);
 
-
-  const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-  const FILE_BASE_URL = process.env.FILE_BASE_URL;
-
   useEffect(() => {
     const fetchOrdersHistories = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/orderhistory`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/orderhistory`);
         url.searchParams.append('page', page.toString());
         url.searchParams.append('limit', limit.toString());
         url.searchParams.append('sort', sort);
@@ -111,8 +108,12 @@ export default function analysis() {
           url.searchParams.append('keySearch', committedSearchTerm);
         }
 
+        console.log(limit);
+        console.log(page);
+
+
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token');
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -134,6 +135,10 @@ export default function analysis() {
         // console.log('Fetched response:', response);
         setOrdersHistories(data);
         console.log('Fetched OrdersHistories:', data);
+        setTotalPages(data.totalPages);
+        console.log(limit);
+        console.log(page);
+
 
         // console.log('Recent Orders:', recentOrders);
 
@@ -146,7 +151,7 @@ export default function analysis() {
 
     fetchOrdersHistories();
 
-  }, [API_BASE_URL, limit, page, sort, committedSearchTerm]);
+  }, [env.API_BASE_URL, limit, page, sort, committedSearchTerm]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,7 +211,7 @@ export default function analysis() {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <span className="mr-2 text-sm text-gray-600 dark:text-white">Price:</span>
+              <span className="mr-2 text-sm text-gray-600 dark:text-white">Order Id :</span>
               <button
                 onClick={toggleSort}
                 className="px-4 py-2 text-sm dark:text-white dark:bg-gray-800 bg-white border border-gray-300 rounded-md hover:bg-gray-50  flex items-center"
@@ -235,40 +240,40 @@ export default function analysis() {
         orderToView ? (
           <ViewOrder
             orderHistory={orderToView}
-            onClose={handleViewCancel}  // Fixed: removed the arrow function wrapper
+            onClose={handleViewCancel}
           />
         ) : null
       ) : (
         <div className={`rounded-lg p-6 shadow-md flex flex-col gap-4 ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-800"}`}>
           <div className="overflow-auto overflow-x-auto h-[calc(100vh-22.25rem)] " >
             <table className="w-full divide-y divide-gray-200 ">
-              <thead className="bg-white text-center ">
+              <thead className="bg-white dark:bg-gray-800 text-center ">
                 <tr>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Order Id</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Customer</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Payment</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Method</th>
-                  <th className=" text-sm font-bold text-gray-500 uppercase tracking-wider">Action</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Order Id</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Date</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Customer</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Payment</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Status</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Method</th>
+                  <th className=" text-sm font-bold text-gray-500 dark:text-white uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 overflow-auto">
 
                 {ordersHistories?.ordersHistories.map((items) => (
 
                   <tr key={items.id} className="text-center">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
                       {items.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
                       {dayjs(items.order_date).format('DD-MM-YYYY')}
                     </td>
-                    <td className="px-6 py-4 flex items-center gap-2 justify-center whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 flex items-center gap-2 justify-center whitespace-nowrap text-sm text-gray-500 dark:text-white">
                       <div className="flex-shrink-0 h-10 w-10">
                         <Image
                           className="h-10 w-10 rounded-full object-cover border-2 border-gray-500"
-                          src={`${items.user.avatar}` || `${FILE_BASE_URL}${items.user.avatar}`}
+                          src={`${items.user.avatar}` || `${env.FILE_BASE_URL}${items.user.avatar}`}
                           alt={items.user.first_name}
                           width={40}
                           height={40}
@@ -280,16 +285,44 @@ export default function analysis() {
                       </div>
 
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {items.payment_status}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {items.payment_status === "paid" ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          Paid
+                        </span>
+                      ) : items.payment_status === "unpaid" ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                          Unpaid
+                        </span>
+                      ) : (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                          {items.payment_status}
+                        </span>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {items.status}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {items.status === "pending" ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                          Pending
+                        </span>
+                      ) : items.status === "shipped" ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                          Shipped
+                        </span>
+                      ) : items.status === "delivered" ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          Delivered
+                        </span>
+                      ) : (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                          {items.status}
+                        </span>
+                      )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
                       {items.payment_method}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
                       <button
                         className="flex items-center justify-center px-4 py-2 text-sm text-blue-600 dark:text-blue-300 hover:rounded-md hover:bg-gray-100 w-full"
                         onClick={() => handleViewClick(items)}
@@ -310,14 +343,14 @@ export default function analysis() {
               <div className="flex items-center gap-2">
                 {/* <span className="text-sm">Items per page:</span> */}
                 <select
-                  value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
+                  value={limit}
                   onChange={(e) => {
                     setLimit(Number(e.target.value));
-                    setPage(1); // Reset to first page when changing limit
+                    setPage(1);
                   }}
                   className="px-2 py-1 border rounded-md text-sm"
                 >
-                  {[5, 10, 15, 20].map((option) => (
+                  {[1, 5, 10, 15, 20].map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>

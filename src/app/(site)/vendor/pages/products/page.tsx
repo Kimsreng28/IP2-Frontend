@@ -9,6 +9,7 @@ import UpdateProduct from './updateProduct';
 import { FaEvernote, FaRegEdit } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
 import ViewProduct from './view';
+import env from '@/src/envs/env';
 
 interface ProductImage {
   id: number;
@@ -77,14 +78,9 @@ const ProductTable: React.FC = () => {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const { theme } = useTheme(); // Get the current theme
+  const { theme } = useTheme();
   const [productToUpdate, setProductToUpdate] = useState<Product | null>(null);
   const [productToView, setProductToView] = useState<Product | null>(null);
-
-
-  const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-  const FILE_BASE_URL = process.env.FILE_BASE_URL;
-
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showViewForm, setShowViewForm] = useState<boolean>(false);
@@ -103,7 +99,7 @@ const ProductTable: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/vendor/product`);
+        const url = new URL(`${env.API_BASE_URL}/vendor/product`);
         url.searchParams.append('page', page.toString());
         url.searchParams.append('limit', limit.toString());
         url.searchParams.append('sortByPrice', priceSort);
@@ -115,7 +111,7 @@ const ProductTable: React.FC = () => {
         console.log(page);
 
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token'); 
 
         if (!token) {
           throw new Error('Authentication token not found');
@@ -145,19 +141,19 @@ const ProductTable: React.FC = () => {
     };
 
     fetchProducts();
-  }, [API_BASE_URL, page, limit, priceSort, committedSearchTerm]);
+  }, [env.API_BASE_URL, page, limit, priceSort, committedSearchTerm]);
 
   useEffect(() => {
     const fetchSetupData = async () => {
       try {
         // Get the JWT token from where you store it (localStorage, cookies, etc.)
-        const token = localStorage.getItem('token'); // Adjust based on your auth storage
+        const token = localStorage.getItem('token'); 
 
         if (!token) {
           throw new Error('Authentication token not found');
         }
 
-        const response = await fetch(`${API_BASE_URL}/vendor/product/setUp`, {
+        const response = await fetch(`${env.API_BASE_URL}/vendor/product/setUp`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -177,7 +173,7 @@ const ProductTable: React.FC = () => {
     };
 
     fetchSetupData();
-  }, [API_BASE_URL]);
+  }, [env.API_BASE_URL]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -246,13 +242,13 @@ const ProductTable: React.FC = () => {
         console.log("after", key, value);
       }
 
-      const token = localStorage.getItem('token'); // Adjust based on your auth storage
+      const token = localStorage.getItem('token'); 
 
       if (!token) {
         throw new Error('Authentication token not found');
       }
 
-      const response = await fetch(`${API_BASE_URL}/vendor/product`, {
+      const response = await fetch(`${env.API_BASE_URL}/vendor/product`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           // 'Content-Type': 'application/json'
@@ -294,7 +290,6 @@ const ProductTable: React.FC = () => {
     console.log('Viewing product:', product);
     setShowViewForm(true);
   };
-
 
   const handleViewCancel = () => {
     setShowViewForm(false);
@@ -339,14 +334,14 @@ const ProductTable: React.FC = () => {
       });
     }
     // Get the JWT token from where you store it (localStorage, cookies, etc.)
-    const token = localStorage.getItem('authToken'); // Adjust based on your auth storage
+    const token = localStorage.getItem('authToken'); 
 
     if (!token) {
       throw new Error('Authentication token not found');
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/vendor/product/${updatedProduct.id}`, {
+      const response = await fetch(`${env.API_BASE_URL}/vendor/product/${updatedProduct.id}`, {
         method: 'PUT',
         body: formData,
         headers: {
@@ -466,7 +461,7 @@ const ProductTable: React.FC = () => {
 
             <button
               onClick={() => {
-                // Add your create product logic here
+                
                 handleCreateClick()
               }}
               className="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700  flex items-center gap-2"
@@ -504,7 +499,7 @@ const ProductTable: React.FC = () => {
               product={productToUpdate}
               brands={brands}
               categories={categories}
-              onCancel={handleUpdateCancel}  // Fixed: removed the arrow function wrapper
+              onCancel={handleUpdateCancel}  
               onSubmit={handleUpdateSubmit}
             />
           ) : null
@@ -512,7 +507,7 @@ const ProductTable: React.FC = () => {
           productToView ? (
             <ViewProduct
               product={productToView}
-              onClose={handleViewCancel}  // Fixed: removed the arrow function wrapper
+              onClose={handleViewCancel}  
             />
           ) : null
         ) :
@@ -535,7 +530,7 @@ const ProductTable: React.FC = () => {
                   <tbody className="bg-white divide-y dark:text-white dark:bg-gray-800 divide-gray-200 overflow-auto">
                     {products.map((product) => {
                       const primaryImage = getPrimaryImage(product.product_images);
-                      const imageUrl = `${FILE_BASE_URL}${primaryImage.image_url}`;
+                      const imageUrl = `${env.FILE_BASE_URL}${primaryImage.image_url}`;
 
                       return (
                         <tr key={product.uuid}>
@@ -630,14 +625,14 @@ const ProductTable: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {/* <span className="text-sm">Items per page:</span> */}
                     <select
-                      value={limit} // Add limit to your state: const [limit, setLimit] = useState(10);
+                      value={limit} 
                       onChange={(e) => {
                         setLimit(Number(e.target.value));
                         setPage(1); // Reset to first page when changing limit
                       }}
                       className="px-2 py-1 border rounded-md text-sm"
                     >
-                      {[5, 10, 15, 20].map((option) => (
+                      {[1, 5, 10, 15, 20].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -691,10 +686,10 @@ const ProductTable: React.FC = () => {
 
       {productToDelete && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-96">
-            <h2 className="text-base  mb-4 text-center">
+          <div className="bg-white dark:bg-gray-500 rounded-xl shadow-lg p-6 w-96">
+            <h2 className="text-base dark:text-white mb-4 text-center">
               Do you want to delete
-              <span className="font-bold text-gray-700 text-lg"> {productToDelete.name} </span> ?
+              <span className="font-bold text-gray-700 dark:text-white text-lg"> {productToDelete.name} </span> ?
             </h2>
             <div className="flex justify-center gap-4">
               <button
@@ -706,13 +701,13 @@ const ProductTable: React.FC = () => {
               <button
                 onClick={async () => {
                   // Call your delete logic here
-                  const token = localStorage.getItem('token'); // Adjust based on your auth storage
+                  const token = localStorage.getItem('token'); 
 
                   if (!token) {
                     throw new Error('Authentication token not found');
                   }
 
-                  const response = await fetch(`${API_BASE_URL}/vendor/product/${productToDelete.id}`.toString(), {
+                  const response = await fetch(`${env.API_BASE_URL}/vendor/product/${productToDelete.id}`.toString(), {
                     method: 'DELETE',
                     headers: {
                       'Authorization': `Bearer ${token}`,

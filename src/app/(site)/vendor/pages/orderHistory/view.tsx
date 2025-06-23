@@ -88,8 +88,6 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
     onClose
 }) => {
     const { theme } = useTheme();
-
-    const FILE_BASE_URL = process.env.FILE_BASE_URL;
     const [error, setError] = useState<string | null>(null);
 
     const getPrimaryImage = (images: ProductImage[]) => {
@@ -120,17 +118,17 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                     <table className="w-full divide-y  divide-gray-200 ">
                         <thead className="bg-white dark:text-white dark:bg-gray-800 ">
                             <tr className="text-sm">
-                                <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider"></th>
-                                <th className=" py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Product Name</th>
-                                <th className="px-6 py-3 text-left  font-bold text-gray-500 uppercase tracking-wider">Price</th>
-                                <th className="px-6 py-3 text-center  font-bold text-gray-500 uppercase tracking-wider">Quantity</th>
-                                <th className="px-6 py-3 text-center  font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left  font-bold text-gray-500 dark:text-white uppercase tracking-wider"></th>
+                                <th className=" py-3 text-left  font-bold text-gray-500 dark:text-white uppercase tracking-wider">Product Name</th>
+                                <th className="px-6 py-3 text-left  font-bold text-gray-500 dark:text-white uppercase tracking-wider">Price</th>
+                                <th className="px-6 py-3 text-center  font-bold text-gray-500 dark:text-white uppercase tracking-wider">Quantity</th>
+                                <th className="px-6 py-3 text-center  font-bold text-gray-500 dark:text-white uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y dark:text-white dark:bg-gray-800 divide-gray-200 overflow-auto">
                             {orderHistory.order_items.map((item) => {
                                 const primaryImage = getPrimaryImage(item.product.product_images);
-                                const imageUrl = `${FILE_BASE_URL}${primaryImage.image_url}`;
+                                const imageUrl = `${env.FILE_BASE_URL}${primaryImage.image_url}`;
 
                                 return (
                                     <tr key={item.id}>
@@ -146,7 +144,7 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                                                 />
                                             </div>
                                         </td>
-                                        <td className="px- py-4 whitespace-nowrap text-sm font-medium dark:text-white text-gray-900">
+                                        <td className="px- py-4 whitespace-nowrap text-sm font-medium dark:text-white text-gray-900 ">
                                             {item.product.name}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-white">
@@ -181,7 +179,7 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                         <div className="flex-shrink-0 h-15 w-15">
                             <Image
                                 className="h-15 w-15 rounded-full object-cover border-2 border-gray-500"
-                                src={`${orderHistory.user.avatar}` || `${FILE_BASE_URL}${orderHistory.user.avatar}`}
+                                src={`${orderHistory.user.avatar}` || `${env.FILE_BASE_URL}${orderHistory.user.avatar}`}
                                 alt={orderHistory.user.first_name}
                                 width={40}
                                 height={40}
@@ -190,37 +188,37 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                         </div>
                         <div className="text-center border-b-2">
                             <p className="text-sm pb-3  font-semibold">{orderHistory.user.first_name} {orderHistory.user.last_name}</p>
-                            <p className="text-sm pb-2 text-gray-600">{orderHistory.user.email}</p>
-                            <p className="text-sm pb-2 text-gray-600">{orderHistory.shipping_address}</p>
+                            <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.user.email}</p>
+                            <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.shipping_address}</p>
                         </div>
                         <div className="flex flex-row">
 
                             <div className="text-right">
-                                <p className="text-sm pb-2 text-gray-600"> Order On</p>
-                                <p className="text-sm pb-2 text-gray-600">Payment Status</p>
-                                <p className="text-sm pb-2 text-gray-600">Total Amount</p>
-                                <p className="text-sm pb-2 text-gray-600">By</p>
-                                <p className="text-sm pb-2 text-gray-600">Delivery Status</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> Order On</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">Payment Status</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">Total Amount</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">By</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">Delivery Status</p>
                             </div>
                             <div className="px-2">
-                                <p className="text-sm pb-2 text-gray-600"> : </p>
-                                <p className="text-sm pb-2 text-gray-600"> : </p>
-                                <p className="text-sm pb-2 text-gray-600"> : </p>
-                                <p className="text-sm pb-2 text-gray-600"> : </p>
-                                <p className="text-sm pb-2 text-gray-600"> : </p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> : </p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> : </p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> : </p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> : </p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white"> : </p>
                             </div>
                             <div className="text-left">
-                                <p className="text-sm pb-2 text-gray-600">
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">
                                     {new Date(orderHistory.order_date).toLocaleDateString('en-GB', {
                                         day: 'numeric',
                                         month: 'short',
                                         year: 'numeric'
                                     })}
                                 </p>
-                                <p className="text-sm pb-2 text-gray-600">{orderHistory.payment_status}</p>
-                                <p className="text-sm pb-2 text-gray-600">{orderHistory.total_amount} $</p>
-                                <p className="text-sm pb-2 text-gray-600">{orderHistory.payment_method}</p>
-                                <p className="text-sm pb-2 text-gray-600">{orderHistory.status}</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.payment_status}</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.total_amount} $</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.payment_method}</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.status}</p>
                             </div>
                         </div>
                     </div>
