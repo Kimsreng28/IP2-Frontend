@@ -396,9 +396,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <div className="space-y-4">
               <div className="relative overflow-hidden bg-white rounded-lg">
                 <div className="relative aspect-square">
-                  <span>
-                    {images[selectedImage]}
-                  </span>
                   <img
                     src={images[selectedImage] || "/placeholder.svg"}
                     alt={product.name}
