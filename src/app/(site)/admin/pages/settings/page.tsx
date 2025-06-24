@@ -136,7 +136,7 @@ export default function Settings() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch('http://localhost:3001/api/admin/setting/category')
+      const response = await fetch('https://api.ele-sale.shop/api/admin/setting/category')
       if (!response.ok) {
         throw new Error('Failed to fetch categories')
       }
