@@ -158,8 +158,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     return () => clearInterval(timer);
   }, []);
 
-  //TODO: Image is missing
-  const fileUrl = env.FILE_BASE_URL || "https://files.ele-sale.shop/api/file/";
+  const fileUrl = "https://files.ele-sale.shop/api/file/";
   const images =
     Array.isArray(product?.product_images) && product.product_images.length > 0
       ? product.product_images.map((img) => new URL(img.image_url, fileUrl).href)
