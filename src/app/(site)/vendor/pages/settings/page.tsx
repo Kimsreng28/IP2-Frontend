@@ -19,8 +19,8 @@ export interface Vendor {
 }
 
 export interface VendorUser {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   avatar: string;
 }
@@ -136,8 +136,8 @@ export default function Settings() {
             <p className="text-base pb-5 text-right text-gray-600 dark:text-white"> : </p>
           </div>
           <div className="font-semibold">
-            <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.user?.lastName || "Null"}</p>
-            <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.user?.firstName || "Null"}</p>
+            <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.user?.last_name || "Null"}</p>
+            <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.user?.first_name || "Null"}</p>
             <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.user?.email || "Null"}</p>
             <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.business_email || "Null"}</p>
             <p className="text-base pb-5 text-left text-gray-600 dark:text-white">{settingInfo?.business_phone || "Null"}</p>

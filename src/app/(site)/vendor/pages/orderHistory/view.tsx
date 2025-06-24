@@ -106,14 +106,14 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                     <IoClose className="w-5 h-5 " />
                 </button>
             </div>
-            <div className="overflow-auto overflow-x-auto h-[calc(100vh-20.5rem)] flex flex-row justify-between " >
+            <div className="h-[calc(100vh-20.5rem)] flex flex-row justify-between " >
                 {error && (
                     <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
                     </div>
                 )}
 
-                <div className="orderItems w-[70%]">
+                <div className="orderItems w-[70%] overflow-auto overflow-x-auto ">
                     <h2 className="text-lg font-semibold mb-4">Order Items</h2>
                     <table className="w-full divide-y  divide-gray-200 ">
                         <thead className="bg-white dark:text-white dark:bg-gray-800 ">
@@ -173,7 +173,7 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                     </table>
                 </div>
 
-                <div className="customer w-[25%] border-l-2">
+                <div className="customer overflow-auto overflow-x-auto  w-[25%] border-l-2">
                     <h2 className="text-lg font-semibold text-center mb-4">Customer</h2>
                     <div className="flex flex-col items-center gap-2">
                         <div className="flex-shrink-0 h-15 w-15">
@@ -215,10 +215,42 @@ const ViewOrder: React.FC<OrderDetailViewProps> = ({
                                         year: 'numeric'
                                     })}
                                 </p>
-                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.payment_status}</p>
+                                <p className="text-sm pb-2 text-gray-600 dark:text-white">
+                                    {orderHistory.payment_status === "paid" ? (
+                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Paid
+                                        </span>
+                                    ) : orderHistory.payment_status === "unpaid" ? (
+                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Unpaid
+                                        </span>
+                                    ) : (
+                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            {orderHistory.payment_status}
+                                        </span>
+                                    )}
+                                </p>
                                 <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.total_amount} $</p>
                                 <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.payment_method}</p>
-                                <p className="text-sm pb-2 text-gray-600 dark:text-white">{orderHistory.status}</p>
+                                <p className="text-sm pb-2">
+                                    {orderHistory.status === "pending" ? (
+                                        <span className="text-yellow-600 dark:text-yellow-400">
+                                            Pending
+                                        </span>
+                                    ) : orderHistory.status === "shipped" ? (
+                                        <span className="text-blue-600 dark:text-blue-400">
+                                            Shipped
+                                        </span>
+                                    ) : orderHistory.status === "delivered" ? (
+                                        <span className="text-green-600 dark:text-green-400">
+                                            Delivered
+                                        </span>
+                                    ) : (
+                                        <span className="text-gray-600 dark:text-white">
+                                            {orderHistory.status}
+                                        </span>
+                                    )}
+                                </p>
                             </div>
                         </div>
                     </div>
