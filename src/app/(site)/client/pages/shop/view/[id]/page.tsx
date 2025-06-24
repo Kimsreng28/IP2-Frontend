@@ -399,13 +399,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <span>
                     {images[selectedImage]}
                   </span>
-                  <span>
-                    {product.product_images.length > 0 ? `Image ${selectedImage + 1} of ${images.length}` : "No images available"}
-                  </span>
-                  <Image
+                  <img
                     src={images[selectedImage] || "/placeholder.svg"}
                     alt={product.name}
-                    fill
                     className="object-contain p-8"
                   />
 
