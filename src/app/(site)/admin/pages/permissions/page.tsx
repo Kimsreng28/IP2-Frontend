@@ -68,7 +68,7 @@ export default function Permission() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/admin/permission/roles');
+        const response = await fetch('https://api.ele-sale.shop/api/admin/permission/roles');
         if (!response.ok) {
           throw new Error('Failed to fetch roles');
         }
@@ -91,7 +91,7 @@ export default function Permission() {
       const fetchRoleUsers = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3001/api/admin/permission/roles/${selectedRole.id}`
+            `https://api.ele-sale.shop/api/admin/permission/roles/${selectedRole.id}`
           )
           if (!response.ok) {
             throw new Error('Failed to fetch role users')

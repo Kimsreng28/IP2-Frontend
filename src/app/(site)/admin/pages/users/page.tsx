@@ -49,7 +49,7 @@ export default function UserManagement() {
     avatar: ""
   })
 
-  const API_URL = "http://localhost:3001/api/admin/user"
+  const API_URL = "https://api.ele-sale.shop/api/admin/user"
 
   // Role mapping functions
   const getRoleIdFromString = (roleString: string): number => {

@@ -68,7 +68,7 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3001/api/admin/dashboard",
+          "https://api.ele-sale.shop/api/admin/dashboard",
         );
         if (!response.ok) {
           throw new Error("Failed to fetch dashboard data");
