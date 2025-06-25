@@ -434,7 +434,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                         : "border-gray-200"
                         }`}
                     >
-                      <Image
+                      <img
                         src={image || "/image2.png"}
                         alt={`${product.name} ${index + 1}`}
                         width={80}
